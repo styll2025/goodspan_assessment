@@ -302,6 +302,23 @@ function bars(level) {
   return [8, 12, 16].map((h, i) => `<span class="bar" style="height:${h}px;background:${i < n ? "#4D2831" : "#E5CFC4"}"></span>`).join("");
 }
 
+function referenceItem(r) {
+  const linked = esc(r).replace(/(https:\/\/doi\.org\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+  return `<li>${linked}</li>`;
+}
+
+function renderReferences(list) {
+  const items = (list || []).map(referenceItem);
+  const preview = 3;
+  if (!items.length) return "";
+  if (items.length <= preview) return `<ol class="refs">${items.join("")}</ol>`;
+  return `<ol class="refs">${items.slice(0, preview).join("")}</ol>
+    <details class="refs-more">
+      <summary><span class="refs-more-show">See full list</span><span class="refs-more-hide">Hide full list</span></summary>
+      <ol class="refs" start="${preview + 1}">${items.slice(preview).join("")}</ol>
+    </details>`;
+}
+
 function practiceRow(x) {
   const chip = CHIPS[x.pillar] || CHIPS.eat;
   const role = x.role === "focus" ? "Focus" : "Light touch";
@@ -333,10 +350,7 @@ function renderPlan() {
     return `<div class="theme" style="background:${chip.bg};color:${chip.fg}"><span class="ui">${esc(label)}</span><div class="ttitle">${esc(t.name)}</div></div>`;
   }).join("");
   const hyg = (p.hygiene_priority || []).map(h => `<li><span class="box"></span>${esc(h.text)}</li>`).join("") || "<li>No foundations to add right now.</li>";
-  const refs = (p.references || []).map(r => {
-    const linked = esc(r).replace(/(https:\/\/doi\.org\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
-    return `<li>${linked}</li>`;
-  }).join("");
+  const refs = renderReferences(p.references);
   const steps = [
     ["✓", "Done", "Assessment complete", "Your answers built this first draft of your plan.", false],
     ["1", "Before you start", "Pre-Span 1:1 check-in", "Review your plan together and agree your first month.", true],
@@ -383,11 +397,11 @@ function renderPlan() {
       <p>Simple everyday habits that support everything else. They aren't part of your six practices: tick them off when they're in place.</p>
       <ul class="checks">${hyg}</ul>
     </section>
-    <section>
+    <section class="refs-section">
       <div class="ui">References</div>
       <h2>The science behind your plan</h2>
       <p>Every practice in your plan is based on published research. These are the main sources for the practices and foundations above.</p>
-      <ol class="refs">${refs}</ol>
+      ${refs}
     </section>
     <div class="actions no-print">
       ${state.planLink ? `<a class="btn btn-secondary" href="${esc(state.planLink)}" target="_blank" rel="noopener">Open saved copy</a>` : ""}

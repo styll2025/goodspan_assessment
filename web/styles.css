@@ -166,8 +166,26 @@ h2 { margin: 4px 0 12px; font-weight: 100; font-size: clamp(24px, 5vw, 32px); li
 ul.checks { list-style: none; padding: 0; margin: 0; }
 ul.checks li { display: flex; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
 .box { flex: none; width: 16px; height: 16px; margin-top: 3px; border: 1.5px solid var(--plum); border-radius: 4px; }
-ol.refs { font-size: 13px; line-height: 1.45; padding-left: 20px; }
+.refs-section { margin-top: 64px; padding-top: 8px; }
+ol.refs { font-size: 13px; line-height: 1.45; padding-left: 20px; margin: 0; }
 ol.refs li { margin-bottom: 6px; overflow-wrap: anywhere; }
+.refs-more { margin-top: 12px; display: flex; flex-direction: column; }
+.refs-more summary {
+  cursor: pointer;
+  color: var(--plum);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: 15px;
+  width: fit-content;
+}
+.refs-more summary::-webkit-details-marker { display: none; }
+.refs-more summary::marker { content: ""; }
+.refs-more .refs-more-hide { display: none; }
+.refs-more[open] { gap: 12px; }
+.refs-more[open] summary { order: 2; }
+.refs-more[open] ol { order: 1; }
+.refs-more[open] .refs-more-show { display: none; }
+.refs-more[open] .refs-more-hide { display: inline; }
 footer.disc { border-top: 1px solid var(--plum); padding-top: 16px; font-size: 13px; margin-top: 28px; }
 
 .hidden { display: none !important; }
@@ -190,4 +208,6 @@ footer.disc { border-top: 1px solid var(--plum); padding-top: 16px; font-size: 1
   body { background: #fff; }
   .topbar, .actions, .no-print { display: none !important; }
   .page { width: 794px; padding: 36px; }
+  .refs-more summary { display: none; }
+  .refs-more ol { display: block !important; }
 }

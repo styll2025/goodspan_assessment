@@ -48,7 +48,16 @@ def render_plan_html(plan, member_name="There"):
         for t in plan.get("themes_months_4_6") or []
     )
     hyg = "".join(f'<li><span class="box"></span>{e(h["text"])}</li>' for h in plan.get("hygiene_priority") or []) or "<li>No foundations to add right now.</li>"
-    refs = "".join(f"<li>{e(r)}</li>" for r in plan.get("references") or [])
+    ref_items = [f"<li>{e(r)}</li>" for r in plan.get("references") or []]
+    preview = 3
+    if len(ref_items) <= preview:
+        refs = f'<ol class="refs">{"".join(ref_items)}</ol>' if ref_items else ""
+    else:
+        refs = (
+            f'<ol class="refs">{"".join(ref_items[:preview])}</ol>'
+            f'<details class="refs-more"><summary><span class="refs-more-show">See full list</span><span class="refs-more-hide">Hide full list</span></summary>'
+            f'<ol class="refs" start="{preview + 1}">{"".join(ref_items[preview:])}</ol></details>'
+        )
     focus = " · ".join(x.title() for x in plan.get("focus_pillars") or [])
     also = " · ".join(x.title() for x in PILLARS if x not in (plan.get("focus_pillars") or []))
     steps = [
@@ -99,9 +108,21 @@ ol{{list-style:none;margin:0;padding:0}} .step{{display:grid;grid-template-colum
 .themes{{display:grid;grid-template-columns:1fr 1fr;gap:12px}} .theme{{border-radius:16px;padding:20px}} .ttitle{{font-weight:100;font-size:26px}}
 ul.checks{{list-style:none;padding:0;margin:0}} ul.checks li{{display:flex;gap:12px;padding:10px 0;border-top:1px solid #E5CFC4}}
 .box{{flex:none;width:16px;height:16px;margin-top:3px;border:1.5px solid {plum};border-radius:4px}}
-ol.refs{{font-size:12px;line-height:1.45;padding-left:20px}} ol.refs li{{margin-bottom:6px;overflow-wrap:anywhere}}
+ol.refs{{list-style:decimal;font-size:12px;line-height:1.45;padding-left:20px;margin:0}}
+ol.refs li{{margin-bottom:6px;overflow-wrap:anywhere}}
+.refs-section{{margin-top:24px;padding-top:8px}}
+.refs-more{{margin-top:12px;display:flex;flex-direction:column}}
+.refs-more summary{{cursor:pointer;color:{plum};text-decoration:underline;text-underline-offset:3px;font-size:15px;list-style:none;width:fit-content}}
+.refs-more summary::-webkit-details-marker{{display:none}}
+.refs-more .refs-more-hide{{display:none}}
+.refs-more[open]{{gap:12px}}
+.refs-more[open] summary{{order:2}}
+.refs-more[open] ol{{order:1}}
+.refs-more[open] .refs-more-show{{display:none}}
+.refs-more[open] .refs-more-hide{{display:inline}}
 .card{{background:#fff;border-radius:18px;padding:22px 24px}} footer{{border-top:1px solid {plum};padding-top:16px;font-size:13px}}
 @media (max-width:700px){{.summary,.themes,.row{{grid-template-columns:1fr}} .c3{{align-items:flex-start;text-align:left}}}}
+@media print{{.refs-more summary{{display:none}}.refs-more ol{{display:block !important}}}}
 </style></head><body><div class="page">
 <header><img src="/design/assets/tgs-logo-one-line-black.png" alt="The Good Span" style="height:18px"><span class="ui">Your Longevity Map</span></header>
 <section><h1>{name}, here is your plan for the next six months</h1>
@@ -118,8 +139,8 @@ ol.refs{{font-size:12px;line-height:1.45;padding-left:20px}} ol.refs li{{margin-
 <section class="card"><div class="ui">Alongside your plan</div><h2>Your foundations</h2>
 <p>Simple everyday habits that support everything else. They aren't part of your six practices: tick them off when they're in place.</p>
 <ul class="checks">{hyg}</ul></section>
-<section><div class="ui">References</div><h2>The science behind your plan</h2>
+<section class="refs-section"><div class="ui">References</div><h2>The science behind your plan</h2>
 <p>Every practice in your plan is based on published research. These are the main sources for the practices and foundations above.</p>
-<ol class="refs">{refs}</ol></section>
+{refs}</section>
 <footer>Your Good Span plan is designed to support everyday wellbeing and healthy habits. It’s not a substitute for personalised medical care.</footer>
 </div></body></html>'''
