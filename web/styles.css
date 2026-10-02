@@ -45,6 +45,7 @@ a { color: var(--plum); }
   text-align: center;
   padding: 24px;
 }
+.building[hidden] { display: none; }
 .page {
   width: min(794px, 100%);
   margin: 0 auto;
