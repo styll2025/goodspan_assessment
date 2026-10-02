@@ -8,7 +8,7 @@ const CHIPS = {
   connect: { bg: "#4D2831", fg: "#FFF2EA" },
 };
 const CHANGE = { new: "New", level_up: "Level up", continue: "Continue", easier: "Easier" };
-const KEY = "goodspan_session_v6";
+const KEY = "goodspan_session_v7";
 
 const $ = (sel, el = document) => el.querySelector(sel);
 const app = $("#app");
@@ -546,12 +546,17 @@ function onClick(e) {
   if (!t) return;
   const act = t.dataset.act;
   if (act === "start") {
-    state.memberName = ($("#name") && $("#name").value || "").trim();
-    state.email = ($("#email") && $("#email").value || "").trim();
-    state.mobile = ($("#mobile") && $("#mobile").value || "").trim();
-    save();
+    const memberName = ($("#name") && $("#name").value || "").trim();
+    const email = ($("#email") && $("#email").value || "").trim();
+    const mobile = ($("#mobile") && $("#mobile").value || "").trim();
+    state = blank();
+    state.memberName = memberName;
+    state.email = email;
+    state.mobile = mobile;
     screenIndex = 0;
+    save();
     location.hash = "#/assess";
+    if (route() === "/assess") render();
     return;
   }
   if (act === "opt") {
