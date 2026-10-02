@@ -18,6 +18,7 @@ let QBY = {};
 let SEC = {};
 let state = loadSession();
 let screenIndex = 0;
+let progressCap = null;
 
 function loadSession() {
   try { return JSON.parse(localStorage.getItem(KEY)) || blank(); }
@@ -81,20 +82,38 @@ function evaluate(expr, a, ctx = {}) {
 }
 
 function isShown(q, a) {
+  return questionVisible(q, a, false);
+}
+
+function unanswered(v) {
+  return v == null || v === "" || (Array.isArray(v) && !v.length);
+}
+
+function mayStillShow(q, a) {
+  return questionVisible(q, a, true);
+}
+
+function questionVisible(q, a, includePossible) {
   const s = q.show_if;
   if (!s) return true;
   if (s.depth_question_for) {
     const focus = a.focus || [];
-    return focus.includes("im_not_sure_yet") || focus.includes(s.depth_question_for.toLowerCase());
+    const pillar = s.depth_question_for.toLowerCase();
+    if (focus.includes("im_not_sure_yet") || focus.includes(pillar)) return true;
+    if (!includePossible) return false;
+    if (!focus.length) return true;
+    const maxSelect = (QBY.focus && QBY.focus.max_select) || 2;
+    return focus.length < maxSelect;
   }
+  if (includePossible && s.q && unanswered(s.row ? (a[s.q] || {})[s.row] : a[s.q])) return true;
   return evaluate(s, a);
 }
 
-function screens() {
+function screensFor(visible) {
   const skip = new Set();
   const out = [];
   for (const q of ASSESS.questions) {
-    if (skip.has(q.id) || !isShown(q, state.answers)) continue;
+    if (skip.has(q.id) || !visible(q, state.answers)) continue;
     if (q.id === "eat_vegetables_fruit") {
       const group = EAT_PATTERN.map(id => QBY[id]).filter(Boolean);
       out.push({ kind: "eat_pattern", id: "eat_pattern", questions: group, section: "eat" });
@@ -104,6 +123,21 @@ function screens() {
     }
   }
   return out;
+}
+
+function screens() {
+  return screensFor(isShown);
+}
+
+function progressTotal() {
+  return screensFor(mayStillShow).length;
+}
+
+function displayProgressTotal(listLen) {
+  const n = Math.max(listLen, progressTotal());
+  if (progressCap == null) progressCap = n;
+  else progressCap = Math.min(progressCap, n);
+  return Math.max(progressCap, listLen);
 }
 
 function answered(screen) {
@@ -225,7 +259,6 @@ function renderAssess() {
   screenIndex = Math.min(screenIndex, list.length - 1);
   const screen = list[screenIndex];
   const section = SEC[screen.section] || {};
-  const pct = Math.round((screenIndex / Math.max(1, list.length - 1)) * 100);
   let body = "";
   let title = "";
   let help = "";
@@ -245,10 +278,12 @@ function renderAssess() {
     body = renderQuestion(q);
   }
   const last = screenIndex === list.length - 1;
+  const total = displayProgressTotal(list.length);
+  const pct = Math.round((screenIndex / Math.max(1, total - 1)) * 100);
   app.innerHTML = `
     <section>
       <div class="progress"><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-        <span class="ui">${screenIndex + 1} of ${list.length}</span></div>
+        <span class="ui">${screenIndex + 1} of ${total}</span></div>
       <div class="ui">${esc(section.title || "")}</div>
       <h1 style="font-size:clamp(26px,5vw,34px)">${esc(title)}</h1>
       ${help ? `<p class="help">${esc(help)}</p>` : ""}
@@ -554,6 +589,7 @@ function onClick(e) {
     state.email = email;
     state.mobile = mobile;
     screenIndex = 0;
+    progressCap = null;
     save();
     location.hash = "#/assess";
     if (route() === "/assess") render();
