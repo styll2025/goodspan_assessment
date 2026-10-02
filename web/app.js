@@ -212,8 +212,7 @@ function renderWelcome() {
           <label>Mobile</label>
           <input type="tel" id="mobile" value="${esc(state.mobile)}" placeholder="Your mobile number" autocomplete="tel" inputmode="tel">
         </div>
-        <div class="actions">
-          <button class="btn btn-ghost" type="button" data-act="example">Load example member</button>
+        <div class="actions" style="justify-content:flex-end">
           <button class="btn btn-primary" type="button" data-act="start">Start the assessment</button>
         </div>
       </div>
@@ -533,26 +532,13 @@ async function buildPlan(extra = {}) {
     state.plan = data.plan;
     if (data.planId) {
       state.planId = data.planId;
-      state.planLink = new URL("plans/" + data.planId + ".html", document.baseURI).href;
+      state.planLink = data.planLink || new URL("plans/" + data.planId + ".html", document.baseURI).href;
     }
     save();
     return data.plan;
   } finally {
     showBuilding(false);
   }
-}
-
-async function loadExample() {
-  const answers = await GoodSpanEngine.loadExample();
-  state = blank();
-  state.memberName = "Alex";
-  state.email = "alex@example.com";
-  state.mobile = "+351 910 000 000";
-  state.answers = answers;
-  save();
-  await buildPlan({ outcomes: null, pilot: null, saveCopy: true });
-  await sendToSheet("example");
-  location.hash = "#/plan";
 }
 
 function onClick(e) {
@@ -568,7 +554,6 @@ function onClick(e) {
     location.hash = "#/assess";
     return;
   }
-  if (act === "example") { loadExample().catch(err => alert(err.message)); return; }
   if (act === "opt") {
     const q = QBY[t.dataset.q];
     if (q.type === "multi") pickMulti(q, t.dataset.v);

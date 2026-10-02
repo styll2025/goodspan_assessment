@@ -97,9 +97,37 @@
     );
     const data = JSON.parse(raw);
     if (data.html) {
-      data.html = data.html.split("/design/assets/").join(assetBase());
+      const originAssets = new URL("design/assets/", new URL(".", document.baseURI)).href;
+      data.html = data.html.split("/design/assets/").join(originAssets);
+      const saved = await savePlanCopy(data.html, payload.memberName || "", payload.planId || "");
+      if (saved && saved.planId) {
+        data.planId = saved.planId;
+        data.planLink = saved.planLink;
+      }
     }
     return data;
+  }
+
+  async function savePlanCopy(html, memberName, planId) {
+    const endpoints = [
+      assetUrl("api/plans"),
+      "https://goodspan-longevity-map.saraportell.workers.dev/api/plans",
+    ];
+    const body = JSON.stringify({ html: html, memberName: memberName || "", planId: planId || "" });
+    for (let i = 0; i < endpoints.length; i++) {
+      try {
+        const res = await fetch(endpoints[i], {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: body,
+        });
+        const type = (res.headers.get("content-type") || "").toLowerCase();
+        if (!type.includes("application/json")) continue;
+        const info = await res.json();
+        if (res.ok && info.planId) return info;
+      } catch (e) {}
+    }
+    return null;
   }
 
   const Engine = {

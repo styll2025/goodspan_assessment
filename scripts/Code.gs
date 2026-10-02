@@ -12,6 +12,8 @@
  *
  * The first row becomes headers. New payload keys add new columns automatically.
  * Multi-selects and grids arrive as readable text (already labelled by the assessment).
+ * A later post with the same memberName (and email, if present) updates that row
+ * instead of adding a duplicate — used to fill in planLink.
  */
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
@@ -42,8 +44,39 @@ function doPost(e) {
   }
 
   const row = headers.map(h => incoming.hasOwnProperty(h) ? incoming[h] : "");
+  const existing = findRow_(sheet, headers, incoming);
+  if (existing) {
+    const merged = existing.values.slice();
+    headers.forEach(function (h, i) {
+      if (incoming.hasOwnProperty(h) && incoming[h] !== "") merged[i] = incoming[h];
+    });
+    sheet.getRange(existing.row, 1, 1, headers.length).setValues([merged]);
+    return json_({ ok: true, updated: true, row: existing.row });
+  }
   sheet.appendRow(row);
   return json_({ ok: true });
+}
+
+function findRow_(sheet, headers, incoming) {
+  const nameIdx = headers.indexOf("memberName");
+  const emailIdx = headers.indexOf("email");
+  if (nameIdx < 0) return null;
+  const name = String(incoming.memberName || "").trim();
+  if (!name) return null;
+  const email = String(incoming.email || "").trim();
+  const last = sheet.getLastRow();
+  if (last < 2) return null;
+  const values = sheet.getRange(2, 1, last - 1, headers.length).getValues();
+  for (let i = values.length - 1; i >= 0; i--) {
+    const rowName = String(values[i][nameIdx] || "").trim();
+    if (rowName !== name) continue;
+    if (emailIdx >= 0 && email) {
+      const rowEmail = String(values[i][emailIdx] || "").trim();
+      if (rowEmail && rowEmail !== email) continue;
+    }
+    return { row: i + 2, values: values[i] };
+  }
+  return null;
 }
 
 function doGet() {

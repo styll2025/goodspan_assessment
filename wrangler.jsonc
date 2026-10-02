@@ -1,9 +1,18 @@
 {
   "name": "goodspan-longevity-map",
+  "main": "worker.js",
   "compatibility_date": "2026-10-02",
   "assets": {
     "directory": ".",
+    "binding": "ASSETS",
+    "run_worker_first": true,
     "not_found_handling": "single-page-application",
     "html_handling": "auto-trailing-slash"
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "PLANS",
+      "id": "0dd9b48964e345199c904192b3c62a3e"
+    }
+  ]
 }

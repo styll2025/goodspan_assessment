@@ -15,3 +15,5 @@ tests/test_engine.py
 tests/random_answers.py
 engine/__pycache__
 Personalised Plan*
+worker.js
+.wrangler
