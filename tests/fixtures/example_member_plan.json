@@ -1,0 +1,349 @@
+{
+  "focus_pillars": [
+    "eat",
+    "move"
+  ],
+  "focus_suggested": false,
+  "top_goals": {
+    "eat": "eating_more_plants_and_fibre",
+    "move": "improve_cardiovascular_fitness",
+    "connect": "more_shared_activities"
+  },
+  "months": [
+    {
+      "month": 1,
+      "practices": [
+        {
+          "practice_id": "beans_and_lentils.gentle",
+          "family_id": "beans_and_lentils",
+          "family": "Beans and lentils",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": true,
+          "level": "gentle",
+          "headline": "Add beans, lentils or chickpeas to one meal this week.",
+          "how_to": "For example, add chickpeas to a salad, lentils to a soup, or beans to a stew. Tinned ones are fine; rinse them first.",
+          "minutes_per_week": 5,
+          "micro": true,
+          "change": "new"
+        },
+        {
+          "practice_id": "salt.gentle",
+          "family_id": "salt",
+          "family": "Salt",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Taste your food before adding salt, and leave the salt shaker off the table at one meal today.",
+          "how_to": "",
+          "minutes_per_week": 5,
+          "micro": true,
+          "change": "new"
+        },
+        {
+          "practice_id": "building_up_cardio.moderate",
+          "family_id": "building_up_cardio",
+          "family": "Building up cardio",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": true,
+          "level": "moderate",
+          "headline": "20 minutes of moderate cardio, such as a brisk walk, cycle or swim, 3 times this week.",
+          "how_to": "Use the talk test: you should be breathing harder but still able to talk in full sentences.",
+          "minutes_per_week": 60,
+          "micro": false,
+          "change": "new"
+        },
+        {
+          "practice_id": "short_intervals.gentle",
+          "family_id": "short_intervals",
+          "family": "Short intervals",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Try a short interval-style cardio session, alternating harder and easier periods.",
+          "how_to": "After a warm-up, try a few 20–30 second hard efforts with easy recovery between. If you're new to exercise or have a health condition, check with a professional first.",
+          "minutes_per_week": 20,
+          "micro": false,
+          "change": "new"
+        },
+        {
+          "practice_id": "bed_for_sleep.gentle",
+          "family_id": "bed_for_sleep",
+          "family": "Bed for sleep",
+          "pillar": "sleep",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Leave your phone outside the bed, not in it or under the pillow.",
+          "how_to": "Put it on a bedside table or across the room, so your bed stays a place for sleep.",
+          "minutes_per_week": 5,
+          "micro": true,
+          "change": "new"
+        },
+        {
+          "practice_id": "time_in_nature.gentle",
+          "family_id": "time_in_nature",
+          "family": "Time in nature",
+          "pillar": "mind",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Spend 20 minutes in a nearby green space this week, such as a park, garden or woodland.",
+          "how_to": "Walk, sit on a bench or eat your lunch there. It counts towards a weekly total, so one visit or several short ones both work.",
+          "minutes_per_week": 20,
+          "micro": false,
+          "change": "new"
+        }
+      ],
+      "total_minutes_per_week": 115
+    },
+    {
+      "month": 2,
+      "practices": [
+        {
+          "practice_id": "beans_and_lentils.moderate",
+          "family_id": "beans_and_lentils",
+          "family": "Beans and lentils",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": true,
+          "level": "moderate",
+          "headline": "Include beans, lentils or chickpeas in at least 2 meals this week.",
+          "how_to": "A serving is about 100 g, roughly half a standard tin, drained.",
+          "minutes_per_week": 15,
+          "micro": false,
+          "change": "level_up"
+        },
+        {
+          "practice_id": "salt.moderate",
+          "family_id": "salt",
+          "family": "Salt",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": false,
+          "level": "moderate",
+          "headline": "Choose lower-salt versions of two foods you buy often this week.",
+          "how_to": "Compare labels on bread, cereals, sauces, soups, ready meals and processed meats, and pick the one with less salt. If a label shows only sodium, multiply it by 2.5 to get the salt content.",
+          "minutes_per_week": 15,
+          "micro": false,
+          "change": "level_up"
+        },
+        {
+          "practice_id": "building_up_cardio.deep",
+          "family_id": "building_up_cardio",
+          "family": "Building up cardio",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": true,
+          "level": "deep",
+          "headline": "20 minutes of moderate cardio on 5 days this week.",
+          "how_to": "That's 100 minutes a week, two-thirds of the way to the 150-minute recommendation. Keep using the talk test to check the effort.",
+          "minutes_per_week": 100,
+          "micro": false,
+          "change": "level_up"
+        },
+        {
+          "practice_id": "short_intervals.gentle",
+          "family_id": "short_intervals",
+          "family": "Short intervals",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Try a short interval-style cardio session, alternating harder and easier periods.",
+          "how_to": "After a warm-up, try a few 20–30 second hard efforts with easy recovery between. If you're new to exercise or have a health condition, check with a professional first.",
+          "minutes_per_week": 20,
+          "micro": false,
+          "change": "continue"
+        },
+        {
+          "practice_id": "group_membership.gentle",
+          "family_id": "group_membership",
+          "family": "Group membership",
+          "pillar": "connect",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "List the groups you belong to, and pick one you'd like to be more involved in.",
+          "how_to": "Groups can be anything you feel part of: a club, team, class, faith community, volunteering group or group of friends.",
+          "minutes_per_week": 10,
+          "micro": true,
+          "change": "new"
+        },
+        {
+          "practice_id": "progressive_muscle_relaxation.gentle",
+          "family_id": "progressive_muscle_relaxation",
+          "family": "Progressive muscle relaxation",
+          "pillar": "sleep",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "5 minutes of progressive muscle relaxation before bed: tense and release each muscle group in turn.",
+          "how_to": "Lying in bed, work from your feet up to your face. Tense each muscle group firmly (never to the point of pain) for a few seconds, then let go and notice the release. Moving through your feet, legs, stomach, hands, arms, shoulders and face takes about 5 minutes.",
+          "minutes_per_week": 5,
+          "micro": true,
+          "change": "new"
+        }
+      ],
+      "total_minutes_per_week": 165
+    },
+    {
+      "month": 3,
+      "practices": [
+        {
+          "practice_id": "beans_and_lentils.moderate",
+          "family_id": "beans_and_lentils",
+          "family": "Beans and lentils",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": true,
+          "level": "moderate",
+          "headline": "Include beans, lentils or chickpeas in at least 2 meals this week.",
+          "how_to": "A serving is about 100 g, roughly half a standard tin, drained.",
+          "minutes_per_week": 15,
+          "micro": false,
+          "change": "continue"
+        },
+        {
+          "practice_id": "salt.moderate",
+          "family_id": "salt",
+          "family": "Salt",
+          "pillar": "eat",
+          "role": "focus",
+          "top_goal": false,
+          "level": "moderate",
+          "headline": "Choose lower-salt versions of two foods you buy often this week.",
+          "how_to": "Compare labels on bread, cereals, sauces, soups, ready meals and processed meats, and pick the one with less salt. If a label shows only sodium, multiply it by 2.5 to get the salt content.",
+          "minutes_per_week": 15,
+          "micro": false,
+          "change": "continue"
+        },
+        {
+          "practice_id": "building_up_cardio.deep",
+          "family_id": "building_up_cardio",
+          "family": "Building up cardio",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": true,
+          "level": "deep",
+          "headline": "20 minutes of moderate cardio on 5 days this week.",
+          "how_to": "That's 100 minutes a week, two-thirds of the way to the 150-minute recommendation. Keep using the talk test to check the effort.",
+          "minutes_per_week": 100,
+          "micro": false,
+          "change": "continue"
+        },
+        {
+          "practice_id": "short_intervals.gentle",
+          "family_id": "short_intervals",
+          "family": "Short intervals",
+          "pillar": "move",
+          "role": "focus",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Try a short interval-style cardio session, alternating harder and easier periods.",
+          "how_to": "After a warm-up, try a few 20–30 second hard efforts with easy recovery between. If you're new to exercise or have a health condition, check with a professional first.",
+          "minutes_per_week": 20,
+          "micro": false,
+          "change": "continue"
+        },
+        {
+          "practice_id": "slow_breathing.gentle",
+          "family_id": "slow_breathing",
+          "family": "Slow breathing",
+          "pillar": "mind",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Practise slow, conscious breathing for a few minutes, keeping your out-breath longer than your in-breath.",
+          "how_to": "Try cyclic sighing for about 5 minutes: breathe in through your nose, add a second short inhale to fill your lungs, then breathe out slowly through your mouth.",
+          "minutes_per_week": 5,
+          "micro": true,
+          "change": "new"
+        },
+        {
+          "practice_id": "affectionate_touch.gentle",
+          "family_id": "affectionate_touch",
+          "family": "Affectionate touch",
+          "pillar": "connect",
+          "role": "light_touch",
+          "top_goal": false,
+          "level": "gentle",
+          "headline": "Give a hug to someone close to you today, if they welcome it.",
+          "how_to": "Ask first if you're not sure.",
+          "minutes_per_week": 1,
+          "micro": true,
+          "change": "new"
+        }
+      ],
+      "total_minutes_per_week": 156
+    }
+  ],
+  "themes_months_4_6": [
+    {
+      "theme_id": "plant_rich_eating",
+      "name": "Plant-Rich Eating",
+      "pillar": "eat"
+    },
+    {
+      "theme_id": "structured_cardio",
+      "name": "Structured Cardio",
+      "pillar": "move"
+    },
+    {
+      "theme_id": "bedtime_habits",
+      "name": "Bedtime Habits",
+      "pillar": "sleep"
+    },
+    {
+      "theme_id": "rest_and_enjoyment",
+      "name": "Rest & Enjoyment",
+      "pillar": "mind"
+    }
+  ],
+  "hygiene_priority": [
+    {
+      "id": "bedroom_noise",
+      "text": "Cut bedroom noise: close windows on the noisy side, move away from noise sources, or try foam earplugs.",
+      "pillar": "sleep"
+    }
+  ],
+  "references": [
+    "Afshin, A., Micha, R., Khatibzadeh, S., & Mozaffarian, D. (2014). Consumption of nuts and legumes and risk of incident ischemic heart disease, stroke, and diabetes: a systematic review and meta-analysis. American Journal of Clinical Nutrition, 100(1), 278–288. https://doi.org/10.3945/ajcn.113.076901",
+    "Balban, M. Y., Neri, E., Kogon, M. M., Weed, L., Nouriani, B., Jo, B., Holl, G., Zeitzer, J. M., Spiegel, D., & Huberman, A. D. (2023). Brief structured respiration practices enhance mood and reduce physiological arousal. Cell Reports Medicine, 4(1), 100895. https://doi.org/10.1016/j.xcrm.2022.100895",
+    "Basner, M., & McGuire, S. (2018). WHO Environmental Noise Guidelines for the European Region: A systematic review on environmental noise and effects on sleep. International Journal of Environmental Research and Public Health, 15(3), 519. https://doi.org/10.3390/ijerph15030519",
+    "Bull, F. C., Al-Ansari, S. S., Biddle, S., Borodulin, K., Buman, M. P., Cardon, G., Carty, C., Chaput, J.-P., Chastin, S., Chou, R., Dempsey, P. C., DiPietro, L., Ekelund, U., Firth, J., Friedenreich, C. M., Garcia, L., Gichu, M., Jago, R., Katzmarzyk, P. T., . . . Willumsen, J. F. (2020). World Health Organization 2020 guidelines on physical activity and sedentary behaviour. British Journal of Sports Medicine, 54(24), 1451–1462. https://doi.org/10.1136/bjsports-2020-102955",
+    "Cohen, S., Janicki-Deverts, D., Turner, R. B., & Doyle, W. J. (2015). Does hugging provide stress-buffering social support? A study of susceptibility to upper respiratory infection and illness. Psychological Science, 26(2), 135–147. https://doi.org/10.1177/0956797614559284",
+    "Cruwys, T., Dingle, G. A., Haslam, C., Haslam, S. A., Jetten, J., & Morton, T. A. (2013). Social group memberships protect against future depression, alleviate depression symptoms and prevent depression relapse. Social Science & Medicine, 98, 179–186. https://doi.org/10.1016/j.socscimed.2013.09.013",
+    "Donato, K. O., Falcão, L., Nishizima, A., Oliveira, A. S., Gonzalez, J. V., Ribeiro, N. N., Abbud, C., Braga, G. A., Garrido, G., Donato, A. O., Eckeli, A., Cruz, M. M. E., & Salles, C. (2026). Progressive muscle relaxation technique improves sleep quality and mental health: A systematic review and meta-analysis of randomized controlled trials. Journal of Psychosomatic Research, 203, 112563. https://doi.org/10.1016/j.jpsychores.2026.112563",
+    "Edinger, J. D., Arnedt, J. T., Bertisch, S. M., Carney, C. E., Harrington, J. J., Lichstein, K. L., Sateia, M. J., Troxel, W. M., Zhou, E. S., Kazmi, U., Heald, J. L., & Martin, J. L. (2021). Behavioral and psychological treatments for chronic insomnia disorder in adults: An American Academy of Sleep Medicine systematic review, meta-analysis, and GRADE assessment. Journal of Clinical Sleep Medicine, 17(2), 263–298. https://doi.org/10.5664/jcsm.8988",
+    "He, F. J., Li, J., & MacGregor, G. A. (2013). Effect of longer term modest salt reduction on blood pressure: Cochrane systematic review and meta-analysis of randomised trials. BMJ, 346, f1325. https://doi.org/10.1136/bmj.f1325",
+    "Ma, X., Yue, Z.-Q., Gong, Z.-Q., Zhang, H., Duan, N.-Y., Shi, Y.-T., Wei, G.-X., & Li, Y.-F. (2017). The Effect of Diaphragmatic Breathing on Attention, Negative Affect and Stress in Healthy Adults. Frontiers in Psychology, 8, 874. https://doi.org/10.3389/fpsyg.2017.00874",
+    "Milanović, Z., Sporiš, G., & Weston, M. (2015). Effectiveness of high-intensity interval training (HIT) and continuous endurance training for VO2max improvements: a systematic review and meta-analysis of controlled trials. Sports Medicine, 45(10), 1469–1481. https://doi.org/10.1007/s40279-015-0365-0",
+    "Packheiser, J., Hartmann, H., Fredriksen, K., Gazzola, V., Keysers, C., & Michon, F. (2024). A systematic review and multivariate meta-analysis of the physical and mental health benefits of touch interventions. Nature Human Behaviour, 8(6), 1088–1107. https://doi.org/10.1038/s41562-024-01841-8",
+    "Pearce, E., Launay, J., & Dunbar, R. I. M. (2015). The ice-breaker effect: Singing mediates fast social bonding. Royal Society Open Science, 2(10), 150221. https://doi.org/10.1098/rsos.150221",
+    "Reed, J. L., & Pipe, A. L. (2014). The talk test: A useful tool for prescribing and monitoring exercise intensity. Current Opinion in Cardiology, 29(5), 475–480. https://doi.org/10.1097/HCO.0000000000000097",
+    "Reynolds, A., Mann, J., Cummings, J., Winter, N., Mete, E., & Te Morenga, L. (2019). Carbohydrate quality and human health: A series of systematic reviews and meta-analyses. The Lancet, 393(10170), 434–445. https://doi.org/10.1016/S0140-6736(18)31809-9",
+    "Simon, K. C., McDevitt, E. A., Ragano, R., & Mednick, S. C. (2022). Progressive muscle relaxation increases slow-wave sleep during a daytime nap. Journal of Sleep Research, 31(5), e13574. https://doi.org/10.1111/jsr.13574",
+    "Wen, D., Utesch, T., Wu, J., Robertson, S., Liu, J., Hu, G., & Chen, H. (2019). Effects of different protocols of high intensity interval training for VO2max improvements in adults: A meta-analysis of randomised controlled trials. Journal of Science and Medicine in Sport, 22(8), 941–947. https://doi.org/10.1016/j.jsams.2019.01.013",
+    "White, M. P., Alcock, I., Grellier, J., Wheeler, B. W., Hartig, T., Warber, S. L., Bone, A., Depledge, M. H., & Fleming, L. E. (2019). Spending at least 120 minutes a week in nature is associated with good health and wellbeing. Scientific Reports, 9(1), 7730. https://doi.org/10.1038/s41598-019-44097-3"
+  ],
+  "pilot_flags": [
+    {
+      "id": "always_ask",
+      "message": "Ask every member about mood, alcohol, falls (60+) and long-term sleep problems (see Pilot guide)."
+    }
+  ],
+  "conditions": [],
+  "weekly_budget_minutes": 150,
+  "notes": [
+    "Month 2: morning_daylight swapped for micro practice progressive_muscle_relaxation to fit weekly time",
+    "Month 2: short_intervals held at gentle to fit weekly time",
+    "Month 3: short_intervals held at gentle to fit weekly time",
+    "Month 3: weekly_cardio held at deep to fit weekly time",
+    "Month 3: salt held at moderate to fit weekly time",
+    "Month 3: beans_and_lentils held at moderate to fit weekly time"
+  ]
+}

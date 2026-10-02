@@ -1,0 +1,2033 @@
+{
+  "id": "longevity_map_assessment",
+  "version": "v6",
+  "language": "en",
+  "notes": [
+    "Every section is shown to everyone. 'Depth' questions (show_if.depth_question_for) are shown only if that pillar is a focus pillar, or if the member chose 'I'm not sure yet'.",
+    "The eating-pattern grid in the v6 document is split here into eat_vegetables_fruit, eat_protein_meals, eat_home_cooked and eat_frequency; render them as one grid.",
+    "Mood, alcohol, falls and long-term sleep problems are not asked here; the Pilot asks them at the pre-Span interview.",
+    "Under-18s are excluded at sign-up, not by the assessment."
+  ],
+  "sections": [
+    {
+      "id": "focus",
+      "title": "Your focus"
+    },
+    {
+      "id": "about_you",
+      "title": "About you"
+    },
+    {
+      "id": "health_check",
+      "title": "Health check"
+    },
+    {
+      "id": "eat",
+      "title": "Eat"
+    },
+    {
+      "id": "sleep",
+      "title": "Sleep"
+    },
+    {
+      "id": "move",
+      "title": "Move"
+    },
+    {
+      "id": "mind",
+      "title": "Mind"
+    },
+    {
+      "id": "connect",
+      "title": "Connect"
+    },
+    {
+      "id": "your_life",
+      "title": "Your life and your practices"
+    }
+  ],
+  "questions": [
+    {
+      "id": "focus",
+      "section": "focus",
+      "text": "Which one or two areas would you most like to focus on?",
+      "type": "multi",
+      "help": "Select up to 2. We'll still ask about every area, so your plan can support your wellbeing as a whole.",
+      "options": [
+        {
+          "id": "eat",
+          "label": "Eat"
+        },
+        {
+          "id": "sleep",
+          "label": "Sleep"
+        },
+        {
+          "id": "move",
+          "label": "Move"
+        },
+        {
+          "id": "mind",
+          "label": "Mind"
+        },
+        {
+          "id": "connect",
+          "label": "Connect"
+        },
+        {
+          "id": "im_not_sure_yet",
+          "label": "I'm not sure yet"
+        }
+      ],
+      "max_select": 2,
+      "exclusive_options": [
+        "im_not_sure_yet"
+      ]
+    },
+    {
+      "id": "age",
+      "section": "about_you",
+      "text": "What is your age?",
+      "type": "single",
+      "options": [
+        {
+          "id": "18_29",
+          "label": "18-29"
+        },
+        {
+          "id": "30_39",
+          "label": "30-39"
+        },
+        {
+          "id": "40_49",
+          "label": "40-49"
+        },
+        {
+          "id": "50_59",
+          "label": "50-59"
+        },
+        {
+          "id": "60_69",
+          "label": "60-69"
+        },
+        {
+          "id": "70_or_over",
+          "label": "70 or over"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ]
+    },
+    {
+      "id": "work_pattern",
+      "section": "about_you",
+      "text": "Which best describes your working pattern?",
+      "type": "single",
+      "options": [
+        {
+          "id": "mostly_regular_daytime_hours",
+          "label": "Mostly regular daytime hours"
+        },
+        {
+          "id": "shift_work_including_nights",
+          "label": "Shift work, including nights"
+        },
+        {
+          "id": "irregular_or_changing_hours",
+          "label": "Irregular or changing hours"
+        },
+        {
+          "id": "not_currently_working",
+          "label": "Not currently working"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ]
+    },
+    {
+      "id": "work_location",
+      "section": "about_you",
+      "text": "Where do you mostly work?",
+      "type": "single",
+      "options": [
+        {
+          "id": "mostly_at_a_workplace",
+          "label": "Mostly at a workplace"
+        },
+        {
+          "id": "mostly_from_home",
+          "label": "Mostly from home"
+        },
+        {
+          "id": "a_mix_of_home_and_a_workplace",
+          "label": "A mix of home and a workplace"
+        }
+      ],
+      "show_if": {
+        "q": "work_pattern",
+        "in": [
+          "mostly_regular_daytime_hours",
+          "shift_work_including_nights",
+          "irregular_or_changing_hours"
+        ]
+      }
+    },
+    {
+      "id": "household",
+      "section": "about_you",
+      "text": "Who do you live with?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "i_live_alone",
+          "label": "I live alone"
+        },
+        {
+          "id": "a_partner",
+          "label": "A partner"
+        },
+        {
+          "id": "children_under_18",
+          "label": "Children under 18"
+        },
+        {
+          "id": "adult_children",
+          "label": "Adult children"
+        },
+        {
+          "id": "other_adults",
+          "label": "Other adults"
+        },
+        {
+          "id": "i_care_for_someone_at_home",
+          "label": "I care for someone at home"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ],
+      "exclusive_options": [
+        "i_live_alone",
+        "prefer_not_to_say"
+      ]
+    },
+    {
+      "id": "health_conditions",
+      "section": "health_check",
+      "text": "Has a doctor or other healthcare professional ever told you that you have any of these?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "a_heart_condition",
+          "label": "A heart condition"
+        },
+        {
+          "id": "high_blood_pressure",
+          "label": "High blood pressure"
+        },
+        {
+          "id": "diabetes",
+          "label": "Diabetes (including if you take insulin or other blood-sugar medicine)"
+        },
+        {
+          "id": "kidney_disease",
+          "label": "Kidney disease"
+        },
+        {
+          "id": "lung_condition",
+          "label": "A lung condition, such as asthma or COPD"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these",
+        "prefer_not_to_say"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "exercise_symptoms",
+      "section": "health_check",
+      "text": "In the past 3 months, have you experienced any of the following?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "chest_pain",
+          "label": "Pain, tightness or pressure in your chest"
+        },
+        {
+          "id": "breathless",
+          "label": "Shortness of breath with very little effort"
+        },
+        {
+          "id": "dizzy_or_fainting",
+          "label": "Feeling dizzy, light-headed or fainting"
+        },
+        {
+          "id": "palpitations",
+          "label": "Your heart racing, fluttering or beating irregularly"
+        },
+        {
+          "id": "swollen_ankles",
+          "label": "Swollen ankles"
+        },
+        {
+          "id": "calf_pain",
+          "label": "Pain in your calves when walking"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ]
+    },
+    {
+      "id": "pregnant_or_breastfeeding",
+      "section": "health_check",
+      "text": "Are you currently pregnant or breastfeeding?",
+      "type": "single",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes"
+        },
+        {
+          "id": "no",
+          "label": "No"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ]
+    },
+    {
+      "id": "eat_vegetables_fruit",
+      "section": "eat",
+      "text": "Vegetables and fruit on a typical day",
+      "type": "single",
+      "help": "Part of the 'How does your eating pattern typically look?' grid.",
+      "options": [
+        {
+          "id": "none",
+          "label": "None"
+        },
+        {
+          "id": "1_2_portions",
+          "label": "1-2 portions"
+        },
+        {
+          "id": "3_4_portions",
+          "label": "3-4 portions"
+        },
+        {
+          "id": "5_or_more_portions",
+          "label": "5 or more portions"
+        }
+      ]
+    },
+    {
+      "id": "eat_protein_meals",
+      "section": "eat",
+      "text": "Main meals that include a source of protein",
+      "type": "single",
+      "help": "Part of the eating-pattern grid.",
+      "options": [
+        {
+          "id": "none",
+          "label": "None"
+        },
+        {
+          "id": "one",
+          "label": "One"
+        },
+        {
+          "id": "two",
+          "label": "Two"
+        },
+        {
+          "id": "all_of_them",
+          "label": "All of them"
+        }
+      ]
+    },
+    {
+      "id": "eat_home_cooked",
+      "section": "eat",
+      "text": "Home-cooked main meals in a typical week",
+      "type": "single",
+      "help": "Part of the eating-pattern grid.",
+      "options": [
+        {
+          "id": "fewer_than_3",
+          "label": "Fewer than 3"
+        },
+        {
+          "id": "3_5",
+          "label": "3-5"
+        },
+        {
+          "id": "more_than_5",
+          "label": "More than 5"
+        }
+      ]
+    },
+    {
+      "id": "eat_frequency",
+      "section": "eat",
+      "text": "How often (days a week) do you eat or drink these?",
+      "type": "grid_single",
+      "help": "Part of the eating-pattern grid.",
+      "rows": [
+        {
+          "id": "whole_grains",
+          "label": "Whole grains, such as oats, wholegrain bread or brown rice"
+        },
+        {
+          "id": "beans_lentils",
+          "label": "Beans, lentils or chickpeas"
+        },
+        {
+          "id": "sugary_drinks",
+          "label": "Sugary drinks, such as soft drinks, energy drinks or sweetened coffee or tea"
+        },
+        {
+          "id": "processed_foods",
+          "label": "Packaged or processed foods, such as ready meals, packaged snacks or processed meats"
+        },
+        {
+          "id": "nuts",
+          "label": "A handful of unsalted nuts"
+        },
+        {
+          "id": "adding_salt",
+          "label": "Adding salt to your food, at the table or when cooking"
+        }
+      ],
+      "columns": [
+        {
+          "id": "rarely_or_never",
+          "label": "Rarely or never"
+        },
+        {
+          "id": "1_2_days_week",
+          "label": "1-2 days/week"
+        },
+        {
+          "id": "3_5_days_week",
+          "label": "3-5 days/week"
+        },
+        {
+          "id": "6_7_days_week",
+          "label": "6-7 days/week"
+        }
+      ]
+    },
+    {
+      "id": "meal_habits",
+      "section": "eat",
+      "text": "How often do you do these at meals?",
+      "type": "grid_single",
+      "rows": [
+        {
+          "id": "eat_without_a_screen",
+          "label": "Eat without a screen"
+        },
+        {
+          "id": "attention_to_food",
+          "label": "Pay attention to the taste and smell of my food"
+        },
+        {
+          "id": "eat_slowly",
+          "label": "Eat slowly, putting my fork down between bites"
+        },
+        {
+          "id": "eat_a_wide_variety_of_plant_foods",
+          "label": "Eat a wide variety of plant foods"
+        },
+        {
+          "id": "plan_for_eating_out",
+          "label": "Have a plan for eating well when I'm out or travelling"
+        },
+        {
+          "id": "eat_within_a_set_daily_time_window",
+          "label": "Eat within a set daily time window"
+        }
+      ],
+      "columns": [
+        {
+          "id": "rarely",
+          "label": "Rarely"
+        },
+        {
+          "id": "sometimes",
+          "label": "Sometimes"
+        },
+        {
+          "id": "most_days",
+          "label": "Most days"
+        }
+      ]
+    },
+    {
+      "id": "eat_goals",
+      "section": "eat",
+      "text": "What would you most like to improve about how you eat?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "getting_enough_protein",
+          "label": "Getting enough protein"
+        },
+        {
+          "id": "eating_more_plants_and_fibre",
+          "label": "Eating more plants and fibre"
+        },
+        {
+          "id": "reducing_highly_processed_foods",
+          "label": "Reducing highly processed foods"
+        },
+        {
+          "id": "reducing_sugar",
+          "label": "Reducing sugar"
+        },
+        {
+          "id": "heart_health",
+          "label": "Heart health: less salt and more nuts"
+        },
+        {
+          "id": "meal_planning_and_home_cooking",
+          "label": "Meal planning and home cooking"
+        },
+        {
+          "id": "eating_out",
+          "label": "Eating well when I'm out or travelling"
+        },
+        {
+          "id": "when_i_eat",
+          "label": "When I eat, such as late-evening eating"
+        },
+        {
+          "id": "eat_mindfully",
+          "label": "Eating more mindfully, with fewer distractions"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        }
+      ],
+      "max_select": 3,
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "eat_barriers",
+      "section": "eat",
+      "text": "What have you found difficult to sustain when it comes to eating?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "knowing_what_to_eat",
+          "label": "Knowing what to eat"
+        },
+        {
+          "id": "planning_and_preparation",
+          "label": "Planning and preparation"
+        },
+        {
+          "id": "finding_time",
+          "label": "Finding time"
+        },
+        {
+          "id": "eating_consistently_when_my_routine_changes",
+          "label": "Eating consistently when my routine changes"
+        },
+        {
+          "id": "eating_well_when_socialising_or_travelling",
+          "label": "Eating well when socialising or travelling"
+        },
+        {
+          "id": "cravings_or_appetite",
+          "label": "Cravings or appetite"
+        },
+        {
+          "id": "making_changes_that_feel_enjoyable",
+          "label": "Making changes that feel enjoyable"
+        },
+        {
+          "id": "making_changes_that_work_for_my_household",
+          "label": "Making changes that work for my household"
+        },
+        {
+          "id": "i_havent_found_it_particularly_difficult",
+          "label": "I haven't found it particularly difficult"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "show_if": {
+        "depth_question_for": "Eat"
+      },
+      "exclusive_options": [
+        "i_havent_found_it_particularly_difficult"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "eat_considerations",
+      "section": "eat",
+      "text": "Are there any health, dietary or other considerations we should take into account?",
+      "type": "multi",
+      "help": "If any specific option is selected, show a free-text box: 'Please tell us a little more'.",
+      "options": [
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        },
+        {
+          "id": "nut_allergy",
+          "label": "Nut allergy"
+        },
+        {
+          "id": "other_food_allergy_or_intolerance",
+          "label": "Other food allergy or intolerance"
+        },
+        {
+          "id": "dietary_preference",
+          "label": "Dietary restriction or preference (for example vegetarian, vegan, halal or kosher)"
+        },
+        {
+          "id": "food_health_condition",
+          "label": "A health condition that affects what or how I eat"
+        },
+        {
+          "id": "a_difficult_relationship_with_food",
+          "label": "A difficult relationship with food"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ],
+      "exclusive_options": [
+        "nothing_in_particular",
+        "prefer_not_to_say"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "sleep_hours",
+      "section": "sleep",
+      "text": "On a typical night, how many hours of actual sleep do you get?",
+      "type": "single",
+      "options": [
+        {
+          "id": "less_than_5",
+          "label": "Less than 5"
+        },
+        {
+          "id": "5_6",
+          "label": "5-6"
+        },
+        {
+          "id": "6_7",
+          "label": "6-7"
+        },
+        {
+          "id": "7_8",
+          "label": "7-8"
+        },
+        {
+          "id": "8_9",
+          "label": "8-9"
+        },
+        {
+          "id": "more_than_9",
+          "label": "More than 9"
+        }
+      ]
+    },
+    {
+      "id": "sleep_problems",
+      "section": "sleep",
+      "text": "Which of these happen to you on 3 or more nights a week?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "slow_to_fall_asleep",
+          "label": "It takes me a long time to fall asleep"
+        },
+        {
+          "id": "night_waking",
+          "label": "I wake during the night and find it hard to get back to sleep"
+        },
+        {
+          "id": "early_waking",
+          "label": "I wake earlier than I want to and can't get back to sleep"
+        },
+        {
+          "id": "i_wake_feeling_unrefreshed",
+          "label": "I wake feeling unrefreshed"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ]
+    },
+    {
+      "id": "snoring",
+      "section": "sleep",
+      "text": "Has anyone told you that you snore loudly or seem to stop breathing while you sleep?",
+      "type": "single",
+      "options": [
+        {
+          "id": "yes",
+          "label": "Yes"
+        },
+        {
+          "id": "no",
+          "label": "No"
+        },
+        {
+          "id": "i_dont_know",
+          "label": "I don't know"
+        }
+      ]
+    },
+    {
+      "id": "last_caffeine",
+      "section": "sleep",
+      "text": "When do you usually have your last drink containing caffeine?",
+      "type": "single",
+      "help": "Include coffee, tea, cola and energy drinks.",
+      "options": [
+        {
+          "id": "i_dont_have_caffeine",
+          "label": "I don't have caffeine"
+        },
+        {
+          "id": "before_12pm",
+          "label": "Before 12pm"
+        },
+        {
+          "id": "12_3pm",
+          "label": "12-3pm"
+        },
+        {
+          "id": "3_6pm",
+          "label": "3-6pm"
+        },
+        {
+          "id": "after_6pm",
+          "label": "After 6pm"
+        }
+      ]
+    },
+    {
+      "id": "eating_before_bed",
+      "section": "sleep",
+      "text": "How long before bed do you usually finish eating?",
+      "type": "single",
+      "options": [
+        {
+          "id": "less_than_1_hour",
+          "label": "Less than 1 hour"
+        },
+        {
+          "id": "1_2_hours",
+          "label": "1-2 hours"
+        },
+        {
+          "id": "2_3_hours",
+          "label": "2-3 hours"
+        },
+        {
+          "id": "3_hours_or_more",
+          "label": "3 hours or more"
+        }
+      ]
+    },
+    {
+      "id": "sleep_habits",
+      "section": "sleep",
+      "text": "Which of these sleep habits do you have now, and which have you tried?",
+      "type": "grid_single",
+      "rows": [
+        {
+          "id": "get_outside_in_daylight_in_the_morning",
+          "label": "Get outside in daylight in the morning"
+        },
+        {
+          "id": "dim_the_lights_in_the_evening",
+          "label": "Dim the lights in the evening"
+        },
+        {
+          "id": "keep_a_regular_bedtime_and_wake_time",
+          "label": "Keep a regular bedtime and wake time"
+        },
+        {
+          "id": "cut_down_on_alcohol_in_the_evening",
+          "label": "Cut down on alcohol in the evening"
+        },
+        {
+          "id": "wind_down_routine",
+          "label": "Follow a relaxing wind-down routine, such as breathing, relaxation or calm music"
+        },
+        {
+          "id": "write_down_tomorrows_tasks_before_bed",
+          "label": "Write down tomorrow's tasks before bed"
+        },
+        {
+          "id": "keep_my_bedroom_cool",
+          "label": "Keep my bedroom cool"
+        },
+        {
+          "id": "keep_my_bedroom_dark",
+          "label": "Keep my bedroom dark"
+        },
+        {
+          "id": "keep_bedroom_quiet",
+          "label": "Keep my bedroom quiet, for example with earplugs"
+        },
+        {
+          "id": "avoid_screens_in_the_30_minutes_before_bed",
+          "label": "Avoid screens in the 30 minutes before bed"
+        },
+        {
+          "id": "keep_my_phone_out_of_bed",
+          "label": "Keep my phone out of bed"
+        },
+        {
+          "id": "keep_work_out_of_bed",
+          "label": "Keep work out of bed"
+        },
+        {
+          "id": "avoid_long_naps_over_30_minutes",
+          "label": "Avoid long naps (over 30 minutes)"
+        },
+        {
+          "id": "track_my_sleep",
+          "label": "Track my sleep"
+        },
+        {
+          "id": "professional_or_cbti",
+          "label": "Work with a professional or a sleep programme such as CBT-I"
+        },
+        {
+          "id": "share_sleep_goals_or_progress_with_others",
+          "label": "Share sleep goals or progress with others"
+        }
+      ],
+      "columns": [
+        {
+          "id": "i_do_this_now",
+          "label": "I do this now"
+        },
+        {
+          "id": "ive_tried_it_but_it_didnt_help",
+          "label": "I've tried it, but it didn't help"
+        },
+        {
+          "id": "i_havent_tried_it",
+          "label": "I haven't tried it"
+        }
+      ]
+    },
+    {
+      "id": "sleep_goals",
+      "section": "sleep",
+      "text": "Which aspects of your sleep would you most like to improve?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "falling_asleep_more_easily",
+          "label": "Falling asleep more easily"
+        },
+        {
+          "id": "staying_asleep_through_the_night",
+          "label": "Staying asleep through the night"
+        },
+        {
+          "id": "getting_more_sleep",
+          "label": "Getting more sleep"
+        },
+        {
+          "id": "waking_at_the_time_i_want",
+          "label": "Waking at the time I want"
+        },
+        {
+          "id": "waking_feeling_rested",
+          "label": "Waking feeling rested"
+        },
+        {
+          "id": "having_a_more_consistent_sleep_schedule",
+          "label": "Having a more consistent sleep schedule"
+        },
+        {
+          "id": "improving_my_evening_routine",
+          "label": "Improving my evening routine"
+        },
+        {
+          "id": "improving_my_morning_routine",
+          "label": "Improving my morning routine"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        }
+      ],
+      "max_select": 3,
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "sleep_disruptors",
+      "section": "sleep",
+      "text": "Which of these currently affect your sleep?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "stress_or_feeling_under_pressure",
+          "label": "Stress or feeling under pressure"
+        },
+        {
+          "id": "work_or_schedule",
+          "label": "Work or schedule"
+        },
+        {
+          "id": "screens_or_technology",
+          "label": "Screens or technology"
+        },
+        {
+          "id": "caffeine",
+          "label": "Caffeine"
+        },
+        {
+          "id": "alcohol",
+          "label": "Alcohol"
+        },
+        {
+          "id": "light_in_my_bedroom",
+          "label": "Light in my bedroom"
+        },
+        {
+          "id": "noise",
+          "label": "Noise"
+        },
+        {
+          "id": "bedroom_temperature",
+          "label": "Bedroom temperature"
+        },
+        {
+          "id": "caring_or_family_responsibilities",
+          "label": "Caring or family responsibilities"
+        },
+        {
+          "id": "pain_or_physical_symptoms",
+          "label": "Pain or physical symptoms"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "activity_days",
+      "section": "move",
+      "text": "On average, how many days a week do you do moderate or vigorous exercise, such as a brisk walk, that makes you breathe harder?",
+      "type": "single",
+      "options": [
+        {
+          "id": "0",
+          "label": "0"
+        },
+        {
+          "id": "1",
+          "label": "1"
+        },
+        {
+          "id": "2",
+          "label": "2"
+        },
+        {
+          "id": "3",
+          "label": "3"
+        },
+        {
+          "id": "4",
+          "label": "4"
+        },
+        {
+          "id": "5",
+          "label": "5"
+        },
+        {
+          "id": "6",
+          "label": "6"
+        },
+        {
+          "id": "7",
+          "label": "7"
+        }
+      ]
+    },
+    {
+      "id": "activity_minutes",
+      "section": "move",
+      "text": "On those days, on average, how many minutes do you exercise at this level?",
+      "type": "single",
+      "options": [
+        {
+          "id": "10",
+          "label": "10"
+        },
+        {
+          "id": "20",
+          "label": "20"
+        },
+        {
+          "id": "30",
+          "label": "30"
+        },
+        {
+          "id": "40",
+          "label": "40"
+        },
+        {
+          "id": "50",
+          "label": "50"
+        },
+        {
+          "id": "60",
+          "label": "60"
+        },
+        {
+          "id": "90",
+          "label": "90"
+        },
+        {
+          "id": "120",
+          "label": "120"
+        },
+        {
+          "id": "150_or_more",
+          "label": "150 or more"
+        }
+      ],
+      "show_if": {
+        "q": "activity_days",
+        "not_in": [
+          "0"
+        ]
+      }
+    },
+    {
+      "id": "strength_days",
+      "section": "move",
+      "text": "On how many days a week do you do strength or resistance exercise, such as weights, bodyweight exercises or resistance bands?",
+      "type": "single",
+      "options": [
+        {
+          "id": "0",
+          "label": "0"
+        },
+        {
+          "id": "1",
+          "label": "1"
+        },
+        {
+          "id": "2",
+          "label": "2"
+        },
+        {
+          "id": "3_or_more",
+          "label": "3 or more"
+        }
+      ]
+    },
+    {
+      "id": "sitting_hours",
+      "section": "move",
+      "text": "On a typical day, how many hours do you spend sitting, including at work, travelling and watching TV?",
+      "type": "single",
+      "options": [
+        {
+          "id": "less_than_6",
+          "label": "Less than 6"
+        },
+        {
+          "id": "6_8",
+          "label": "6-8"
+        },
+        {
+          "id": "8_10",
+          "label": "8-10"
+        },
+        {
+          "id": "more_than_10",
+          "label": "More than 10"
+        }
+      ]
+    },
+    {
+      "id": "steps",
+      "section": "move",
+      "text": "If you track your steps, roughly how many do you take on a typical day?",
+      "type": "single",
+      "options": [
+        {
+          "id": "fewer_than_5_000",
+          "label": "Fewer than 5,000"
+        },
+        {
+          "id": "5_000_7_999",
+          "label": "5,000-7,999"
+        },
+        {
+          "id": "8_000_9_999",
+          "label": "8,000-9,999"
+        },
+        {
+          "id": "10_000_or_more",
+          "label": "10,000 or more"
+        },
+        {
+          "id": "i_dont_track_my_steps",
+          "label": "I don't track my steps"
+        }
+      ]
+    },
+    {
+      "id": "move_already",
+      "section": "move",
+      "text": "Which of these do you already do regularly?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "warm_up_before_exercise",
+          "label": "Warm up before exercise"
+        },
+        {
+          "id": "stretching_or_mobility_work",
+          "label": "Stretching or mobility work"
+        },
+        {
+          "id": "balance_exercises",
+          "label": "Balance exercises"
+        },
+        {
+          "id": "take_breaks_from_sitting",
+          "label": "Take breaks from sitting"
+        },
+        {
+          "id": "walk_after_meals",
+          "label": "Walk after meals"
+        },
+        {
+          "id": "vigorous_bursts",
+          "label": "Short bursts of vigorous activity, such as taking stairs fast"
+        },
+        {
+          "id": "interval_training",
+          "label": "Interval training"
+        },
+        {
+          "id": "exercise_with_others_or_in_a_group",
+          "label": "Exercise with others or in a group"
+        },
+        {
+          "id": "take_part_in_activity_challenges",
+          "label": "Take part in activity challenges"
+        },
+        {
+          "id": "listen_to_music_while_exercising",
+          "label": "Listen to music while exercising"
+        },
+        {
+          "id": "plan_rest_or_lighter_days",
+          "label": "Plan rest or lighter days"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ]
+    },
+    {
+      "id": "activity_types",
+      "section": "move",
+      "text": "Which types of activity do you do or enjoy?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "walking",
+          "label": "Walking"
+        },
+        {
+          "id": "running_or_jogging",
+          "label": "Running or jogging"
+        },
+        {
+          "id": "cycling",
+          "label": "Cycling"
+        },
+        {
+          "id": "swimming",
+          "label": "Swimming"
+        },
+        {
+          "id": "strength_training",
+          "label": "Strength training"
+        },
+        {
+          "id": "bodyweight_exercise",
+          "label": "Bodyweight exercise"
+        },
+        {
+          "id": "yoga_or_pilates",
+          "label": "Yoga or Pilates"
+        },
+        {
+          "id": "dance",
+          "label": "Dance"
+        },
+        {
+          "id": "sport",
+          "label": "Sport"
+        },
+        {
+          "id": "mobility_or_flexibility",
+          "label": "Mobility or flexibility"
+        },
+        {
+          "id": "other",
+          "label": "Other"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ],
+      "free_text_options": [
+        "other"
+      ]
+    },
+    {
+      "id": "move_places",
+      "section": "move",
+      "text": "Where do you usually do your movement or exercise?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "outdoors",
+          "label": "Outdoors"
+        },
+        {
+          "id": "at_home",
+          "label": "At home"
+        },
+        {
+          "id": "gym_or_studio",
+          "label": "Gym or studio"
+        },
+        {
+          "id": "sports_facility_or_club",
+          "label": "Sports facility or club"
+        },
+        {
+          "id": "walking_or_cycling_to_get_places",
+          "label": "Walking or cycling to get places"
+        },
+        {
+          "id": "at_work",
+          "label": "At work"
+        },
+        {
+          "id": "other",
+          "label": "Other"
+        }
+      ],
+      "free_text_options": [
+        "other"
+      ]
+    },
+    {
+      "id": "move_goals",
+      "section": "move",
+      "text": "What would you most like to improve?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "build_general_fitness",
+          "label": "Build general fitness"
+        },
+        {
+          "id": "build_strength",
+          "label": "Build strength"
+        },
+        {
+          "id": "improve_cardiovascular_fitness",
+          "label": "Improve cardiovascular fitness"
+        },
+        {
+          "id": "improve_mobility_and_flexibility",
+          "label": "Improve mobility and flexibility"
+        },
+        {
+          "id": "improve_balance_and_coordination",
+          "label": "Improve balance and coordination"
+        },
+        {
+          "id": "increase_everyday_movement",
+          "label": "Increase everyday movement"
+        },
+        {
+          "id": "become_more_consistent_with_exercise",
+          "label": "Become more consistent with exercise"
+        },
+        {
+          "id": "improve_performance",
+          "label": "Improve performance"
+        },
+        {
+          "id": "other",
+          "label": "Other"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        }
+      ],
+      "max_select": 3,
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "other"
+      ]
+    },
+    {
+      "id": "move_barriers",
+      "section": "move",
+      "text": "What tends to get in the way of being as active as you would like?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "lack_of_time",
+          "label": "Lack of time"
+        },
+        {
+          "id": "lack_of_motivation",
+          "label": "Lack of motivation"
+        },
+        {
+          "id": "difficulty_making_it_part_of_my_routine",
+          "label": "Difficulty making it part of my routine"
+        },
+        {
+          "id": "i_dont_know_what_to_do",
+          "label": "I don't know what to do"
+        },
+        {
+          "id": "i_find_exercise_boring",
+          "label": "I find exercise boring"
+        },
+        {
+          "id": "i_spend_most_of_my_day_sitting",
+          "label": "I spend most of my day sitting"
+        },
+        {
+          "id": "access_to_facilities_or_equipment",
+          "label": "Access to facilities or equipment"
+        },
+        {
+          "id": "cost",
+          "label": "Cost"
+        },
+        {
+          "id": "physical_limitations",
+          "label": "Physical limitations"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "show_if": {
+        "depth_question_for": "Move"
+      },
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "move_considerations",
+      "section": "move",
+      "text": "Is there anything we should take into account when suggesting movement or exercise?",
+      "type": "multi",
+      "help": "If any specific option is selected, show a free-text box.",
+      "options": [
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        },
+        {
+          "id": "ongoing_pain",
+          "label": "Ongoing pain"
+        },
+        {
+          "id": "a_recent_injury",
+          "label": "A recent injury"
+        },
+        {
+          "id": "a_joint_or_mobility_limitation",
+          "label": "A joint or mobility limitation"
+        },
+        {
+          "id": "movement_health_condition",
+          "label": "A health condition that affects movement or exercise"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "prefer_not_to_say",
+          "label": "Prefer not to say"
+        }
+      ],
+      "exclusive_options": [
+        "nothing_in_particular",
+        "prefer_not_to_say"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "nature_time",
+      "section": "mind",
+      "text": "About how much time a week do you spend in green spaces or nature, such as parks, woodland, gardens or beaches?",
+      "type": "single",
+      "options": [
+        {
+          "id": "less_than_30_minutes",
+          "label": "Less than 30 minutes"
+        },
+        {
+          "id": "30_minutes_to_2_hours",
+          "label": "30 minutes to 2 hours"
+        },
+        {
+          "id": "2_to_3_hours",
+          "label": "2 to 3 hours"
+        },
+        {
+          "id": "more_than_3_hours",
+          "label": "More than 3 hours"
+        }
+      ]
+    },
+    {
+      "id": "social_media_time",
+      "section": "mind",
+      "text": "On a typical day, how much time do you spend on social media?",
+      "type": "single",
+      "options": [
+        {
+          "id": "less_than_30_minutes",
+          "label": "Less than 30 minutes"
+        },
+        {
+          "id": "30_60_minutes",
+          "label": "30-60 minutes"
+        },
+        {
+          "id": "1_2_hours",
+          "label": "1-2 hours"
+        },
+        {
+          "id": "more_than_2_hours",
+          "label": "More than 2 hours"
+        },
+        {
+          "id": "i_dont_use_social_media",
+          "label": "I don't use social media"
+        }
+      ]
+    },
+    {
+      "id": "mind_goals",
+      "section": "mind",
+      "text": "What would you most like to improve in this area?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "managing_stress",
+          "label": "Managing stress"
+        },
+        {
+          "id": "switching_off_and_relaxing",
+          "label": "Switching off and relaxing"
+        },
+        {
+          "id": "focus_and_concentration",
+          "label": "Focus and concentration"
+        },
+        {
+          "id": "managing_difficult_emotions",
+          "label": "Managing difficult emotions"
+        },
+        {
+          "id": "less_phone_time",
+          "label": "Spending less time on my phone or social media"
+        },
+        {
+          "id": "making_more_time_for_myself",
+          "label": "Making more time for myself"
+        },
+        {
+          "id": "enjoyment_and_positive_experiences",
+          "label": "Enjoyment and positive experiences"
+        },
+        {
+          "id": "rest_and_recovery",
+          "label": "Rest and recovery"
+        },
+        {
+          "id": "a_greater_sense_of_purpose",
+          "label": "A greater sense of purpose"
+        },
+        {
+          "id": "building_routines_that_stick",
+          "label": "Building routines that stick"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        }
+      ],
+      "max_select": 3,
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "mind_routine",
+      "section": "mind",
+      "text": "Which of these are currently part of your routine?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "meditation_or_mindfulness",
+          "label": "Meditation or mindfulness"
+        },
+        {
+          "id": "journalling_or_reflection",
+          "label": "Journalling or reflection"
+        },
+        {
+          "id": "breathing_or_relaxation_practices",
+          "label": "Breathing or relaxation practices"
+        },
+        {
+          "id": "time_for_hobbies_or_enjoyable_activities",
+          "label": "Time for hobbies or enjoyable activities"
+        },
+        {
+          "id": "limits_on_social_media_use",
+          "label": "Limits on social media use"
+        },
+        {
+          "id": "a_gratitude_practice",
+          "label": "A gratitude practice"
+        },
+        {
+          "id": "reframing_stressful_thoughts",
+          "label": "Reframing stressful thoughts"
+        },
+        {
+          "id": "naming_my_feelings",
+          "label": "Naming my feelings"
+        },
+        {
+          "id": "setting_aside_focused_work_time",
+          "label": "Setting aside focused work time"
+        },
+        {
+          "id": "keeping_notifications_turned_off",
+          "label": "Keeping notifications turned off"
+        },
+        {
+          "id": "time_away_from_work",
+          "label": "Time away from work"
+        },
+        {
+          "id": "working_towards_goals_that_matter_to_me",
+          "label": "Working towards goals that matter to me"
+        },
+        {
+          "id": "habit_tools",
+          "label": "Tools for building habits, such as if-then plans"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "mind_barriers",
+      "section": "mind",
+      "text": "What tends to make it difficult to look after your mental and emotional wellbeing?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "lack_of_time",
+          "label": "Lack of time"
+        },
+        {
+          "id": "stress_or_workload",
+          "label": "Stress or workload"
+        },
+        {
+          "id": "difficulty_switching_off",
+          "label": "Difficulty switching off"
+        },
+        {
+          "id": "lack_of_consistency",
+          "label": "Lack of consistency"
+        },
+        {
+          "id": "i_dont_know_what_would_help",
+          "label": "I don't know what would help"
+        },
+        {
+          "id": "difficulty_prioritising_myself",
+          "label": "Difficulty prioritising myself"
+        },
+        {
+          "id": "my_environment_or_circumstances",
+          "label": "My environment or circumstances"
+        },
+        {
+          "id": "lack_of_motivation",
+          "label": "Lack of motivation"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "max_select": 3,
+      "show_if": {
+        "depth_question_for": "Mind"
+      },
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "social_contact",
+      "section": "connect",
+      "text": "In a typical month, how often do you…",
+      "type": "grid_single",
+      "rows": [
+        {
+          "id": "phone_or_video",
+          "label": "Talk to friends or family by phone or video"
+        },
+        {
+          "id": "meet_in_person",
+          "label": "Meet friends or family in person"
+        },
+        {
+          "id": "group_club_class",
+          "label": "Take part in a group, club or class"
+        },
+        {
+          "id": "volunteer",
+          "label": "Volunteer"
+        }
+      ],
+      "columns": [
+        {
+          "id": "never",
+          "label": "Never"
+        },
+        {
+          "id": "once",
+          "label": "Once"
+        },
+        {
+          "id": "2_3_times",
+          "label": "2-3 times"
+        },
+        {
+          "id": "weekly_or_more",
+          "label": "Weekly or more"
+        }
+      ]
+    },
+    {
+      "id": "connect_already",
+      "section": "connect",
+      "text": "Which of these do you already do in a typical week?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "do_small_acts_of_kindness_for_others",
+          "label": "Do small acts of kindness for others"
+        },
+        {
+          "id": "tell_people_what_i_appreciate_about_them",
+          "label": "Tell people what I appreciate about them"
+        },
+        {
+          "id": "respond_to_good_news",
+          "label": "Respond with enthusiasm when others share good news"
+        },
+        {
+          "id": "ask_follow_up_questions_and_really_listen",
+          "label": "Ask follow-up questions and really listen"
+        },
+        {
+          "id": "share_feelings",
+          "label": "Share how I'm really feeling with someone I trust"
+        },
+        {
+          "id": "get_in_touch",
+          "label": "Get in touch with people I haven't seen for a while"
+        },
+        {
+          "id": "chat_acquaintances",
+          "label": "Chat with people I don't know well, such as neighbours"
+        },
+        {
+          "id": "share_meals_with_others",
+          "label": "Share meals with others"
+        },
+        {
+          "id": "food_traditions",
+          "label": "Cook or share food traditions with others"
+        },
+        {
+          "id": "affection",
+          "label": "Hug or share affection with people close to me"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ]
+    },
+    {
+      "id": "connect_goals",
+      "section": "connect",
+      "text": "What, if anything, would you like from your connections with other people?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "more_meaningful_relationships",
+          "label": "More meaningful relationships"
+        },
+        {
+          "id": "meeting_new_people",
+          "label": "Meeting new people"
+        },
+        {
+          "id": "more_shared_activities",
+          "label": "More shared activities"
+        },
+        {
+          "id": "a_stronger_sense_of_belonging",
+          "label": "A stronger sense of belonging"
+        },
+        {
+          "id": "more_time_with_friends_or_family",
+          "label": "More time with friends or family"
+        },
+        {
+          "id": "stay_in_touch_far_away",
+          "label": "Staying in touch with people who live far away"
+        },
+        {
+          "id": "sharing_meals_with_others",
+          "label": "Sharing meals with others"
+        },
+        {
+          "id": "helping_others",
+          "label": "Helping others or contributing to my community"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        }
+      ],
+      "max_select": 3,
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "connect_barriers",
+      "section": "connect",
+      "text": "What makes it difficult to build or maintain the connections you would like?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "lack_of_time",
+          "label": "Lack of time"
+        },
+        {
+          "id": "work_or_other_commitments",
+          "label": "Work or other commitments"
+        },
+        {
+          "id": "i_find_it_difficult_to_meet_new_people",
+          "label": "I find it difficult to meet new people"
+        },
+        {
+          "id": "hard_to_find_shared_interests",
+          "label": "It's difficult to find people with shared interests"
+        },
+        {
+          "id": "live_away",
+          "label": "I have moved or live away from family and friends"
+        },
+        {
+          "id": "i_feel_awkward_reaching_out",
+          "label": "I feel awkward reaching out"
+        },
+        {
+          "id": "health_or_mobility",
+          "label": "My health or mobility makes it hard to get out"
+        },
+        {
+          "id": "not_looking",
+          "label": "I'm not currently looking for more connection"
+        },
+        {
+          "id": "nothing_in_particular",
+          "label": "Nothing in particular"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "show_if": {
+        "depth_question_for": "Connect"
+      },
+      "exclusive_options": [
+        "nothing_in_particular"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    },
+    {
+      "id": "weekly_time",
+      "section": "your_life",
+      "text": "The Good Span asks for about 45-60 minutes a week. How much time could you realistically give to your practices in a typical week?",
+      "type": "single",
+      "options": [
+        {
+          "id": "about_45_60_minutes",
+          "label": "About 45-60 minutes"
+        },
+        {
+          "id": "1_2_hours",
+          "label": "1-2 hours"
+        },
+        {
+          "id": "2_4_hours",
+          "label": "2-4 hours"
+        },
+        {
+          "id": "more_than_4_hours",
+          "label": "More than 4 hours"
+        },
+        {
+          "id": "it_varies",
+          "label": "It varies"
+        }
+      ],
+      "free_text_options": [
+        "it_varies"
+      ]
+    },
+    {
+      "id": "change_size",
+      "section": "your_life",
+      "text": "How big a change feels right for you to start with?",
+      "type": "single",
+      "options": [
+        {
+          "id": "small_steps",
+          "label": "Small, easy steps. I'm not sure how much I can manage right now"
+        },
+        {
+          "id": "something_in_between",
+          "label": "Something in between"
+        },
+        {
+          "id": "bigger_challenge",
+          "label": "I'm ready for a bigger challenge"
+        }
+      ]
+    },
+    {
+      "id": "avoid_types",
+      "section": "your_life",
+      "text": "Are there any types of practice you'd rather not do?",
+      "type": "multi",
+      "options": [
+        {
+          "id": "tracking_or_counting_what_i_eat",
+          "label": "Tracking or counting what I eat"
+        },
+        {
+          "id": "using_apps_or_devices_to_track_things",
+          "label": "Using apps or devices to track things"
+        },
+        {
+          "id": "eating_windows_or_fasting",
+          "label": "Eating windows or fasting"
+        },
+        {
+          "id": "meditation",
+          "label": "Meditation"
+        },
+        {
+          "id": "journalling_or_writing",
+          "label": "Journalling or writing"
+        },
+        {
+          "id": "early_morning_activities",
+          "label": "Early-morning activities"
+        },
+        {
+          "id": "touch",
+          "label": "Practices involving physical affection or touch"
+        },
+        {
+          "id": "none_of_these",
+          "label": "None of these"
+        },
+        {
+          "id": "something_else",
+          "label": "Something else"
+        }
+      ],
+      "exclusive_options": [
+        "none_of_these"
+      ],
+      "free_text_options": [
+        "something_else"
+      ]
+    }
+  ]
+}

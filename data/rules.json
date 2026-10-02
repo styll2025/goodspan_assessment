@@ -1,0 +1,1420 @@
+{
+  "version": "2026-10-02",
+  "description": "Plan-building rules for The Good Span. Option IDs refer to data/assessment.json; family and theme IDs refer to data/practices.json. Rule codes (P3, P5…) match the Assessment mapping sheet and docs/RULES.md.",
+  "constants": {
+    "practices_per_month": 6,
+    "detailed_months": 3,
+    "focus_practices_per_focus_pillar": 2,
+    "max_focus_pillars": 2,
+    "themes_months_4_6": 4,
+    "micro_minutes_per_week": 10,
+    "time_flex": 1.25,
+    "top_up_below_minutes": 45,
+    "min_score_for_second_theme_slot": 40,
+    "weekly_budget_minutes": {
+      "about_45_60_minutes": 60,
+      "1_2_hours": 120,
+      "2_4_hours": 240,
+      "more_than_4_hours": 300,
+      "it_varies": 120
+    },
+    "pilot_checkin_if_not_done_or_changed_in_month_at_least": 2,
+    "hygiene_min_priority_items": 4,
+    "hygiene_max_priority_items": 8
+  },
+  "levels": [
+    "gentle",
+    "moderate",
+    "deep"
+  ],
+  "conditions": {
+    "_doc": "Each condition is derived from assessment answers (source 'assessment') or set by the Pilot at the pre-Span interview (source 'pilot'). Practices list the conditions that exclude them in exclude_if.",
+    "pregnant_or_breastfeeding": {
+      "source": "assessment",
+      "when": {
+        "q": "pregnant_or_breastfeeding",
+        "is": "yes"
+      },
+      "note": "Treated as pregnancy (the more cautious set); the Pilot can relax for breastfeeding."
+    },
+    "diabetes": {
+      "source": "assessment",
+      "when": {
+        "q": "health_conditions",
+        "has": "diabetes"
+      }
+    },
+    "kidney_disease": {
+      "source": "assessment",
+      "when": {
+        "q": "health_conditions",
+        "has": "kidney_disease"
+      }
+    },
+    "exercise_warning_symptoms": {
+      "source": "assessment",
+      "when": {
+        "q": "exercise_symptoms",
+        "has_any": [
+          "chest_pain",
+          "breathless",
+          "dizzy_or_fainting",
+          "palpitations",
+          "swollen_ankles",
+          "calf_pain"
+        ]
+      }
+    },
+    "condition_and_inactive": {
+      "source": "assessment",
+      "when": {
+        "all": [
+          {
+            "q": "health_conditions",
+            "has_any": [
+              "a_heart_condition",
+              "diabetes",
+              "kidney_disease"
+            ]
+          },
+          {
+            "computed": "weekly_activity_minutes",
+            "lt": 60
+          }
+        ]
+      }
+    },
+    "pain_or_injury": {
+      "source": "assessment",
+      "when": {
+        "q": "move_considerations",
+        "has_any": [
+          "ongoing_pain",
+          "a_recent_injury",
+          "a_joint_or_mobility_limitation"
+        ]
+      }
+    },
+    "difficult_relationship_with_food": {
+      "source": "assessment",
+      "when": {
+        "q": "eat_considerations",
+        "has_any": [
+          "a_difficult_relationship_with_food",
+          "prefer_not_to_say"
+        ]
+      }
+    },
+    "nut_allergy": {
+      "source": "assessment",
+      "when": {
+        "q": "eat_considerations",
+        "has": "nut_allergy"
+      }
+    },
+    "shift_work": {
+      "source": "assessment",
+      "when": {
+        "q": "work_pattern",
+        "is": "shift_work_including_nights"
+      }
+    },
+    "early_waking": {
+      "source": "assessment",
+      "when": {
+        "q": "sleep_problems",
+        "has": "early_waking"
+      }
+    },
+    "lives_alone": {
+      "source": "assessment",
+      "when": {
+        "q": "household",
+        "has": "i_live_alone"
+      }
+    },
+    "no_social_media": {
+      "source": "assessment",
+      "when": {
+        "q": "social_media_time",
+        "is": "i_dont_use_social_media"
+      }
+    },
+    "non_drinker": {
+      "source": "pilot"
+    },
+    "higher_risk_drinking": {
+      "source": "pilot"
+    },
+    "low_mood_flag": {
+      "source": "pilot"
+    },
+    "fall_past_year": {
+      "source": "pilot"
+    }
+  },
+  "pilot_holds": {
+    "_doc": "P11. Not offered until the Pilot releases them at the pre-Span interview (no mood or alcohol screen in v6).",
+    "practice_ids": [
+      "expressive_writing.moderate",
+      "expressive_writing.deep",
+      "alcohol_and_sleep.deep",
+      "alcohol_intake.gentle",
+      "alcohol_intake.moderate",
+      "alcohol_intake.deep"
+    ]
+  },
+  "equipment": {
+    "_doc": "Practices with equipment_needed are offered only if the member exercises at a gym, studio or club.",
+    "allowed_if": {
+      "q": "move_places",
+      "has_any": [
+        "gym_or_studio",
+        "sports_facility_or_club"
+      ]
+    }
+  },
+  "avoid_types": {
+    "q": "avoid_types",
+    "excludes": {
+      "tracking_or_counting_what_i_eat": [
+        "daily_eating_window.*",
+        "plant_variety.moderate",
+        "plant_variety.deep",
+        "salt.deep",
+        "reducing_sugar.deep",
+        "protein_at_meals.deep"
+      ],
+      "using_apps_or_devices_to_track_things": [],
+      "eating_windows_or_fasting": [
+        "daily_eating_window.*"
+      ],
+      "meditation": [
+        "meditation.*"
+      ],
+      "journalling_or_writing": [
+        "expressive_writing.*",
+        "three_good_things.*",
+        "bedtime_to_do_list.*"
+      ],
+      "early_morning_activities": [
+        "morning_daylight.deep"
+      ],
+      "touch": [
+        "affectionate_touch.*"
+      ]
+    }
+  },
+  "sleep_sharing": {
+    "_doc": "P9. Light-touch only, and only in a month that includes a Sleep practice.",
+    "families": [
+      "sharing_sleep_plans_with_others",
+      "sharing_sleep_learnings_with_others",
+      "celebrating_sleep_wins"
+    ]
+  },
+  "level_setting": {
+    "_doc": "Baseline answers → starting level for a family ('skip' = already at the top, don't offer). Families with no baseline start at the member's typical measured level in that pillar (median, max moderate), else gentle (P2).",
+    "single": [
+      {
+        "q": "eat_vegetables_fruit",
+        "family": "balanced_plate",
+        "map": {
+          "none": "gentle",
+          "1_2_portions": "gentle",
+          "3_4_portions": "moderate",
+          "5_or_more_portions": "deep"
+        }
+      },
+      {
+        "q": "eat_protein_meals",
+        "family": "protein_at_meals",
+        "map": {
+          "none": "gentle",
+          "one": "gentle",
+          "two": "moderate",
+          "all_of_them": "deep"
+        }
+      },
+      {
+        "q": "eat_home_cooked",
+        "family": "meal_planning_and_home_cooking",
+        "map": {
+          "fewer_than_3": "gentle",
+          "3_5": "moderate",
+          "more_than_5": "deep"
+        }
+      },
+      {
+        "q": "eating_before_bed",
+        "family": "gap_between_eating_and_bed",
+        "map": {
+          "less_than_1_hour": "gentle",
+          "1_2_hours": "moderate",
+          "2_3_hours": "deep",
+          "3_hours_or_more": "skip"
+        }
+      },
+      {
+        "q": "sleep_hours",
+        "family": "enough_sleep",
+        "map": {
+          "less_than_5": "gentle",
+          "5_6": "gentle",
+          "6_7": "moderate",
+          "7_8": "skip",
+          "8_9": "skip",
+          "more_than_9": "skip"
+        }
+      },
+      {
+        "q": "strength_days",
+        "family": "strength_sessions",
+        "map": {
+          "0": "gentle",
+          "1": "moderate",
+          "2": "deep",
+          "3_or_more": "deep"
+        }
+      },
+      {
+        "q": "sitting_hours",
+        "family": "breaking_up_sitting",
+        "map": {
+          "less_than_6": "moderate",
+          "6_8": "moderate",
+          "8_10": "gentle",
+          "more_than_10": "gentle"
+        }
+      },
+      {
+        "q": "steps",
+        "family": "daily_steps",
+        "map": {
+          "fewer_than_5_000": "gentle",
+          "5_000_7_999": "moderate",
+          "8_000_9_999": "deep",
+          "10_000_or_more": "skip"
+        }
+      },
+      {
+        "q": "nature_time",
+        "family": "time_in_nature",
+        "map": {
+          "less_than_30_minutes": "gentle",
+          "30_minutes_to_2_hours": "moderate",
+          "2_to_3_hours": "deep",
+          "more_than_3_hours": "skip"
+        }
+      },
+      {
+        "q": "social_media_time",
+        "family": "social_media_limits",
+        "map": {
+          "more_than_2_hours": "gentle",
+          "1_2_hours": "moderate",
+          "30_60_minutes": "deep",
+          "less_than_30_minutes": "skip"
+        }
+      }
+    ],
+    "grid": [
+      {
+        "q": "eat_frequency",
+        "row": "whole_grains",
+        "family": "whole_grains",
+        "map": {
+          "rarely_or_never": "gentle",
+          "1_2_days_week": "gentle",
+          "3_5_days_week": "moderate",
+          "6_7_days_week": "deep"
+        }
+      },
+      {
+        "q": "eat_frequency",
+        "row": "beans_lentils",
+        "family": "beans_and_lentils",
+        "map": {
+          "rarely_or_never": "gentle",
+          "1_2_days_week": "gentle",
+          "3_5_days_week": "moderate",
+          "6_7_days_week": "deep"
+        }
+      },
+      {
+        "q": "eat_frequency",
+        "row": "nuts",
+        "family": "nuts",
+        "map": {
+          "rarely_or_never": "gentle",
+          "1_2_days_week": "moderate",
+          "3_5_days_week": "deep",
+          "6_7_days_week": "skip"
+        }
+      },
+      {
+        "q": "eat_frequency",
+        "row": "sugary_drinks",
+        "family": "reducing_sugar",
+        "map": {
+          "6_7_days_week": "gentle",
+          "3_5_days_week": "gentle",
+          "1_2_days_week": "moderate",
+          "rarely_or_never": "deep"
+        }
+      },
+      {
+        "q": "eat_frequency",
+        "row": "processed_foods",
+        "family": "less_processed_food",
+        "map": {
+          "6_7_days_week": "gentle",
+          "3_5_days_week": "gentle",
+          "1_2_days_week": "moderate",
+          "rarely_or_never": "deep"
+        }
+      },
+      {
+        "q": "eat_frequency",
+        "row": "adding_salt",
+        "family": "salt",
+        "map": {
+          "6_7_days_week": "gentle",
+          "3_5_days_week": "gentle",
+          "1_2_days_week": "moderate",
+          "rarely_or_never": "deep"
+        }
+      },
+      {
+        "q": "social_contact",
+        "row": "phone_or_video",
+        "family": "calling_instead_of_texting",
+        "map": {
+          "never": "gentle",
+          "once": "gentle",
+          "2_3_times": "moderate",
+          "weekly_or_more": "deep"
+        }
+      },
+      {
+        "q": "social_contact",
+        "row": "meet_in_person",
+        "family": "shared_meals",
+        "map": {
+          "never": "gentle",
+          "once": "gentle",
+          "2_3_times": "moderate",
+          "weekly_or_more": "deep"
+        }
+      },
+      {
+        "q": "social_contact",
+        "row": "group_club_class",
+        "family": "group_membership",
+        "map": {
+          "never": "gentle",
+          "once": "gentle",
+          "2_3_times": "moderate",
+          "weekly_or_more": "deep"
+        }
+      },
+      {
+        "q": "social_contact",
+        "row": "volunteer",
+        "family": "volunteering",
+        "map": {
+          "never": "gentle",
+          "once": "gentle",
+          "2_3_times": "moderate",
+          "weekly_or_more": "deep"
+        }
+      }
+    ],
+    "computed": [
+      {
+        "name": "weekly_activity_minutes",
+        "formula": "activity_days × activity_minutes (150 or more = 150; 0 days = 0)",
+        "family": "building_up_cardio",
+        "bands": [
+          {
+            "lt": 30,
+            "level": "gentle"
+          },
+          {
+            "lt": 60,
+            "level": "moderate"
+          },
+          {
+            "lt": 100,
+            "level": "deep"
+          },
+          {
+            "gte": 100,
+            "level": "skip"
+          }
+        ]
+      },
+      {
+        "name": "weekly_activity_minutes",
+        "family": "weekly_cardio",
+        "bands": [
+          {
+            "lt": 100,
+            "level": "skip"
+          },
+          {
+            "lt": 150,
+            "level": "gentle"
+          },
+          {
+            "lt": 300,
+            "level": "moderate"
+          },
+          {
+            "gte": 300,
+            "level": "deep"
+          }
+        ]
+      }
+    ]
+  },
+  "already_do": {
+    "_doc": "P3. Answers showing the member already does a habit: start that family at moderate, or one level above its baseline if higher; never move it down.",
+    "multi": {
+      "move_already": {
+        "stretching_or_mobility_work": [
+          "stretching"
+        ],
+        "balance_exercises": [
+          "balance"
+        ],
+        "take_breaks_from_sitting": [
+          "breaking_up_sitting"
+        ],
+        "walk_after_meals": [
+          "walking_after_meals"
+        ],
+        "vigorous_bursts": [
+          "movement_snacks"
+        ],
+        "interval_training": [
+          "harder_cardio_and_long_intervals",
+          "short_intervals"
+        ],
+        "exercise_with_others_or_in_a_group": [
+          "group_activity",
+          "walking_with_others"
+        ],
+        "take_part_in_activity_challenges": [
+          "activity_challenges"
+        ]
+      },
+      "mind_routine": {
+        "meditation_or_mindfulness": [
+          "meditation"
+        ],
+        "reframing_stressful_thoughts": [
+          "reframing"
+        ],
+        "naming_my_feelings": [
+          "naming_emotions"
+        ],
+        "setting_aside_focused_work_time": [
+          "focused_work",
+          "present_moment_attention"
+        ],
+        "time_away_from_work": [
+          "time_away_from_work"
+        ],
+        "working_towards_goals_that_matter_to_me": [
+          "sense_of_purpose"
+        ],
+        "habit_tools": [
+          "habit_building",
+          "if_then_planning"
+        ],
+        "journalling_or_reflection": [
+          "expressive_writing"
+        ],
+        "breathing_or_relaxation_practices": [
+          "slow_breathing"
+        ],
+        "time_for_hobbies_or_enjoyable_activities": [
+          "enjoyable_leisure"
+        ],
+        "limits_on_social_media_use": [
+          "social_media_limits"
+        ],
+        "a_gratitude_practice": [
+          "three_good_things"
+        ]
+      },
+      "connect_already": {
+        "do_small_acts_of_kindness_for_others": [
+          "acts_of_kindness"
+        ],
+        "tell_people_what_i_appreciate_about_them": [
+          "expressing_gratitude"
+        ],
+        "respond_to_good_news": [
+          "responding_to_good_news"
+        ],
+        "ask_follow_up_questions_and_really_listen": [
+          "asking_follow_up_questions"
+        ],
+        "share_feelings": [
+          "feelings_check_ins",
+          "opening_up"
+        ],
+        "get_in_touch": [
+          "reaching_out"
+        ],
+        "chat_acquaintances": [
+          "meals_with_new_people",
+          "talking_to_acquaintances"
+        ],
+        "share_meals_with_others": [
+          "conversation_at_meals",
+          "sharing_recipes_with_others",
+          "shared_meals",
+          "thanks_after_meals"
+        ],
+        "food_traditions": [
+          "food_memories",
+          "meal_rituals"
+        ],
+        "affection": [
+          "affectionate_touch"
+        ]
+      }
+    },
+    "grid": {
+      "sleep_habits": {
+        "now_column": "i_do_this_now",
+        "tried_not_helped_column": "ive_tried_it_but_it_didnt_help",
+        "not_tried_column": "i_havent_tried_it",
+        "rows": {
+          "get_outside_in_daylight_in_the_morning": [
+            "morning_daylight"
+          ],
+          "keep_a_regular_bedtime_and_wake_time": [
+            "consistent_sleep_timing"
+          ],
+          "cut_down_on_alcohol_in_the_evening": [
+            "alcohol_and_sleep"
+          ],
+          "wind_down_routine": [
+            "bedtime_music",
+            "progressive_muscle_relaxation",
+            "slow_breathing",
+            "slow_breathing_to_wind_down"
+          ],
+          "write_down_tomorrows_tasks_before_bed": [
+            "bedtime_to_do_list"
+          ],
+          "avoid_screens_in_the_30_minutes_before_bed": [
+            "screen_free_wind_down"
+          ],
+          "keep_my_phone_out_of_bed": [
+            "bed_for_sleep"
+          ],
+          "keep_work_out_of_bed": [
+            "bed_for_sleep"
+          ],
+          "track_my_sleep": [
+            "enough_sleep"
+          ],
+          "professional_or_cbti": [
+            "getting_help_for_insomnia"
+          ],
+          "share_sleep_goals_or_progress_with_others": [
+            "celebrating_sleep_wins",
+            "sharing_sleep_learnings_with_others",
+            "sharing_sleep_plans_with_others"
+          ]
+        }
+      },
+      "meal_habits": {
+        "now_column": "most_days",
+        "rows": {
+          "attention_to_food": [
+            "attention_to_food"
+          ],
+          "eat_slowly": [
+            "slow_eating"
+          ],
+          "eat_a_wide_variety_of_plant_foods": [
+            "plant_variety"
+          ],
+          "plan_for_eating_out": [
+            "eating_out_and_on_the_move"
+          ],
+          "eat_within_a_set_daily_time_window": [
+            "daily_eating_window"
+          ],
+          "eat_without_a_screen": [
+            "screen_free_meals"
+          ]
+        }
+      }
+    },
+    "not_tried_counts_as_gentle_baseline": true
+  },
+  "goals": {
+    "_doc": "Goal questions per pillar. The top goal (P4) is the selected goal whose families show most room to improve; ties → questionnaire order.",
+    "by_pillar": {
+      "eat": "eat_goals",
+      "sleep": "sleep_goals",
+      "move": "move_goals",
+      "mind": "mind_goals",
+      "connect": "connect_goals"
+    },
+    "map": {
+      "eat_goals": {
+        "getting_enough_protein": [
+          "protein_at_meals"
+        ],
+        "eating_more_plants_and_fibre": [
+          "balanced_plate",
+          "beans_and_lentils",
+          "plant_variety",
+          "whole_grains"
+        ],
+        "reducing_highly_processed_foods": [
+          "less_processed_food"
+        ],
+        "reducing_sugar": [
+          "reducing_sugar"
+        ],
+        "heart_health": [
+          "nuts",
+          "salt"
+        ],
+        "meal_planning_and_home_cooking": [
+          "meal_planning_and_home_cooking"
+        ],
+        "eating_out": [
+          "eating_out_and_on_the_move"
+        ],
+        "when_i_eat": [
+          "daily_eating_window",
+          "gap_between_eating_and_bed"
+        ],
+        "eat_mindfully": [
+          "attention_to_food",
+          "screen_free_meals",
+          "slow_eating"
+        ]
+      },
+      "sleep_goals": {
+        "falling_asleep_more_easily": [
+          "bedtime_music",
+          "bedtime_to_do_list",
+          "progressive_muscle_relaxation",
+          "screen_free_wind_down",
+          "slow_breathing_to_wind_down"
+        ],
+        "staying_asleep_through_the_night": [
+          "bedtime_music",
+          "bedtime_to_do_list",
+          "progressive_muscle_relaxation",
+          "screen_free_wind_down",
+          "slow_breathing_to_wind_down"
+        ],
+        "getting_more_sleep": [
+          "enough_sleep"
+        ],
+        "waking_feeling_rested": [
+          "enough_sleep"
+        ],
+        "improving_my_evening_routine": [
+          "bedtime_music",
+          "bedtime_to_do_list",
+          "progressive_muscle_relaxation",
+          "screen_free_wind_down",
+          "slow_breathing_to_wind_down"
+        ],
+        "improving_my_morning_routine": [
+          "morning_daylight"
+        ],
+        "waking_at_the_time_i_want": [
+          "consistent_sleep_timing",
+          "morning_daylight"
+        ],
+        "having_a_more_consistent_sleep_schedule": [
+          "consistent_sleep_timing",
+          "morning_daylight"
+        ]
+      },
+      "move_goals": {
+        "build_general_fitness": [
+          "harder_cardio_and_long_intervals",
+          "short_intervals",
+          "weekly_cardio",
+          "building_up_cardio"
+        ],
+        "build_strength": [
+          "strength_sessions",
+          "strength_volume"
+        ],
+        "improve_cardiovascular_fitness": [
+          "harder_cardio_and_long_intervals",
+          "short_intervals",
+          "weekly_cardio",
+          "building_up_cardio"
+        ],
+        "improve_mobility_and_flexibility": [
+          "balance"
+        ],
+        "improve_balance_and_coordination": [
+          "balance"
+        ],
+        "increase_everyday_movement": [
+          "active_travel",
+          "breaking_up_sitting",
+          "daily_steps",
+          "movement_snacks",
+          "walking_after_meals"
+        ],
+        "become_more_consistent_with_exercise": [
+          "activity_challenges",
+          "group_activity",
+          "habit_building",
+          "if_then_planning",
+          "walking_with_others"
+        ],
+        "improve_performance": [
+          "harder_cardio_and_long_intervals"
+        ]
+      },
+      "mind_goals": {
+        "managing_stress": [
+          "meditation",
+          "present_moment_attention",
+          "reframing",
+          "slow_breathing"
+        ],
+        "switching_off_and_relaxing": [
+          "focused_work",
+          "social_media_limits",
+          "time_away_from_work"
+        ],
+        "focus_and_concentration": [
+          "focused_work",
+          "present_moment_attention"
+        ],
+        "managing_difficult_emotions": [
+          "expressive_writing",
+          "naming_emotions",
+          "reframing",
+          "using_your_own_name"
+        ],
+        "less_phone_time": [
+          "social_media_limits"
+        ],
+        "making_more_time_for_myself": [
+          "enjoyable_leisure",
+          "three_good_things",
+          "time_away_from_work",
+          "time_in_nature"
+        ],
+        "enjoyment_and_positive_experiences": [
+          "enjoyable_leisure",
+          "three_good_things",
+          "time_away_from_work",
+          "time_in_nature"
+        ],
+        "rest_and_recovery": [
+          "time_away_from_work",
+          "time_in_nature"
+        ],
+        "a_greater_sense_of_purpose": [
+          "sense_of_purpose"
+        ],
+        "building_routines_that_stick": [
+          "habit_building",
+          "if_then_planning"
+        ]
+      },
+      "connect_goals": {
+        "more_meaningful_relationships": [
+          "asking_follow_up_questions",
+          "feelings_check_ins",
+          "opening_up",
+          "responding_to_good_news"
+        ],
+        "meeting_new_people": [
+          "meals_with_new_people",
+          "talking_to_acquaintances"
+        ],
+        "more_shared_activities": [
+          "affectionate_touch",
+          "group_membership",
+          "meals_with_new_people",
+          "talking_to_acquaintances"
+        ],
+        "a_stronger_sense_of_belonging": [
+          "affectionate_touch",
+          "group_membership",
+          "meals_with_new_people",
+          "talking_to_acquaintances"
+        ],
+        "more_time_with_friends_or_family": [
+          "calling_instead_of_texting",
+          "conversation_at_meals",
+          "food_memories",
+          "meal_rituals",
+          "reaching_out",
+          "sharing_recipes_with_others",
+          "shared_meals",
+          "thanks_after_meals"
+        ],
+        "stay_in_touch_far_away": [
+          "calling_instead_of_texting"
+        ],
+        "sharing_meals_with_others": [
+          "conversation_at_meals",
+          "food_memories",
+          "meal_rituals",
+          "sharing_recipes_with_others",
+          "shared_meals",
+          "thanks_after_meals"
+        ],
+        "helping_others": [
+          "acts_of_kindness",
+          "expressing_gratitude",
+          "volunteering"
+        ]
+      }
+    }
+  },
+  "barriers": {
+    "by_pillar": {
+      "eat": "eat_barriers",
+      "move": "move_barriers",
+      "mind": "mind_barriers",
+      "connect": "connect_barriers"
+    },
+    "map": {
+      "eat_barriers": {
+        "knowing_what_to_eat": [
+          "balance",
+          "balanced_plate"
+        ],
+        "planning_and_preparation": [
+          "meal_planning_and_home_cooking"
+        ],
+        "finding_time": [
+          "meal_planning_and_home_cooking"
+        ],
+        "eating_consistently_when_my_routine_changes": [
+          "eating_out_and_on_the_move",
+          "if_then_planning"
+        ],
+        "eating_well_when_socialising_or_travelling": [
+          "eating_out_and_on_the_move"
+        ],
+        "cravings_or_appetite": [
+          "protein_at_meals",
+          "reducing_sugar",
+          "slow_eating"
+        ],
+        "making_changes_that_feel_enjoyable": [
+          "attention_to_food",
+          "meal_rituals"
+        ],
+        "making_changes_that_work_for_my_household": [
+          "conversation_at_meals",
+          "food_memories",
+          "meal_planning_and_home_cooking",
+          "meal_rituals",
+          "sharing_recipes_with_others",
+          "shared_meals",
+          "thanks_after_meals"
+        ]
+      },
+      "move_barriers": {
+        "lack_of_time": [
+          "active_travel",
+          "movement_snacks",
+          "short_intervals"
+        ],
+        "lack_of_motivation": [
+          "activity_challenges",
+          "group_activity"
+        ],
+        "difficulty_making_it_part_of_my_routine": [
+          "habit_building",
+          "if_then_planning"
+        ],
+        "i_dont_know_what_to_do": [
+          "strength_sessions",
+          "weekly_cardio",
+          "building_up_cardio"
+        ],
+        "i_find_exercise_boring": [
+          "activity_challenges",
+          "group_activity"
+        ],
+        "i_spend_most_of_my_day_sitting": [
+          "breaking_up_sitting"
+        ]
+      },
+      "mind_barriers": {
+        "lack_of_time": [
+          "present_moment_attention",
+          "slow_breathing",
+          "three_good_things"
+        ],
+        "stress_or_workload": [
+          "focused_work",
+          "meditation",
+          "present_moment_attention",
+          "slow_breathing",
+          "social_media_limits",
+          "time_away_from_work"
+        ],
+        "difficulty_switching_off": [
+          "focused_work",
+          "meditation",
+          "present_moment_attention",
+          "slow_breathing",
+          "social_media_limits",
+          "time_away_from_work"
+        ],
+        "lack_of_consistency": [
+          "habit_building",
+          "if_then_planning"
+        ],
+        "difficulty_prioritising_myself": [
+          "enjoyable_leisure",
+          "time_away_from_work"
+        ],
+        "lack_of_motivation": [
+          "habit_building",
+          "if_then_planning"
+        ]
+      },
+      "connect_barriers": {
+        "lack_of_time": [
+          "calling_instead_of_texting",
+          "responding_to_good_news"
+        ],
+        "work_or_other_commitments": [
+          "calling_instead_of_texting",
+          "responding_to_good_news"
+        ],
+        "i_find_it_difficult_to_meet_new_people": [
+          "group_membership",
+          "volunteering"
+        ],
+        "hard_to_find_shared_interests": [
+          "group_membership",
+          "volunteering"
+        ],
+        "live_away": [
+          "calling_instead_of_texting",
+          "reaching_out"
+        ],
+        "i_feel_awkward_reaching_out": [
+          "reaching_out"
+        ],
+        "health_or_mobility": [
+          "calling_instead_of_texting",
+          "reaching_out"
+        ]
+      }
+    }
+  },
+  "sleep_problems": {
+    "slow_to_fall_asleep": [
+      "bed_for_sleep",
+      "bedtime_music",
+      "bedtime_to_do_list",
+      "progressive_muscle_relaxation",
+      "screen_free_wind_down",
+      "slow_breathing_to_wind_down"
+    ],
+    "night_waking": [
+      "bed_for_sleep",
+      "bedtime_music",
+      "bedtime_to_do_list",
+      "progressive_muscle_relaxation",
+      "screen_free_wind_down",
+      "slow_breathing_to_wind_down"
+    ],
+    "i_wake_feeling_unrefreshed": [
+      "enough_sleep"
+    ]
+  },
+  "sleep_disruptors": {
+    "_doc": "P8. Named disruptors that map to practices score like a goal (+40). Bedroom light, noise, temperature and caffeine go to the hygiene checklist instead.",
+    "map": {
+      "stress_or_feeling_under_pressure": [
+        "bedtime_music",
+        "bedtime_to_do_list",
+        "meditation",
+        "present_moment_attention",
+        "progressive_muscle_relaxation",
+        "screen_free_wind_down",
+        "slow_breathing",
+        "slow_breathing_to_wind_down"
+      ],
+      "screens_or_technology": [
+        "screen_free_wind_down"
+      ],
+      "alcohol": [
+        "alcohol_and_sleep"
+      ]
+    }
+  },
+  "preferences": {
+    "activity_types": {
+      "walking": [
+        "daily_steps",
+        "walking_after_meals",
+        "walking_with_others",
+        "active_travel",
+        "weekly_cardio",
+        "building_up_cardio"
+      ],
+      "running_or_jogging": [
+        "weekly_cardio",
+        "harder_cardio_and_long_intervals",
+        "short_intervals",
+        "building_up_cardio"
+      ],
+      "cycling": [
+        "active_travel",
+        "weekly_cardio",
+        "building_up_cardio"
+      ],
+      "strength_training": [
+        "strength_sessions",
+        "strength_volume"
+      ],
+      "bodyweight_exercise": [
+        "strength_sessions",
+        "movement_snacks"
+      ],
+      "yoga_or_pilates": [
+        "stretching",
+        "balance",
+        "slow_breathing"
+      ],
+      "mobility_or_flexibility": [
+        "stretching",
+        "balance"
+      ],
+      "dance": [
+        "weekly_cardio",
+        "building_up_cardio"
+      ],
+      "sport": [
+        "group_activity"
+      ]
+    },
+    "move_places": {
+      "outdoors": [
+        "time_in_nature",
+        "active_travel",
+        "morning_daylight",
+        "walking_with_others"
+      ],
+      "walking_or_cycling_to_get_places": [
+        "active_travel"
+      ],
+      "at_home": [
+        "strength_sessions",
+        "movement_snacks",
+        "stretching"
+      ],
+      "at_work": [
+        "breaking_up_sitting",
+        "walking_with_others"
+      ]
+    },
+    "work_location": {
+      "mostly_from_home": [
+        "breaking_up_sitting",
+        "time_away_from_work",
+        "calling_instead_of_texting",
+        "group_membership"
+      ],
+      "a_mix_of_home_and_a_workplace": [
+        "breaking_up_sitting",
+        "time_away_from_work"
+      ]
+    }
+  },
+  "scoring": {
+    "_doc": "P5. Score per family; highest first. Ties: evidence fit (Direct 3, Reasonable 2, Indirect 1), then evidence strength (guideline or SR+MA 3, SR 2, other 1), then fewer minutes, then family id.",
+    "top_goal": 100,
+    "other_goal": 40,
+    "sleep_disruptor": 40,
+    "sleep_problem": 15,
+    "insomnia_pattern": 30,
+    "barrier": 10,
+    "preference": 8,
+    "work_from_home": 10,
+    "tried_not_helped": -30,
+    "age_60_plus_balance": 20,
+    "room_to_improve": {
+      "gentle": 20,
+      "moderate": 10,
+      "deep": 4,
+      "no_baseline": 6,
+      "skip": -100
+    }
+  },
+  "focus": {
+    "_doc": "Up to 2 focus pillars from the focus question. 'I'm not sure yet': suggest the 2 pillars with the highest average room to improve across their own baseline questions (+10 per goal chosen), ties in pillar order eat, sleep, move, mind, connect."
+  },
+  "monthly_plan": {
+    "_doc": "P12. Months 1–3: six practices. Two focus pillars: 2 each + 2 light-touch rotating through the other 3 pillars. One focus pillar: 2 + 4 light-touch (one per other pillar). The first focus practice in each pillar matches its top goal; the second comes from a different theme when one scores 40+. Light-touch practices start at gentle (or the level already done).",
+    "small_steps": {
+      "q": "change_size",
+      "option": "small_steps",
+      "effect": "new practices start at gentle"
+    },
+    "bigger_challenge": {
+      "q": "change_size",
+      "option": "bigger_challenge",
+      "effect": "new practices start one level above baseline"
+    }
+  },
+  "progression": {
+    "_doc": "P6. At each monthly check-in the member marks each practice.",
+    "outcomes": {
+      "done": "step up one level next month (after deep: next best-scoring family in that pillar)",
+      "partly": "repeat the same practice",
+      "not_yet": "step down one level, or switch family if already gentle",
+      "not_for_me": "switch to the next best-scoring family in that pillar; do not offer the original again in months 1–3"
+    },
+    "next_family": {
+      "_doc": "After the Deep level of a family is done, move to this family at its gentle level (if not excluded).",
+      "building_up_cardio": "weekly_cardio"
+    }
+  },
+  "time": {
+    "_doc": "P7. Non-micro minutes should fit the weekly budget × time_flex. Over: hold step-ups, then set lower-priority practices to gentle or swap for a micro practice; keep the top-goal practice; still over → Pilot flag. Under top_up_below_minutes (and not small steps): step up a focus practice."
+  },
+  "themes": {
+    "_doc": "P14. Four themes for months 4–6: one per focus pillar (two if one focus pillar) + two from other pillars. Each is the theme where the member's practices went best in months 1–3, else the best-scoring theme for that pillar. sharing_sleep_progress is never a theme.",
+    "never_theme": [
+      "sharing_sleep_progress"
+    ]
+  },
+  "hygiene": {
+    "_doc": "P13. 4–8 priority checklist items. Triggered items come first; if fewer than 4 trigger, fill from the rest of the checklist. Never-priority items stay off the list.",
+    "triggers": {
+      "dark_bedroom": {
+        "all": [
+          {
+            "q": "sleep_disruptors",
+            "has": "light_in_my_bedroom"
+          },
+          {
+            "not": {
+              "q": "sleep_habits",
+              "row": "keep_my_bedroom_dark",
+              "is": "i_do_this_now"
+            }
+          }
+        ]
+      },
+      "bedroom_noise": {
+        "all": [
+          {
+            "q": "sleep_disruptors",
+            "has": "noise"
+          },
+          {
+            "not": {
+              "q": "sleep_habits",
+              "row": "keep_bedroom_quiet",
+              "is": "i_do_this_now"
+            }
+          }
+        ]
+      },
+      "cool_bedroom": {
+        "all": [
+          {
+            "q": "sleep_disruptors",
+            "has": "bedroom_temperature"
+          },
+          {
+            "not": {
+              "q": "sleep_habits",
+              "row": "keep_my_bedroom_cool",
+              "is": "i_do_this_now"
+            }
+          }
+        ]
+      },
+      "caffeine_timing": {
+        "any": [
+          {
+            "q": "last_caffeine",
+            "in": [
+              "3_6pm",
+              "after_6pm"
+            ]
+          },
+          {
+            "q": "sleep_disruptors",
+            "has": "caffeine"
+          }
+        ]
+      },
+      "evening_light": {
+        "all": [
+          {
+            "q": "sleep_disruptors",
+            "has": "screens_or_technology"
+          },
+          {
+            "not": {
+              "q": "sleep_habits",
+              "row": "dim_the_lights_in_the_evening",
+              "is": "i_do_this_now"
+            }
+          }
+        ]
+      },
+      "step_tracking": {
+        "all": [
+          {
+            "q": "steps",
+            "is": "i_dont_track_my_steps"
+          },
+          {
+            "q": "move_goals",
+            "has": "increase_everyday_movement"
+          }
+        ]
+      },
+      "music_and_enjoyment_in_exercise": {
+        "q": "move_barriers",
+        "has_any": [
+          "lack_of_motivation",
+          "i_find_exercise_boring"
+        ]
+      },
+      "recovery": {
+        "any": [
+          {
+            "computed": "weekly_activity_minutes",
+            "gte": 150
+          },
+          {
+            "q": "move_goals",
+            "has": "improve_performance"
+          }
+        ]
+      },
+      "notifications": {
+        "all": [
+          {
+            "q": "mind_goals",
+            "has_any": [
+              "focus_and_concentration",
+              "less_phone_time"
+            ]
+          },
+          {
+            "not": {
+              "q": "mind_routine",
+              "has": "keeping_notifications_turned_off"
+            }
+          }
+        ]
+      },
+      "warm_up": {
+        "never_priority": true
+      },
+      "napping": {
+        "never_priority": true
+      }
+    }
+  },
+  "pilot_flags": [
+    {
+      "id": "exercise_safety",
+      "when": {
+        "any": [
+          {
+            "condition": "exercise_warning_symptoms"
+          },
+          {
+            "condition": "condition_and_inactive"
+          }
+        ]
+      },
+      "message": "Check with the family doctor before vigorous exercise; vigorous practices are excluded until cleared."
+    },
+    {
+      "id": "snoring",
+      "when": {
+        "q": "snoring",
+        "is": "yes"
+      },
+      "message": "Possible sleep apnoea: suggest a family doctor check."
+    },
+    {
+      "id": "food_considerations",
+      "when": {
+        "q": "eat_considerations",
+        "has_any": [
+          "a_difficult_relationship_with_food",
+          "food_health_condition",
+          "other_food_allergy_or_intolerance",
+          "something_else",
+          "prefer_not_to_say"
+        ]
+      },
+      "message": "Food considerations the rules cannot resolve."
+    },
+    {
+      "id": "health_something_else",
+      "when": {
+        "q": "health_conditions",
+        "has": "something_else"
+      },
+      "message": "Review the health condition the member described."
+    },
+    {
+      "id": "pain_with_strength",
+      "when": {
+        "all": [
+          {
+            "condition": "pain_or_injury"
+          },
+          {
+            "plan_includes_any": [
+              "strength_sessions",
+              "strength_volume",
+              "balance"
+            ]
+          }
+        ]
+      },
+      "message": "Pain or injury and the plan includes strength or balance: Pilot decides whether a specialist is needed."
+    },
+    {
+      "id": "time_conflict",
+      "when": {
+        "plan": "over_budget_after_adjustment"
+      },
+      "message": "Plan needs more time than the member has: agree the time."
+    },
+    {
+      "id": "always_ask",
+      "when": {
+        "always": true
+      },
+      "message": "Ask every member about mood, alcohol, falls (60+) and long-term sleep problems (see Pilot guide)."
+    }
+  ]
+}

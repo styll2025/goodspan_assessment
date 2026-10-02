@@ -1,0 +1,146 @@
+{
+  "version": "2026-10-02",
+  "max_priority_items": 8,
+  "min_priority_items": 4,
+  "items": [
+    {
+      "id": "evening_light",
+      "pillar": "sleep",
+      "name": "Evening light",
+      "text": "Dim the lights in the evening: use lamps instead of ceiling lights from about 3 hours before bed.",
+      "why_hygiene": "Home setup or simple rule",
+      "show_when_plain": "'Dim the lights in the evening' not done yet, or an evening-routine goal",
+      "evidence_summary": "Studies show that evening light affects your body clock and your sleep. Dimming the lights in the hour before bed gives your body a clear signal that night is coming. Expert guidance also recommends keeping light low from about 3 hours before bedtime.",
+      "references": [
+        "Cajochen, C., Stefani, O., Schöllhorn, I., Lang, D., & Chellappa, S. L. (2022). Influence of evening light exposure on polysomnographically assessed night-time sleep: A systematic review with meta-analysis. Lighting Research & Technology, 54(6), 609–624. https://doi.org/10.1177/14771535221078765",
+        "Phillips, A. J. K., Vidafar, P., Burns, A. C., McGlashan, E. M., Anderson, C., Rajaratnam, S. M. W., Lockley, S. W., & Cain, S. W. (2019). High sensitivity and interindividual variability in the response of the human circadian system to evening light. Proceedings of the National Academy of Sciences, 116(24), 12019–12024. https://doi.org/10.1073/pnas.1901824116",
+        "Brown, T. M., Brainard, G. C., Cajochen, C., Czeisler, C. A., Hanifin, J. P., Lockley, S. W., Lucas, R. J., Münch, M., O'Hagan, J. B., Peirson, S. N., Price, L. L. A., Roenneberg, T., Schlangen, L. J. M., Skene, D. J., Spitschan, M., Vetter, C., Zee, P. C., & Wright, K. P. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. PLOS Biology, 20(3), e3001571. https://doi.org/10.1371/journal.pbio.3001571"
+      ]
+    },
+    {
+      "id": "caffeine_timing",
+      "pillar": "sleep",
+      "name": "Caffeine timing",
+      "text": "Have your last caffeine at least 6 hours before bed; for a standard coffee, about 9 hours.",
+      "why_hygiene": "Simple rule, no skill to build",
+      "show_when_plain": "Last caffeine after 12pm, or 'Caffeine' affects sleep",
+      "evidence_summary": "Research found that caffeine close to bedtime can shorten total sleep, make it take longer to fall asleep and lead to more time awake during the night. Timing your caffeine with your bedtime in mind helps protect your sleep.",
+      "references": [
+        "Gardiner, C., Weakley, J., Burke, L. M., Roach, G. D., Sargent, C., Maniar, N., Townshend, A., & Halson, S. L. (2023). The effect of caffeine on subsequent sleep: A systematic review and meta-analysis. Sleep Medicine Reviews, 69, 101764. https://doi.org/10.1016/j.smrv.2023.101764",
+        "Drake, C., Roehrs, T., Shambroom, J., & Roth, T. (2013). Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed. Journal of Clinical Sleep Medicine, 9(11), 1195–1200. https://doi.org/10.5664/jcsm.3170"
+      ]
+    },
+    {
+      "id": "napping",
+      "pillar": "sleep",
+      "name": "Napping",
+      "text": "If you nap, keep it short (about 10–20 minutes) and in the afternoon.",
+      "why_hygiene": "Simple rule, no skill to build",
+      "show_when_plain": "'Avoid long naps' not done yet",
+      "evidence_summary": "Research on napping shows that how long you nap shapes what you get from it. Keeping naps short lets you enjoy a rest while protecting your night's sleep. A study comparing nap lengths found a 10-minute nap gave the quickest boost, while a 30-minute nap caused grogginess at first. A 20-minute nap took about half an hour to have an effect.",
+      "references": [
+        "Faraut, B., Andrillon, T., Vecchierini, M. F., & Leger, D. (2017). Napping: A public health issue. From epidemiological to laboratory studies. Sleep Medicine Reviews, 35, 85–100. https://doi.org/10.1016/j.smrv.2016.09.002",
+        "Brooks, A., & Lack, L. (2006). A brief afternoon nap following nocturnal sleep restriction: Which nap duration is most recuperative? Sleep, 29(6), 831–840. https://doi.org/10.1093/sleep/29.6.831"
+      ]
+    },
+    {
+      "id": "cool_bedroom",
+      "pillar": "sleep",
+      "name": "Cool bedroom",
+      "text": "Keep your bedroom comfortably cool: adjust the heating, open a window or use a fan, and change bedding with the seasons.",
+      "why_hygiene": "One-off bedroom setup",
+      "show_when_plain": "'Bedroom temperature' affects sleep, or 'Keep my bedroom cool' not done yet",
+      "evidence_summary": "A systematic review of real-world studies found that higher indoor and outdoor temperatures are generally linked with worse sleep quality and quantity, especially on the hottest nights, and a review of lab studies found that heat increases time awake and reduces deep and REM sleep. Keeping your bedroom comfortably cool helps set you up for a restful night.",
+      "references": [
+        "Okamoto-Mizuno, K., & Mizuno, K. (2012). Effects of thermal environment on sleep and circadian rhythm. Journal of Physiological Anthropology, 31(1), 14. https://doi.org/10.1186/1880-6805-31-14",
+        "Chevance, G., Minor, K., Vielma, C., Campi, E., O'Callaghan-Gordo, C., Basagaña, X., Ballester, J., & Bernard, P. (2024). A systematic review of ambient heat and sleep in a warming climate. Sleep Medicine Reviews, 75, 101915. https://doi.org/10.1016/j.smrv.2024.101915"
+      ]
+    },
+    {
+      "id": "dark_bedroom",
+      "pillar": "sleep",
+      "name": "Dark bedroom",
+      "text": "Make your bedroom dark: close the curtains or blinds, cover standby lights, and try an eye mask if light still gets in.",
+      "why_hygiene": "One-off bedroom setup",
+      "show_when_plain": "'Light in my bedroom' affects sleep, or 'Keep my bedroom dark' not done yet",
+      "evidence_summary": "Expert guidance recommends keeping light low at night to support sleep and your body clock. Closing curtains or blinds is an easy way to create the darkness your body sleeps best in. A systematic review also found that even low light levels at night can affect the body clock, even with the eyes closed.",
+      "references": [
+        "Brown, T. M., Brainard, G. C., Cajochen, C., Czeisler, C. A., Hanifin, J. P., Lockley, S. W., Lucas, R. J., Münch, M., O'Hagan, J. B., Peirson, S. N., Price, L. L. A., Roenneberg, T., Schlangen, L. J. M., Skene, D. J., Spitschan, M., Vetter, C., Zee, P. C., & Wright, K. P. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. PLOS Biology, 20(3), e3001571. https://doi.org/10.1371/journal.pbio.3001571",
+        "Tähkämö, L., Partonen, T., & Pesonen, A.-K. (2019). Systematic review of light exposure impact on human circadian rhythm. Chronobiology International, 36(2), 151–170. https://doi.org/10.1080/07420528.2018.1527773"
+      ]
+    },
+    {
+      "id": "bedroom_noise",
+      "pillar": "sleep",
+      "name": "Bedroom noise",
+      "text": "Cut bedroom noise: close windows on the noisy side, move away from noise sources, or try foam earplugs.",
+      "why_hygiene": "One-off bedroom setup",
+      "show_when_plain": "'Noise' affects sleep, or 'Keep my bedroom quiet' not done yet",
+      "evidence_summary": "The research behind the World Health Organization's noise guidelines supports reducing nighttime noise to protect sleep. Tackling even one source of noise helps make your bedroom more restful.",
+      "references": [
+        "Basner, M., & McGuire, S. (2018). WHO Environmental Noise Guidelines for the European Region: A systematic review on environmental noise and effects on sleep. International Journal of Environmental Research and Public Health, 15(3), 519. https://doi.org/10.3390/ijerph15030519"
+      ]
+    },
+    {
+      "id": "warm_up",
+      "pillar": "move",
+      "name": "Warm-up",
+      "text": "Warm up before exercise with light activity, then movements like the ones you're about to do.",
+      "why_hygiene": "Part of doing any exercise well",
+      "show_when_plain": "Does any moderate or vigorous exercise, and 'Warm up before exercise' not ticked",
+      "evidence_summary": "Research shows that warming up improves physical performance in nearly 80% of the measures studied, and the balance of trial evidence favours warming up to help reduce injury risk. Starting with light, dynamic movement helps prepare your body for activity.",
+      "references": [
+        "Fradkin, A. J., Zazryn, T. R., & Smoliga, J. M. (2010). Effects of warming-up on physical performance: a systematic review with meta-analysis. Journal of Strength and Conditioning Research, 24(1), 140–148. https://doi.org/10.1519/JSC.0b013e3181c643a0",
+        "Fradkin, A. J., Gabbe, B. J., & Cameron, P. A. (2006). Does warming up prevent injury in sport? The evidence from randomised controlled trials? Journal of Science and Medicine in Sport, 9(3), 214–220. https://doi.org/10.1016/j.jsams.2006.03.026"
+      ]
+    },
+    {
+      "id": "recovery",
+      "pillar": "move",
+      "name": "Recovery",
+      "text": "Build in lighter days between harder sessions, and increase training gradually (keep weekly increases under about 30%).",
+      "why_hygiene": "Part of doing any exercise well",
+      "show_when_plain": "Exercises 3+ days a week, or a performance goal",
+      "evidence_summary": "Research in new runners suggests that increasing training too quickly may raise the risk of some overuse injuries. Building in rest or lighter days helps your body recover and adapt. In a study of 874 novice runners, increasing weekly distance by more than 30% was linked with more distance-related injuries than increases under 10%.",
+      "references": [
+        "Nielsen, R. Ø., Parner, E. T., Nohr, E. A., Sørensen, H., Lind, M., & Rasmussen, S. (2014). Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury. Journal of Orthopaedic & Sports Physical Therapy, 44(10), 739–747. https://doi.org/10.2519/jospt.2014.5164"
+      ]
+    },
+    {
+      "id": "step_tracking",
+      "pillar": "move",
+      "name": "Step tracking",
+      "text": "Turn on step counting on your phone and check your daily average.",
+      "why_hygiene": "Phone setup, a tool rather than a practice",
+      "show_when_plain": "'I don't track my steps'",
+      "evidence_summary": "Research found that using a step tracker is linked with meaningful increases in daily activity, and that knowing your baseline is a common first step. Tracking your steps helps you understand where you're starting from. People who used a pedometer increased their activity by about 2,000–2,500 steps a day.",
+      "references": [
+        "Bravata, D. M., Smith-Spangler, C., Sundaram, V., Gienger, A. L., Lin, N., Lewis, R., Stave, C. D., Olkin, I., & Sirard, J. R. (2007). Using pedometers to increase physical activity and improve health: a systematic review. JAMA, 298(19), 2296–2304. https://doi.org/10.1001/jama.298.19.2296"
+      ]
+    },
+    {
+      "id": "music_and_enjoyment_in_exercise",
+      "pillar": "move",
+      "name": "Music and enjoyment in exercise",
+      "text": "Use music you enjoy during workouts; save faster tracks for harder efforts.",
+      "why_hygiene": "Enabling tip rather than a practice",
+      "show_when_plain": "'Lack of motivation' or 'I find exercise boring'",
+      "evidence_summary": "A review of 139 studies found that listening to music during exercise improved mood during the activity, boosted performance and made the effort feel easier; fast-tempo music gave the biggest performance boost.",
+      "references": [
+        "Terry, P. C., Karageorghis, C. I., Curran, M. L., Martin, O. V., & Parsons-Smith, R. L. (2020). Effects of music in exercise and sport: A meta-analytic review. Psychological Bulletin, 146(2), 91–117. https://doi.org/10.1037/bul0000216"
+      ]
+    },
+    {
+      "id": "notifications",
+      "pillar": "mind",
+      "name": "Notifications",
+      "text": "Turn off non-essential notifications, and use Do Not Disturb while you focus.",
+      "why_hygiene": "One-off phone setup",
+      "show_when_plain": "A focus or phone-time goal in Mind, or 'Keeping notifications turned off' not ticked",
+      "evidence_summary": "A study found that turning phone notifications off reduced feelings of inattention and restlessness, which in turn was linked with higher productivity and wellbeing. Silencing just one app is an easy first step.",
+      "references": [
+        "Kushlev, K., Proulx, J. D. E., & Dunn, E. W. (2016). \"Silence Your Phones\": Smartphone Notifications Increase Inattention and Hyperactivity Symptoms. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1011–1020). ACM. https://doi.org/10.1145/2858036.2858359"
+      ]
+    }
+  ]
+}

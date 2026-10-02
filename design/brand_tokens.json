@@ -1,0 +1,21 @@
+{
+  "source": "The Good Span visual identity guidelines (Oct 2026) and colour contrast matrix",
+  "colours": {"plum": "#4D2831", "cream": "#FFF2EA", "orange": "#FE600C", "light_blue": "#D1E6E9", "pink": "#F5A4C2", "ochre": "#CB863A", "black": "#000000", "white": "#FFFFFF"},
+  "usage": {"page_background": "cream", "card_background": "white", "text": "plum", "primary_button": {"bg": "plum", "text": "cream"}, "secondary_button": {"border": "plum", "text": "plum"}},
+  "pillar_chips": {
+    "eat": {"bg": "ochre", "text": "black", "contrast": "7.01 AAA"},
+    "sleep": {"bg": "light_blue", "text": "plum", "contrast": "9.74 AAA"},
+    "move": {"bg": "orange", "text": "black", "contrast": "6.89 AA"},
+    "mind": {"bg": "pink", "text": "plum", "contrast": "6.60 AA"},
+    "connect": {"bg": "plum", "text": "cream", "contrast": "11.51 AAA"}
+  },
+  "change_tags": {"new": {"bg": "light_blue", "text": "plum"}, "level_up": {"bg": "plum", "text": "cream"}, "continue": {"border": "plum", "text": "plum"}, "easier": {"border": "plum", "text": "plum"}},
+  "typography": {
+    "display": {"family": "BST Bazaine", "weight": 100, "file": "assets/BSTBazaineTrial-Thin.otf"},
+    "body": {"family": "BST Bazaine", "weight": 300, "file": "assets/BSTBazaineTrial-Light.otf"},
+    "emphasis": {"family": "BST Bazaine", "weight": 400, "file": "assets/BSTBazaineTrial-Regular.otf"},
+    "ui_labels_buttons": {"family": "Archivo", "weight": 400, "file": "assets/Archivo-Regular.ttf", "style": "uppercase, 12–13px, letter-spacing 0.08em", "note": "UI elements only, never long copy"}
+  },
+  "shape": {"radius_card": "16–24px", "radius_pill": "999px", "line_weights": "1–2px solid, dashed or dotted arcs; no more than 3 line styles per layout"},
+  "logo_rule": "Use the logo files as supplied: no recolouring, no lock-ups with the symbol."
+}
