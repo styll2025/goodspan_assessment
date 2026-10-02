@@ -90,7 +90,7 @@ h1,h2,.ptitle,.ttitle,.mtitle,.stitle{{font-family:'BST Bazaine',Georgia,serif;w
 h1{{margin:0;font-weight:100;font-size:clamp(32px,6vw,46px);line-height:1.08}}
 h2{{margin:4px 0 0;font-weight:100;font-size:32px;line-height:1.15}}
 header{{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid {plum}}}
-.summary{{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}} .summary div{{background:#fff;border-radius:14px;padding:12px 14px}}
+.summary{{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:40px 0 16px}} .summary div{{background:#fff;border-radius:14px;padding:12px 14px}}
 .note{{background:{blue};border-radius:16px;padding:16px 20px}}
 ol{{list-style:none;margin:0;padding:0}} .step{{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:12px 0;border-top:1px solid #E5CFC4}}
 .dot{{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;border:1px solid {plum};font-family:Archivo,sans-serif;font-size:13px}} .dot.done{{background:{plum};color:{cream}}}
