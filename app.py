@@ -85,7 +85,7 @@ class Handler(SimpleHTTPRequestHandler):
     def do_GET(self):
         path = urlparse(self.path).path
         if path in ("/", "/index.html"):
-            return self._send_file(os.path.join(ROOT, "web", "index.html"), "text/html; charset=utf-8")
+            return self._send_file(os.path.join(ROOT, "index.html"), "text/html; charset=utf-8")
         if path.startswith("/web/"):
             return SimpleHTTPRequestHandler.do_GET(self)
         if path.startswith("/data/") or path.startswith("/design/"):

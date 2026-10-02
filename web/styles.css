@@ -1,7 +1,7 @@
-@font-face { font-family: "BST Bazaine"; src: url("/design/assets/BSTBazaineTrial-Thin.otf"); font-weight: 100; font-display: swap; }
-@font-face { font-family: "BST Bazaine"; src: url("/design/assets/BSTBazaineTrial-Light.otf"); font-weight: 300; font-display: swap; }
-@font-face { font-family: "BST Bazaine"; src: url("/design/assets/BSTBazaineTrial-Regular.otf"); font-weight: 400; font-display: swap; }
-@font-face { font-family: "Archivo"; src: url("/design/assets/Archivo-Regular.ttf"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "BST Bazaine"; src: url("../design/assets/BSTBazaineTrial-Thin.otf"); font-weight: 100; font-display: swap; }
+@font-face { font-family: "BST Bazaine"; src: url("../design/assets/BSTBazaineTrial-Light.otf"); font-weight: 300; font-display: swap; }
+@font-face { font-family: "BST Bazaine"; src: url("../design/assets/BSTBazaineTrial-Regular.otf"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Archivo"; src: url("../design/assets/Archivo-Regular.ttf"); font-weight: 400; font-display: swap; }
 
 :root {
   --plum: #4D2831;
@@ -34,6 +34,17 @@ button, input, textarea { font: inherit; }
   text-transform: uppercase;
 }
 a { color: var(--plum); }
+.building {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 242, 234, 0.94);
+  color: var(--plum);
+  text-align: center;
+  padding: 24px;
+}
 .page {
   width: min(794px, 100%);
   margin: 0 auto;

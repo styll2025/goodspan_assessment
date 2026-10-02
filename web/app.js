@@ -505,31 +505,45 @@ async function sendToSheet(source) {
   }
 }
 
+function showBuilding(on) {
+  let el = document.querySelector(".building");
+  if (on) {
+    if (!el) {
+      el = document.createElement("div");
+      el.className = "building";
+      el.innerHTML = '<p class="ui">Building your plan</p><p>This can take a moment the first time.</p>';
+      document.body.appendChild(el);
+    }
+    el.hidden = false;
+  } else if (el) {
+    el.hidden = true;
+  }
+}
+
 async function buildPlan(extra = {}) {
-  const res = await fetch("/api/plan", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
+  showBuilding(true);
+  try {
+    const data = await GoodSpanEngine.buildPlan({
       answers: state.answers,
       memberName: state.memberName || "",
       saveCopy: !!extra.saveCopy,
       outcomes: extra.outcomes !== undefined ? extra.outcomes : (state.outcomes.length ? state.outcomes : null),
       pilot: extra.pilot !== undefined ? extra.pilot : (state.pilot.conditions.length || state.pilot.released.length ? state.pilot : null),
-    }),
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.details ? data.details.join("; ") : (data.error || "Could not build plan"));
-  state.plan = data.plan;
-  if (data.planId) {
-    state.planId = data.planId;
-    state.planLink = location.origin + "/plans/" + data.planId + ".html";
+    });
+    state.plan = data.plan;
+    if (data.planId) {
+      state.planId = data.planId;
+      state.planLink = new URL("plans/" + data.planId + ".html", document.baseURI).href;
+    }
+    save();
+    return data.plan;
+  } finally {
+    showBuilding(false);
   }
-  save();
-  return data.plan;
 }
 
 async function loadExample() {
-  const answers = await fetch("/tests/fixtures/example_member.json").then(r => r.json());
+  const answers = await GoodSpanEngine.loadExample();
   state = blank();
   state.memberName = "Alex";
   state.email = "alex@example.com";
@@ -648,8 +662,8 @@ function onInput(e) {
 
 async function init() {
   const [assess, meta] = await Promise.all([
-    fetch("/data/assessment.json", { cache: "no-store" }).then(r => r.json()),
-    fetch("/api/meta").then(r => r.json()),
+    GoodSpanEngine.loadAssessment(),
+    GoodSpanEngine.loadMeta(),
   ]);
   ASSESS = assess;
   META = meta;
@@ -660,6 +674,7 @@ async function init() {
   document.addEventListener("input", onInput);
   window.addEventListener("hashchange", render);
   render();
+  GoodSpanEngine.preload();
 }
 
 init().catch(err => { app.innerHTML = `<p class="error">${esc(err.message)}</p>`; });

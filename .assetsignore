@@ -1,0 +1,17 @@
+.git
+.github
+**/__pycache__
+**/*.pyc
+plans
+source
+docs
+*.md
+design/*.pdf
+design/*.eps
+.DS_Store
+.gitignore
+app.py
+tests/test_engine.py
+tests/random_answers.py
+engine/__pycache__
+Personalised Plan*
