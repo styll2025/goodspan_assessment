@@ -244,7 +244,7 @@ function renderPlan() {
   const paceLabel = { small: 'Small, easy steps', mid: 'Something in between', big: 'A bigger challenge' }[p.change];
   document.getElementById('view').innerHTML = `<div>
   <div class="wrap hero">
-    <p class="kicker">Your Good Span · ${esc(new Date(member.planned || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }))} · Ref ${esc(member.id)}</p>
+    <p class="kicker">Your Good Span · ${esc(new Date(member.planned || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }))}</p>
     <h1>${nm ? esc(nm) + (/s$/i.test(nm) ? "'" : "'s") + ' Good Span.' : 'Your Good Span.'}</h1>
     <p class="lead">${P.wish.length ? `You told us you'd like to improve ${esc(P.wish.join(' and ').toLowerCase())}.` : "You weren't sure where to start, so we've built your Good Span from your answers."} Your answers show the greatest opportunity in ${esc(P.pri.join(' and ').toLowerCase())}, so that's where your Good Span starts.</p>
     <ol class="journey">
