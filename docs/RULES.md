@@ -25,7 +25,7 @@ each answer in the table below adds to an area's score. A High signal counts 2 p
 
 ### Rule 2. Priorities
 
-each area's combined score = opportunity score + 2 if the member chose it in question 1. The highest combined area is the first priority; the second-highest is also a priority if it scores 2 or more. Ties: chosen areas first, then more High signals, then the order on the map. “I'm not sure yet” = opportunity score only.
+each area's combined score = opportunity score + 2 if the member chose it in question 1. The highest combined area is the first priority; the second-highest is also a priority if it scores 2 or more. Ties: chosen areas first, then more High signals, then the order on the map. “I'm not sure yet” = opportunity score only. Under each priority, the member sees up to three reasons: the signal lines for that area, or, when the area has no signal, the “why this is in your Good Span” line for each priority practice there.
 
 ### Rule 3. Priority practices
 

@@ -709,7 +709,14 @@ function makeEngine(DATA) {
     if (overTime.length) notes.push(['Over time', `${overTime.join(' and ')} didn't fit in their weekly time, so ${overTime.length > 1 ? 'they were' : 'it was'} left out. Ask whether they'd like to make room for ${overTime.length > 1 ? 'them' : 'it'}.`]);
     if (p.change !== 'small' && months[0] && total(months[0]) < budget / 3 && !months[0].some(x => extraMinutes(p, x.row) >= 15)) notes.push(['Low new time', `The plan adds about ${Math.round(total(months[0]))} of the ${budget} minutes a week they have. Ask whether they'd like to use more of it.`]);
     if (p.own_habit && p.own_habit[1] === 'share' && p.own_habit[0]) notes.push(['Own habit', `Member would like to work on: “${p.own_habit[0]}”. Shape it into a practice with them at the pre-Span 1:1.`]);
-    const reasons = {}; AREAS.forEach(a => reasons[a] = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).slice(0, 3).map(x => x[1]));
+    const reasons = {};
+    AREAS.forEach(a => {
+      const fromSignals = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).slice(0, 3).map(x => x[1]);
+      if (fromSignals.length) { reasons[a] = fromSignals; return; }
+      // A priority filled from their answers, with no scored signal: show why each practice is there, as the signal lines do.
+      const seen = new Set();
+      reasons[a] = (months[0] || []).filter(x => x.area === a && x.role === 'Priority' && x.why && !seen.has(x.why) && seen.add(x.why)).map(x => x.why).slice(0, 3);
+    });
     const target = ms => ms.reduce((t, x) => t + (x.change === 'DONE' ? 0 : x.row.tg), 0);
     // Rule 13: "Not right for me". The member gives a reason from a fixed list; each reason has one rule.
     // Returns up to 2 options that pass every hard rule, or hands the decision to the Pilot. Changes apply at the next check-in.
