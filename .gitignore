@@ -3,3 +3,6 @@ __pycache__/
 *.pyc
 plans/
 
+
+node_modules/
+tests/out/
