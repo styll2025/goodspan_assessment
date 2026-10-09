@@ -12,31 +12,35 @@ const DEFAULTS = {
   Connection: ['Reaching out', 'Asking follow-up questions', 'Acts of kindness', 'Expressing gratitude', 'Shared meals', 'Group membership'],
   Prevention: ['Routine check-ups', 'Alcohol-free swaps', 'Daily sunscreen', 'Learning new skills', 'Air quality', 'Vaccination record'],
 };
-const OVERLAP = [['Slow breathing', 'Slow breathing to wind down'], ['Building up cardio', 'Weekly cardio', 'Activity for better sleep'],
+const OVERLAP = [['Slow breathing', 'Slow breathing to wind down', 'Progressive muscle relaxation'], ['Building up cardio', 'Weekly cardio', 'Activity for better sleep'],
   ['Harder cardio and long intervals', 'Short intervals'], ['Strength sessions', 'Strength volume'],
   ['Alcohol intake', 'Alcohol-free swaps', 'Alcohol and sleep'], ['Walking with others', 'Group activity'],
   ['Daily eating window', 'Gap between eating and bed'], ['Shared meals', 'Meals with new people'],
   ['Quitting with full support', 'Trying again to quit'], ['Three good things', 'Expressing gratitude'],
-  ['Safe listening', 'Hearing protection'], ['Air quality', 'Indoor air']];
+  ['Safe listening', 'Hearing protection'], ['Air quality', 'Indoor air'],
+  ['Avoiding sunburn', 'Daily sunscreen'], ['Focused work', 'Present-moment attention'], ['Breaking up sitting', 'Micro-breaks'], ['Habit building', 'If-then planning'], ['Balanced plate', 'Protein at meals']];
 const ONE_OFF = new Set(['Vaccination record', 'Hearing check']);
-const CAP_LEARNING = { Movement: ['Exercise warning symptoms', 'Heart, metabolic or kidney condition and inactive'] };
-const NO_RAISE = { Movement: ['Pregnant', 'Fall in past 12 months', 'Pain, injury or joint limitation'], Mind: ['Positive PHQ-4 screen'],
+// Exercise warning symptoms: vigorous practices are always left out (library Exclude if). The hold at Learning applies until a doctor has said
+// it's OK to be more active; after that, a bigger challenge still doesn't raise the starting level (NO_RAISE).
+const CAP_LEARNING = { Movement: ['Exercise warning symptoms, not yet cleared', 'Heart, metabolic or kidney condition and inactive'] };
+const NO_RAISE = { Movement: ['Exercise warning symptoms', 'Pregnant', 'Breastfeeding', 'Fall in past 12 months', 'Pain, injury or joint limitation', 'Lung condition', 'High blood pressure'], Mind: ['Positive PHQ-4 screen'],
   Nutrition: ['Difficult relationship with food', 'Pregnant'], Prevention: ['Higher-risk drinking (AUDIT-C 8+)'] };
 const OPTOUT = { meditation: ['Meditation', 'Self-compassion.Mastering'], journalling: ['Expressive writing', 'Three good things', 'Bedtime to-do list', 'Best possible self', 'Self-compassion.Developing'],
-  fasting: ['Daily eating window'],
+  fasting: ['Daily eating window', 'Gap between eating and bed'],
   tracking_food: ['Daily eating window', 'Plant variety.Developing', 'Plant variety.Mastering', 'Salt.Mastering', 'Reducing sugar.Mastering', 'Protein at meals.Mastering'],
   touch: ['Affectionate touch'], early: ['Morning daylight.Mastering'], apps: ['Daily steps.Developing', 'Daily steps.Mastering'] };
 const NEXTFAM = { 'Building up cardio': 'Weekly cardio', 'Strength sessions': 'Strength volume', 'Safe listening': 'Hearing protection', 'Air quality': 'Indoor air' };
 const SLEEP_SHARE = ['Sharing sleep plans with others', 'Sharing sleep learnings with others', 'Celebrating sleep wins'];
 const CESSATION = ['Quitting with full support', 'Trying again to quit', 'Stopping vaping'];
 const MAX_UPS = { small: 1, mid: 2, big: 6 };
+const SETUP_FIRST = ['Habit building', 'If-then planning'];
 // Rule 14: practices that match what the member enjoys or where they like to be active (from "Which of these do you enjoy?" and "Where do you usually do your movement?")
 const ENJOY = {
   outdoors: ['Time in nature', 'Daily steps', 'Walking after meals', 'Walking with others', 'Building up cardio', 'Weekly cardio', 'Morning daylight', 'Awe walks'],
   music: ['Music to unwind', 'Bedtime music'],
   making: ['Enjoyable leisure', 'Meal planning and home cooking'],
   writing: ['Expressive writing', 'Three good things', 'Best possible self', 'Bedtime to-do list', 'Problem-solving steps', 'Sense of purpose'],
-  social: ['Walking with others', 'Group activity', 'Group membership', 'Shared meals', 'Meals with new people', 'Volunteering', 'Activity challenges', 'Talking to acquaintances', 'Reaching out'],
+  social: ['Walking with others', 'Group activity', 'Group membership', 'Shared meals', 'Meals with new people', 'Volunteering', 'Activity challenges'],
   quiet: ['Meditation', 'Slow breathing', 'Savouring', 'Present-moment attention', 'Time in nature', 'Progressive muscle relaxation', 'Slow breathing to wind down'],
   stretch: ['Yoga for stress', 'Stretching', 'Balance'],
   sport: ['Weekly cardio', 'Building up cardio', 'Harder cardio and long intervals', 'Short intervals', 'Activity challenges', 'Group activity', 'Strength sessions', 'Strength volume'],
@@ -50,6 +54,8 @@ const ENJOY_TXT = { outdoors: "It's also a way to spend time outdoors, which you
   social: 'You can also do it with other people, which you enjoy.', quiet: "It's also a chance for quiet time on your own, which you enjoy.", stretch: 'It also fits your love of stretching and yoga.', sport: 'It also fits your love of sport.', cooking: 'It also involves food and cooking, which you enjoy.',
   home: 'You can do it at home.', gym: 'You can do it at the gym.', work: 'You can do it at work.' };
 const WORK_FAMS = ['Micro-breaks', 'Time away from work', 'Focused work'];
+// where they like to be active (not what they enjoy): said as a place, not as enjoyment
+const LOC_TXT = { outdoors: 'You can do it outdoors, where you like to be active.', sport: 'You can do it at your sports club.' };
 const WISH_WEIGHT = 2;
 const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
 const GOAL_TXT = { protein: 'getting enough protein', plants: 'eating more plants and fibre', processed: 'eating less processed food', sugar: 'reducing sugar',
@@ -88,11 +94,15 @@ function makeEngine(DATA) {
     if (p.food_rel) c.add('Difficult relationship with food');
     if (p.nut_allergy) c.add('Nut allergy');
     if (p.symptoms) c.add('Exercise warning symptoms');
+    if (p.symptoms && !p.symptoms_cleared) c.add('Exercise warning symptoms, not yet cleared');
     if ((p.heart || p.diabetes || p.kidney) && p.mvpa < 150) c.add('Heart, metabolic or kidney condition and inactive');
     if (p.pain) c.add('Pain, injury or joint limitation');
     if (p.fall) c.add('Fall in past 12 months');
     if (p.no_sm) c.add("Doesn't use social media");
     if (p.phq4_pos) c.add('Positive PHQ-4 screen');
+    if (p.isolated) c.add('Rarely sees friends or family');
+    if (p.lung) c.add('Lung condition');
+    if (p.high_bp) c.add('High blood pressure');
     if (!p.smokes) c.add("Doesn't smoke");
     if (p.smokes || p.vapes) c.add('Smokes or vapes');
     if (!p.vapes) c.add("Doesn't vape");
@@ -110,43 +120,43 @@ function makeEngine(DATA) {
     if (p.sleep_h < 6) add('Sleep', 'H', `You usually sleep ${p.sleep_txt} a night. Guidelines recommend 7 or more hours for adults.`, 'Enough sleep');
     else if (p.sleep_h < 7) add('Sleep', 'M', 'You usually sleep 6-7 hours a night, a little under the 7 or more hours guidelines recommend for adults.', 'Enough sleep');
     const ins = p.insomnia || [];
-    if (ins.length >= 2) add('Sleep', 'H', 'On 3 or more nights a week, ' + ins.join(' and ') + '.', 'Slow breathing to wind down');
-    else if (ins.length === 1) add('Sleep', 'M', 'On 3 or more nights a week, ' + ins[0] + '.', 'Screen-free wind-down');
-    if (p.caffeine_late) add('Sleep', 'M', 'Your last caffeine is usually after 3pm, which can make it harder to fall asleep.', null);
+    if (ins.length >= 2) add('Sleep', 'H', 'On 3 or more nights a week, ' + ins.join(' and ') + '. Small, regular changes to your routine help many people sleep better.', 'Slow breathing to wind down');
+    else if (ins.length === 1) add('Sleep', 'M', 'On 3 or more nights a week, ' + ins[0] + '. Small, regular changes to your routine help many people sleep better.', 'Screen-free wind-down');
+    if (p.caffeine_late) add('Sleep', 'M', `Your last caffeine is usually ${p.caffeine_when || 'after 3pm'}, which can make it harder to fall asleep.`, null);
     const v = p.veg;
     if (v === 0) add('Nutrition', 'H', "You don't usually eat vegetables or fruit. At least 5 portions a day are recommended.", 'Balanced plate');
     else if (v <= 2) add('Nutrition', 'M', 'You usually eat 1-2 portions of vegetables and fruit a day. At least 5 are recommended.', 'Balanced plate');
-    if ((p.sugary || 0) >= 3) add('Nutrition', 'M', `You have sugary drinks on ${p.sugary_txt} days a week.`, 'Reducing sugar');
-    if ((p.processed || 0) >= 3) add('Nutrition', 'M', `You eat packaged or processed foods on ${p.processed_txt} days a week.`, 'Less processed food');
-    if (p.wholegrain_rare) add('Nutrition', 'M', 'You rarely eat whole grains.', 'Whole grains');
-    if (p.beans_rare) add('Nutrition', 'M', 'You rarely eat beans, lentils or chickpeas.', 'Beans and lentils');
-    if ((p.protein_meals ?? 3) <= 1) add('Nutrition', 'M', "Most of your main meals don't include a source of protein.", 'Protein at meals');
-    if (p.salt_daily) add('Nutrition', 'M', 'You add salt to your food most days.', 'Salt');
+    if ((p.sugary || 0) >= 3) add('Nutrition', 'M', `You have sugary drinks on ${p.sugary_txt} days a week. Swapping some for water or unsweetened drinks is an easy way to cut added sugar.`, 'Reducing sugar');
+    if ((p.processed || 0) >= 3) add('Nutrition', 'M', `You eat packaged or processed foods on ${p.processed_txt} days a week. Eating more fresh and home-cooked food is linked with better long-term health.`, 'Less processed food');
+    if (p.wholegrain_rare) add('Nutrition', 'M', 'You rarely eat whole grains. They add fibre, and eating more of them is linked with better heart and gut health.', 'Whole grains');
+    if (p.beans_rare) add('Nutrition', 'M', 'You rarely eat beans, lentils or chickpeas. They are a good source of fibre and protein, and eating them more often is linked with better heart health.', 'Beans and lentils');
+    if ((p.protein_meals ?? 3) <= 1) add('Nutrition', 'M', "Most of your main meals don't include a source of protein. Spreading protein across your meals helps you feel full and supports your muscles.", 'Protein at meals');
+    if (p.salt_daily) add('Nutrition', 'M', 'You add salt to your food most days. Many adults eat more salt than recommended, and cutting down helps keep blood pressure healthy.', 'Salt');
     const m = p.mvpa;
-    if (m < 60) add('Movement', 'H', `You do about ${m} minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes.`, 'Building up cardio');
-    else if (m < 150) add('Movement', 'M', `You do about ${m} minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend.`, m < 100 ? 'Building up cardio' : 'Weekly cardio');
-    if (p.strength <= 1) add('Movement', 'M', `You do strength exercise on ${p.strength} ${p.strength === 1 ? 'day' : 'days'} a week. Guidelines recommend 2 or more.`, 'Strength sessions');
+    if (m < 60) add('Movement', 'H', `You do about ${m} minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes, and even small increases are linked with better health.`, 'Building up cardio');
+    else if (m < 150) add('Movement', 'M', `You do about ${m} minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend. Being more active is linked with better long-term health.`, m < 100 ? 'Building up cardio' : 'Weekly cardio');
+    if (p.strength <= 1) add('Movement', 'M', `You do strength exercise on ${p.strength} ${p.strength === 1 ? 'day' : 'days'} a week. Guidelines recommend 2 or more, to help keep your muscles and bones strong.`, 'Strength sessions');
     if (p.fall) add('Movement', 'M', "You've had a fall in the past 12 months. Balance practice can help you stay steady on your feet.", 'Balance');
-    if (p.sit8) add('Movement', 'M', 'You sit for 8 or more hours on a typical day.', 'Breaking up sitting');
-    if (p.steps_low) add('Movement', 'M', 'You take fewer than 5,000 steps on a typical day.', 'Daily steps');
-    if (p.phq4_pos) add('Mind', 'H', "You've been feeling anxious or low on several days recently.", 'Self-compassion');
+    if (p.sit8) add('Movement', 'M', 'You sit for 8 or more hours on a typical day. Breaking up long periods of sitting is linked with better health, even for people who exercise.', 'Breaking up sitting');
+    if (p.steps_low) add('Movement', 'M', 'You take fewer than 5,000 steps on a typical day. Walking more is linked with better health, and even small increases count.', 'Daily steps');
+    if (p.phq4_pos) add('Mind', 'H', `You've been feeling anxious or low on ${p.phq4_often ? 'more than half the days' : 'several days'} recently. Small, regular practices can help support how you feel day to day.`, 'Self-compassion');
     if (p.nature_low) add('Mind', 'M', 'You spend less than 2 hours a week in nature. People who spend at least 2 hours a week tend to report better health and wellbeing.', 'Time in nature');
-    if (p.sm_high) add('Mind', 'M', 'You spend more than 2 hours a day on social media.', 'Social media limits');
-    if (p.mind_none) add('Mind', 'M', 'None of the mind practices we asked about are part of your routine yet.', 'Slow breathing');
-    if (p.isolated) add('Connection', 'H', 'You rarely see or speak to friends or family.', 'Reaching out');
-    else if (p.meet_rare) add('Connection', 'M', 'You see friends or family in person once a month or less.', 'Reaching out');
-    if (p.no_group) add('Connection', 'M', "You don't currently take part in a group, club or class.", 'Group membership');
-    if (p.conn_none) add('Connection', 'M', 'None of the everyday connection habits we asked about are part of your week yet.', 'Acts of kindness');
+    if (p.sm_high) add('Mind', 'M', 'You spend more than 2 hours a day on social media. In several studies, cutting back was linked with better mood and sleep.', 'Social media limits');
+    if (p.mind_none) add('Mind', 'M', 'None of the mind practices we asked about are part of your routine yet. Short, regular practices can help you manage everyday stress and feel more settled.', 'Slow breathing');
+    if (p.isolated) add('Connection', 'H', 'You rarely see or speak to friends or family. Regular contact with people who matter to you is linked with better health and wellbeing.', 'Reaching out');
+    else if (p.meet_rare) add('Connection', 'M', 'You see friends or family in person once a month or less. Regular time with people who matter to you is linked with better health and wellbeing.', 'Reaching out');
+    if (p.no_group) add('Connection', 'M', "You don't currently take part in a group, club or class. Being part of a group gives you regular contact and a sense of belonging, both linked with better wellbeing.", 'Group membership');
+    if (p.conn_none) add('Connection', 'M', 'None of the everyday connection habits we asked about are part of your week yet. Small everyday habits, like a kind act or a quick call, help build and keep connections.', 'Acts of kindness');
     const qf = p.tried_quit ? 'Trying again to quit' : 'Quitting with full support';
     if (p.smokes === 'daily') add('Prevention', 'H', 'You smoke daily. Stopping brings real health benefits at any age, and support makes it much more likely to work.', p.want_quit ? qf : 'Smoke-free home');
-    else if (p.smokes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You smoke occasionally and you'd like to stop. Support makes stopping much more likely to work." : 'You smoke occasionally.', p.want_quit ? qf : 'Smoke-free home');
-    else if (p.vapes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You vape and you'd like to stop. Support makes stopping much more likely to work." : 'You vape.', p.want_quit ? 'Stopping vaping' : null);
+    else if (p.smokes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You smoke occasionally and you'd like to stop. Support makes stopping much more likely to work." : 'You smoke occasionally. Even light smoking carries health risks, and support is there whenever you feel ready.', p.want_quit ? qf : 'Smoke-free home');
+    else if (p.vapes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You vape and you'd like to stop. Support makes stopping much more likely to work." : 'You vape. Vaping is less harmful than smoking but not risk-free, and support is there whenever you feel ready.', p.want_quit ? 'Stopping vaping' : null);
     const au = p.audit || 0;
-    if (au >= 8) add('Prevention', 'H', 'Your drinking is in the higher-risk range.', 'Alcohol intake');
-    else if (au >= 5) add('Prevention', 'M', 'Your drinking is above lower-risk levels.', 'Alcohol intake');
+    if (au >= 8) add('Prevention', 'H', 'Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems.', 'Alcohol intake');
+    else if (au >= 5) add('Prevention', 'M', 'Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health.', 'Alcohol intake');
     if (p.bp_old) add('Prevention', 'M', "Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly.", 'Routine check-ups');
-    if (p.sunburn) add('Prevention', 'M', "You've been sunburnt or used a sunbed in the past 12 months.", 'Avoiding sunburn');
-    if (p.hearing_diff) add('Prevention', 'M', 'You often find it hard to follow conversations.', 'Hearing check');
+    if (p.sunburn) add('Prevention', 'M', "You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time.", 'Avoiding sunburn');
+    if (p.hearing_diff) add('Prevention', 'M', 'You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected.', 'Hearing check');
     if (p.learn_rare) add('Prevention', 'M', 'You rarely learn new things or practise a challenging hobby, which helps keep the mind active.', 'Learning new skills');
     return a;
   }
@@ -184,8 +194,10 @@ function makeEngine(DATA) {
   function why(p, S, x, wish) {
     let base = whyBase(p, S, x, wish); const f = x.fam;
     if (x.fill && base === x.row.why) base = 'A small, well-established habit to add alongside your priorities. ' + base;
-    const ej = (p.enjoy || []).find(k => (ENJOY[k] || []).includes(f));
-    return ej && ENJOY_TXT[ej] ? base + ' ' + ENJOY_TXT[ej] : base;
+    const likes = p.likes || [], keys = [...likes, ...(p.enjoy || []).filter(k => !likes.includes(k))];
+    const ej = keys.find(k => (ENJOY[k] || []).includes(f));
+    const t = ej && (likes.includes(ej) ? ENJOY_TXT[ej] : (LOC_TXT[ej] || ENJOY_TXT[ej]));   // only say they enjoy it when they told us so
+    return t ? base + ' ' + t : base;
   }
   function whyBase(p, S, x, wish) {
     const a = x.area, f = x.fam, m = p.mvpa;
@@ -205,7 +217,12 @@ function makeEngine(DATA) {
     const N = [], ins = p.insomnia || [];
     if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.']);
     if (p.snore) N.push(['Snoring', 'Loud snoring or pauses in breathing. Suggest they mention it to their doctor.']);
-    if (c.has('Exercise warning symptoms')) N.push(['Exercise warning symptoms', 'Movement held at Learning, no vigorous practices, until they have seen their doctor.']);
+    if (p.symptoms) {
+      const what = (p.symptoms_txt || []).join('; ').toLowerCase(), ctx = p.symptoms_active ? ' Happened during or just after activity.' : '';
+      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`]);
+      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`]);
+      else N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`]);
+    }
     if (c.has('Heart, metabolic or kidney condition and inactive')) N.push(['Condition and inactive', 'Movement held at Learning until their doctor has advised on activity.']);
     if (p.fall) N.push(['Fall', 'Fall in the past 12 months. Ask whether they have seen a doctor or physiotherapist.']);
     if (p.pregnant || p.breastfeeding) N.push(['Pregnancy', 'Check their midwife or doctor is happy with the plan.']);
@@ -250,6 +267,7 @@ function makeEngine(DATA) {
       if (b === 'skip') return null;
       let i = b ? LEVELS.indexOf(b) : Math.min(LEVELS.indexOf(st[a]), 1);   // no baseline: area level, at most Developing
       if (role === 'Lighter touch') i = b ? LEVELS.indexOf(b) : 0;
+      else if (SETUP_FIRST.includes(f)) i = 0;   // these start with a set-up step
       else if (p.change === 'small') i = 0;
       else if (p.change === 'big' && ![...(NO_RAISE[a] || []), ...(CAP_LEARNING[a] || [])].some(x => c.has(x))) i = Math.min(2, i + 1);
       return LEVELS[Math.min(i, cap(a))];
@@ -278,7 +296,8 @@ function makeEngine(DATA) {
       const lists = (p.goals[a] || []).map(g => byFit(a, GOALMAP[a][g] || [])), gl = [];
       for (let k = 0; lists.some(l => l.length > k); k++) for (const l of lists) if (l[k] && !gl.includes(l[k])) gl.push(l[k]);
       // in an area the member chose: their first goal, then any High signal (a clear need), then their other goals
-      let seq = (wish.includes(a) ? [...gl.slice(0, 1), ...H, ...gl.slice(1), ...dis, ...M] : [...H, ...M, ...gl, ...dis]).concat(strict ? [] : byFit(a, DEFAULTS[a]));
+      const ans = byFit(a, Object.keys(p.why_ans || {}).filter(f => famOf(a, f)));   // small gaps their answers show (not strong enough to be a signal)
+      let seq = (wish.includes(a) ? [...gl.slice(0, 1), ...H, ...gl.slice(1), ...dis, ...M] : [...H, ...M, ...gl, ...dis]).concat(strict ? [] : [...ans, ...byFit(a, DEFAULTS[a])]);
       if (a === 'Movement' && p.fall) seq = ['Balance', ...seq];
       if (a === 'Prevention' && p.ex_smoker) seq = [...seq, 'Staying nicotine-free'];
       if (a === 'Connection' && role === 'Lighter touch' && pri.includes('Sleep')) seq = [...SLEEP_SHARE, ...seq];
@@ -286,6 +305,8 @@ function makeEngine(DATA) {
       if (a === 'Movement' && p.mvpa >= 150 && p.strength <= 1) seq = ['Strength sessions', ...seq];
       if (a === 'Prevention' && p.ex_smoker && strict) seq = [...seq, 'Staying nicotine-free'];
       if (!strict && (p.audit || 0) < 3) seq = seq.filter(f => !(f === 'Alcohol-free swaps' && !gl.includes(f)));   // no alcohol advice as a filler for people who drink little
+      const alcAsked = (p.goals.Prevention || []).includes('alcohol') || (p.sleep_disrupt || []).includes('Alcohol and sleep');
+      if (p.drinks_rare && !alcAsked) seq = seq.filter(f => !['Alcohol and sleep', 'Alcohol-free swaps'].includes(f));   // drinks less than weekly: no 'drink less on some evenings' practices unless they asked
       const out = [];
       for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16
       return out;
@@ -305,7 +326,7 @@ function makeEngine(DATA) {
         const lv = famOf(a, f); if (!lv) continue;
         // A starting-set practice (not from their goals or answers) is only offered where their own answer shows they're at the start:
         // never "more of" something they already do most days (for example whole grains on 3–5 days a week).
-        if (!backed(a, f)) { const b1 = baseline(p, f); if (b1 && b1 !== 'Learning') { log.push([a, f, b1, 'starting set skipped: they already do this most of the time']); continue; } }
+        if (!backed(a, f) && !(p.why_ans || {})[f]) { const b1 = baseline(p, f); if (b1 && b1 !== 'Learning') { log.push([a, f, b1, 'starting set skipped: they already do this most of the time']); continue; } }
         let lvl = startLevel(a, f, role); if (lvl === null) continue;
         if (force) lvl = force;
         const b0 = baseline(p, f), minI = (b0 && cap(a) > 0) ? LEVELS.indexOf(b0) : 0;   // never offer a level below what they already do
@@ -341,13 +362,40 @@ function makeEngine(DATA) {
       if (x) chosen.push(x);
     }
     // Still fewer than 3? Take the next areas by score (their own answers first, then Foundation practices only).
+    // A pillar the member didn't choose and where their answers are already good ("doing well") gives at most one priority practice
+    // in the whole plan, at its easiest level and adding no more than 15 minutes a week; any space left goes to lighter touches.
+    const doingWell = a => !wish.includes(a) && opp[a] === 0;
+    let wellUsed = false;
     for (const a of order.filter(z => !pri.includes(z))) {
+      if (chosen.filter(x => x.role === 'Priority').length >= 3) break;
+      if (doingWell(a)) {
+        if (wellUsed) continue;
+        const tried = []; let x = null;
+        for (let k = 0; k < 30 && !x; k++) {
+          const y = pick(a, 'Priority', chosen, tried, 'Learning', false, 'Foundation'); if (!y) break;
+          if (extraMinutes(p, y.row) <= 15) x = y; else tried.push(y.fam);
+        }
+        if (x) { chosen.push(x); pri.push(a); wellUsed = true; log.push([a, x.fam, x.row.l, 'doing well here: one small priority practice']); }
+        if (chosen.filter(x => x.role === 'Priority').length >= 3) break;
+        continue;
+      }
       while (chosen.filter(x => x.role === 'Priority').length < 3) {
         const x = pick(a, 'Priority', chosen, [], null, true) || pick(a, 'Priority', chosen, [], null, false, 'Foundation');
         if (!x) break;
         chosen.push(x); if (!pri.includes(a)) pri.push(a);
       }
       if (chosen.filter(x => x.role === 'Priority').length >= 3) break;
+    }
+    // Every pillar the member chose that is a priority has at least one priority practice: if one has none, it takes the place of
+    // the last practice from a pillar that has two.
+    for (const a of pri.filter(z => wish.includes(z))) {
+      if (chosen.some(x => x.role === 'Priority' && x.area === a)) continue;
+      const x = pick(a, 'Priority', chosen, [], null, true) || pick(a, 'Priority', chosen, [], null, false, 'Foundation') || pick(a, 'Priority', chosen, [], null, false, 'Targeted');
+      if (!x) continue;
+      const prs = chosen.filter(y => y.role === 'Priority'), cnt = ar => prs.filter(y => y.area === ar).length;
+      const victim = prs.slice().reverse().find(y => cnt(y.area) >= 2 && y !== prs[0]);
+      if (victim) chosen[chosen.indexOf(victim)] = x; else if (prs.length < 3) chosen.splice(prs.length, 0, x); else continue;
+      log.push([a, x.fam, x.row.l, 'a pillar they chose gets at least one priority practice']);
     }
     // Lighter touches: up to 3, one per area, from areas the answers point to, each answering a specific answer or goal.
     for (const a of order.filter(z => !pri.includes(z) && combined[z] >= 1)) {
@@ -382,12 +430,13 @@ function makeEngine(DATA) {
       if (down.length) { big.row = lv[down[0]]; big.note = 'started a level lower to fit your time'; continue; }
       const others = chosen.filter(x => x !== big);
       const z = pick(big.area, 'Priority', others, [big.fam], 'Learning');
-      if (z && extraMinutes(p, z.row) < extraMinutes(p, big.row)) { z.note = `chosen instead of ${big.fam} to fit your time`; chosen[chosen.indexOf(big)] = z; continue; }
+      if (z && extraMinutes(p, z.row) < extraMinutes(p, big.row)) { z.note = `chosen instead of “${big.fam}” to fit your time`; chosen[chosen.indexOf(big)] = z; continue; }
       chosen = others; log.push([big.area, big.fam, '', 'removed: over your weekly time']); overTime.push(big.fam);
     }
     // A priority practice was left out for time: fill the space with one that fits (their own answers first, then Foundation practices).
     if (overTime.length) {
       for (const a of [...pri, ...order.filter(z => !pri.includes(z))]) {
+        if (doingWell(a)) continue;   // filling time never adds a practice where they're doing well
         for (let k = 0; k < 30 && chosen.filter(x => x.role === 'Priority').length < 3; k++) {
           const tried = [...overTime, ...chosen.map(x => x.fam)];
           let z = null;
@@ -413,7 +462,7 @@ function makeEngine(DATA) {
       if (victim) {
         const others = chosen.filter(x => x !== victim);
         let found = null;
-        for (const [a, strictMode] of [[victim.area, true], ...pri.filter(z => z !== victim.area).map(z => [z, true]), ...order.filter(z => !pri.includes(z) && opp[z] >= 1).map(z => [z, true]), ...order.map(z => [z, false])]) {
+        for (const [a, strictMode] of [[victim.area, true], ...pri.filter(z => z !== victim.area && !doingWell(z)).map(z => [z, true]), ...order.filter(z => !pri.includes(z) && opp[z] >= 1).map(z => [z, true]), ...order.filter(z => !doingWell(z)).map(z => [z, false])]) {   // never a big practice in a pillar where they're doing well
           const tried = [victim.fam];
           for (let k = 0; k < 30 && !found; k++) {
             const z = pick(a, 'Priority', others, tried, null, strictMode, strictMode ? null : 'Foundation');
@@ -471,7 +520,10 @@ function makeEngine(DATA) {
           for (let k = 0; k < 30; k++) { const y = pick(a, 'Lighter touch', chosen, tried); if (!y) break; tried.push(y.fam);
             if ((y.row.ev !== 'Explore' || enjoyed(y.fam)) && total(chosen) + extraMinutes(p, y.row) <= budget) cands.push(y); }
         }
-        const sc = y => (enjoyed(y.fam) ? 4 : 0) + (y.row.ev === 'Foundation' ? 2 : 0) - extraMinutes(p, y.row) / 100;
+        const likes = f => (p.likes || []).some(k => (ENJOY[k] || []).includes(f));
+        // the best fit: a small gap their own answers show, then something they enjoy, then where their answer shows they're at the start,
+        // then Foundation evidence, then the shortest. Where they like to move counts less than what they enjoy.
+        const sc = y => ((p.why_ans || {})[y.fam] ? 5 : 0) + (likes(y.fam) ? 4 : enjoyed(y.fam) ? 1 : 0) + (baseline(p, y.fam) === 'Learning' ? 3 : 0) + (y.row.ev === 'Foundation' ? 2 : 0) - extraMinutes(p, y.row) / 100;
         cands.sort((u, v) => (sc(v) - sc(u)) || (order.indexOf(u.area) - order.indexOf(v.area)));
         z = cands[0] || null;
         ltFill = false;
@@ -481,78 +533,105 @@ function makeEngine(DATA) {
       if (!z) continue;
       chosen.push(z); log.push([z.area, z.fam, z.row.l, z.fill ? 'lighter touch added to reach six practices (starting set)' : 'lighter touch added to reach six practices']);
     }
-    chosen.forEach(x => { x.change = 'START'; x.why = why(p, S, x, wish); });
+    chosen.forEach(x => { x.change = 'START'; x.why = why(p, S, x, wish); if (cap(x.area) === 0 && !x.note) x.note = 'kept gentle for safety: please check with your doctor before doing more than this'; });   // Rule 6c: safety hold shown from month 1
     const months = [chosen.map(x => Object.assign({}, x))];
     for (const m of [2, 3]) {
       const cur = months[months.length - 1].map(x => Object.assign({}, x));
       cur.forEach(y => { y.change = 'CONTINUE'; delete y.note; });
       const upsAllowed = (p.change === 'small' && m === 2) ? 0 : MAX_UPS[p.change] ?? 2;
-      const cands = [];
-      cur.forEach((y, i) => {
-        const r = y.row, a = y.area;
-        if (ONE_OFF.has(y.fam)) {
-          const used = months.flat().map(q => q.fam), rest = cur.filter(q => q !== y), tried = [y.fam, ...used];
-          for (const ar of [...new Set([a, ...pri, ...order])]) {   // same area first, then the other priority areas, then the next areas
-            const t2 = tried.slice();
-            for (let k = 0; k < 30; k++) {
-              const z = pick(ar, y.role, rest, t2, null, ar !== a, ar !== a && y.role === 'Priority' ? null : null);
-              if (!z) break;
-              if (total(rest) + extraMinutes(p, z.row) <= budget) { Object.assign(z, { change: 'SWAP', note: `${y.fam} done` }); z.why = why(p, S, z, wish); cur[i] = z; return; }
-              t2.push(z.fam);
-            }
+      const cands = [], prev = months[months.length - 1];
+      // Rule 12b: one-off steps ("once this month") are done after a month. A priority one-off moves to its next level (a level up);
+      // a lighter-touch one-off, or one with no next level, is replaced by another practice; stop-smoking or vaping steps carry on
+      // as "keep following your plan". A one-off held back by the pace waits, marked DONE, and moves on the month after.
+      const oneOff = r => /once this month|in the first week of this month/.test(r.d || '');
+      const swapOut = (y, i) => {
+        if (y.role === 'Lighter touch') ltFill = true;   // a lighter touch can be replaced by a small, well-established practice
+        try { swapOne(y, i); } finally { ltFill = false; }
+      };
+      const swapOne = (y, i) => {
+        const a = y.area, used = months.flat().map(q => q.fam), rest = cur.filter(q => q !== y), tried = [y.fam, ...used];
+        for (const ar of [...new Set([a, ...pri, ...order])]) {   // same area first, then the other priority areas, then the next areas
+          const t2 = tried.slice();
+          for (let k = 0; k < 30; k++) {
+            const z = pick(ar, y.role, rest, t2, null, ar !== a);
+            if (!z) break;
+            if (total(rest) + extraMinutes(p, z.row) <= budget) { Object.assign(z, { change: 'SWAP', note: `replaces ${y.fam}, which is done` }); z.why = why(p, S, z, wish); cur[i] = z; return; }
+            t2.push(z.fam);
           }
-          cur[i] = Object.assign({}, y, { change: 'DONE', note: `${y.fam} done; nothing else fits your time, so this space stays free` });
-          return;
         }
+        cur[i] = Object.assign({}, y, { change: 'DONE', note: `Done: ${y.row.w.charAt(0).toLowerCase() + y.row.w.slice(1)}. Nothing new is added in its place this month.` });
+      };
+      cur.forEach((y, i) => {
+        const r = y.row, a = y.area, was = prev[i] || {};
+        if (was.change === 'DONE' && !was.waiting) { cur[i] = Object.assign({}, was, { note: 'Done.' }); return; }   // already done, nothing replaced it
+        if (CESSATION.includes(y.fam)) { if (oneOff(r)) y.note = 'keep following your plan, with the support you set up'; return; }
+        const lv = famOf(a, y.fam), li = LEVELS.indexOf(r.l), higher = li < 0 ? [] : LEVELS.slice(li + 1).filter(l => lv[l] && !optedOut(y.fam, l, optout) && !excluded(lv[l], c, p).length);
+        if (ONE_OFF.has(y.fam) || (oneOff(r) && (y.role === 'Lighter touch' || !higher.length))) { swapOut(y, i); return; }
+        if (oneOff(r) && cap(a) > 0) { cands.push([-1000, i, lv[higher[0]], 'LEVEL UP', true]); return; }
         if (!LEVELS.includes(r.l) || y.role === 'Lighter touch') return;
-        const li = LEVELS.indexOf(r.l);
-        if (cap(a) === 0) { y.note = 'held at Learning for safety until the Pilot has discussed it'; return; }
-        const lv = famOf(a, y.fam);
-        const higher = LEVELS.slice(li + 1).filter(l => lv[l]);
+        if (cap(a) === 0) { y.note = "stays at this level for now, for safety; we'll talk it through with you before it steps up"; return; }
         if (li === 2 || !higher.length) {
-          const nf = NEXTFAM[y.fam], nl = nf && famOf(a, nf), nr = nl && LEVELS.map(l => nl[l]).find(Boolean);
-          if (nr && !excluded(nr, c, p).length && !optedOut(nf, nr.l, optout) && !cur.some(q => q.fam === nf)) cands.push([extraMinutes(p, nr) - extraMinutes(p, r), i, { area: a, fam: nf, row: nr, role: y.role }, 'SWAP']);
+          // mastered: move on to the next family, at a level at least as demanding as this one (never an easier practice)
+          const nf = NEXTFAM[y.fam], nl = nf && famOf(a, nf), nr = nl && LEVELS.map(l => nl[l]).find(q => q && q.tg >= r.tg && !excluded(q, c, p).length && !optedOut(nf, q.l, optout));
+          if (nr && !cur.some(q => q.fam === nf)) cands.push([extraMinutes(p, nr) - extraMinutes(p, r), i, { area: a, fam: nf, row: nr, role: y.role }, 'SWAP']);
           return;
         }
-        const nxt = higher[0];
-        if (optedOut(y.fam, nxt, optout) || excluded(lv[nxt], c, p).length) return;
-        cands.push([extraMinutes(p, lv[nxt]) - extraMinutes(p, r), i, lv[nxt], 'LEVEL UP']);
+        cands.push([extraMinutes(p, lv[higher[0]]) - extraMinutes(p, r), i, lv[higher[0]], 'LEVEL UP']);
       });
       let n = 0;
-      cands.sort((u, v) => u[0] - v[0]).forEach(([d, i, nw, kind]) => {
-        if (n >= upsAllowed) { cur[i].note = 'level up later: keeping to the pace you chose'; return; }
-        if (total(cur) + d > budget) { cur[i].note = 'level up only if you agree to more time'; return; }
-        if (kind === 'SWAP') { Object.assign(nw, { change: 'SWAP', note: `${cur[i].fam} mastered` }); nw.why = why(p, S, nw, wish); cur[i] = nw; }
-        else { cur[i].row = nw; cur[i].change = 'LEVEL UP'; }
+      cands.sort((u, v) => u[0] - v[0]).forEach(([d, i, nw, kind, one]) => {
+        const dd = one ? extraMinutes(p, nw) - extraMinutes(p, cur[i].row) : d;
+        if (n >= upsAllowed || total(cur) + dd > budget) {
+          if (one) { Object.assign(cur[i], { change: 'DONE', waiting: true, note: (n >= upsAllowed ? 'The next step follows next month, at the pace you chose.' : "The next step needs a little more time; we'll agree it with you.").replace(/^/, `Done: ${cur[i].row.w.charAt(0).toLowerCase() + cur[i].row.w.slice(1)}. `) }); return; }
+          cur[i].note = n >= upsAllowed ? 'stays at this level for now, to keep to the pace you chose' : "can level up if you'd like to give it more time"; return;
+        }
+        if (kind === 'SWAP') { Object.assign(nw, { change: 'SWAP', note: `the next step after ${cur[i].fam}` }); nw.why = why(p, S, nw, wish); cur[i] = nw; }
+        else { cur[i].row = nw; cur[i].change = 'LEVEL UP'; delete cur[i].waiting; }
         n++;
       });
       months.push(cur);
     }
+    // A pillar shown as a priority has a priority practice in month 1 (or the member chose it)
+    for (let k = pri.length - 1; k >= 0; k--) if (!wish.includes(pri[k]) && !months[0].some(x => x.role === 'Priority' && x.area === pri[k])) pri.splice(k, 1);
     const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
     const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
     const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
     const THEMES_N = 6;   // Rule 11: six themes for months 4–6
+    // Why each theme: it builds on practices from months 1–3 in that theme, or is another part of a priority pillar, or links to their goals or answers
+    const inTheme = (t, role) => months.flat().some(x => (!role || x.role === role) && CAT.get(x.area + '|' + x.fam) === t);
+    const themeSrc = (a, t) => pri.includes(a) ? (inTheme(t) ? 'pri' : 'pri2') : inTheme(t, 'Lighter touch') ? 'light' : opp[a] >= 1 ? 'room' : (p.goals[a] || []).length ? 'goal' : 'next';
+    const themeOut = [...(optout.includes('meditation') ? ['Mindfulness & Meditation'] : []), ...((optout.includes('fasting') || p.food_rel || p.food_pns) ? ['Rhythm'] : [])];   // a theme built on something they opted out of, or left out for safety
     const used = new Set(), themes = [];
     for (const a of [...(pri.length === 1 ? [pri[0], pri[0]] : pri), ...light, ...order.filter(x => !pri.includes(x) && !light.includes(x))]) {
       if (themes.length >= THEMES_N) break;
       for (const f of ranked(a, 'Priority')) {
         const t = CAT.get(a + '|' + f), lv = famOf(a, f);
-        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, pri.includes(a) ? 'pri' : chosen.some(x => x.role === 'Lighter touch' && x.area === a) ? 'light' : (opp[a] >= 1 || (p.goals[a] || []).length) ? 'room' : 'next']); used.add(t); break; }
+        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && !themeOut.includes(t) && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, themeSrc(a, t)]); used.add(t); break; }
       }
     }
     for (const a of [...pri, ...chosen.filter(x => x.role === 'Lighter touch').map(x => x.area), ...order]) {
       if (themes.length >= THEMES_N) break;
       for (const f of ranked(a, 'Priority')) {
         const t = CAT.get(a + '|' + f), lv = famOf(a, f);
-        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, pri.includes(a) ? 'pri' : chosen.some(x => x.role === 'Lighter touch' && x.area === a) ? 'light' : (opp[a] >= 1 || (p.goals[a] || []).length) ? 'room' : 'next']); used.add(t); break; }
+        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && !themeOut.includes(t) && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, themeSrc(a, t)]); used.add(t); break; }
       }
     }
     const notes = pilotNotes(p, c);
     if (overTime.length) notes.push(['Over time', `${overTime.join(' and ')} didn't fit in their weekly time, so ${overTime.length > 1 ? 'they were' : 'it was'} left out. Ask whether they'd like to make room for ${overTime.length > 1 ? 'them' : 'it'}.`]);
     if (p.change !== 'small' && months[0] && total(months[0]) < budget / 3 && !months[0].some(x => extraMinutes(p, x.row) >= 15)) notes.push(['Low new time', `The plan adds about ${Math.round(total(months[0]))} of the ${budget} minutes a week they have. Ask whether they'd like to use more of it.`]);
     if (p.own_habit && p.own_habit[1] === 'share' && p.own_habit[0]) notes.push(['Own habit', `Member would like to work on: “${p.own_habit[0]}”. Shape it into a practice with them at the pre-Span 1:1.`]);
-    const reasons = {}; AREAS.forEach(a => reasons[a] = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).slice(0, 3).map(x => x[1]));
+    // Why each pillar is a priority: the member's goals there, then what their answers show (High first), then a plain reason when neither applies
+    const DOING_WELL = { Mind: 'research links with better wellbeing', Connection: 'research links with better wellbeing' };
+    const reasons = {}; AREAS.forEach(a => {
+      const r = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).map(x => x[1]);
+      const gs = (p.goals[a] || []).map(g => '“' + (GOAL_TXT[g] || g) + '”');
+      const gl = gs.length ? `You picked ${gs.length > 1 ? gs.slice(0, -1).join(', ') + ' and ' + gs[gs.length - 1] + ' as goals' : gs[0] + ' as a goal'}.` : null;
+      let out = wish.includes(a) && gl ? [gl, ...r] : [...r, ...(gl ? [gl] : [])];
+      if (!out.length) out = [wish.includes(a) ? "You chose this as an area to focus on, so we've started with practices that are well supported by research."
+        : `Most of your answers here are already in a good place, so we've added one small step that builds on what you do, using a practice that ${DOING_WELL[a] || 'research links with better long-term health'}.`];
+      reasons[a] = out.slice(0, 3);
+    });
     const target = ms => ms.reduce((t, x) => t + (x.change === 'DONE' ? 0 : x.row.tg), 0);
     // Rule 13: "Not right for me". The member gives a reason from a fixed list; each reason has one rule.
     // Returns up to 2 options that pass every hard rule, or hands the decision to the Pilot. Changes apply at the next check-in.

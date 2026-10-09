@@ -74,6 +74,7 @@ for (let i = 0; i < N; i++) {
   const iss = check(f, o);
   for (const s of iss) { const k = s.replace(/: .*/, '').replace(/\d+/g, 'N'); issueCount[k] = (issueCount[k] || 0) + 1; if (ex.filter(e => e[2] === k).length < 4) ex.push([i, s, k, A]); }
   const pr = o.months[0].filter(x => x.role === 'Priority').length; if (pr === 3) stats.pri3++;
+  stats.m1 = stats.m1 || {}; stats.m1[o.months[0].length] = (stats.m1[o.months[0].length]||0)+1; stats.th = stats.th || {}; stats.th[o.themes.length] = (stats.th[o.themes.length]||0)+1;
   stats.light[o.months[0].filter(x => x.role === 'Lighter touch').length]++;
   stats.newMin.push(o.minutes[0] / o.budget);
 }
@@ -86,5 +87,6 @@ console.log('Questions with no feature change:', report.filter(r => !r.featureCh
 console.log('Questions with no plan change:', report.filter(r => !r.planChange).map(r => r.id + ' ' + r.text.slice(0, 50)));
 console.log('Options with no effect (feature or plan):'); for (const r of report) { const dead = r.options.filter(o => !o.fch && !o.pch).map(o => o.v.slice(0, 60)); if (dead.length) console.log('  ', r.id, dead.join(' || ')); }
 console.log('Exclude-if values the assessment never produces:', deadTokens.map(t => t + ' [' + tokens[t].length + ']'));
+console.log('Month-1 practice counts', stats.m1, 'theme counts', stats.th);
 console.log('Fuzz', out.fuzz.N, 'nondet', stats.nd, 'issues', issueCount, 'pri3', stats.pri3, 'light dist', stats.light, 'seen', out.fuzz.seenAvg.toFixed(1), out.fuzz.seenMin, out.fuzz.seenMax);
 console.log('Families never used in', N, 'random members:', unused.length, unused.join(', '));

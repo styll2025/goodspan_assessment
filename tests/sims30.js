@@ -40,6 +40,7 @@ const T = [
 ];
 const R = ['time', 'routine', 'already', 'pillar', 'health', 'other'];
 const out = []; let total = 0, expFail = 0, nrN = 0;
+fs.writeFileSync('personas30.json', JSON.stringify(T.map(t => t[0])));
 for (const [s, exp] of T) {
   const f = toFeatures(s.A);
   const o = E.plan(JSON.parse(JSON.stringify(f))), o2 = E.plan(JSON.parse(JSON.stringify(f)));

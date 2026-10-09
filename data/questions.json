@@ -133,6 +133,32 @@
   },
   {
    "number": 6,
+   "id": "q5a",
+   "s": "about",
+   "type": "single",
+   "show": "(shown when) A => (A.q5 || []).some(x => x !== 'None of these')",
+   "text": "Did any of these happen during or just after physical activity?",
+   "options": [
+    "Yes",
+    "No",
+    "Not sure"
+   ]
+  },
+  {
+   "number": 7,
+   "id": "q5b",
+   "s": "about",
+   "type": "single",
+   "show": "(shown when) A => (A.q5 || []).some(x => x !== 'None of these')",
+   "text": "Have you talked to a doctor about them?",
+   "options": [
+    "Yes, and they're happy for me to be more active",
+    "Yes, but I haven't been told it's OK to be more active yet",
+    "No, not yet"
+   ]
+  },
+  {
+   "number": 8,
    "id": "q6",
    "s": "about",
    "type": "single",
@@ -145,7 +171,7 @@
    ]
   },
   {
-   "number": 7,
+   "number": 9,
    "id": "q7",
    "s": "nutrition",
    "type": "grid",
@@ -243,7 +269,7 @@
    ]
   },
   {
-   "number": 8,
+   "number": 10,
    "id": "q8",
    "s": "nutrition",
    "type": "grid",
@@ -281,7 +307,7 @@
    ]
   },
   {
-   "number": 9,
+   "number": 11,
    "id": "q9",
    "s": "nutrition",
    "type": "multi",
@@ -302,7 +328,7 @@
    ]
   },
   {
-   "number": 10,
+   "number": 12,
    "id": "q11",
    "s": "nutrition",
    "type": "multi",
@@ -319,7 +345,7 @@
    ]
   },
   {
-   "number": 11,
+   "number": 13,
    "id": "q12",
    "s": "sleep",
    "type": "single",
@@ -334,7 +360,7 @@
    ]
   },
   {
-   "number": 12,
+   "number": 14,
    "id": "q13",
    "s": "sleep",
    "type": "multi",
@@ -348,7 +374,7 @@
    ]
   },
   {
-   "number": 13,
+   "number": 15,
    "id": "q14",
    "s": "sleep",
    "type": "single",
@@ -360,7 +386,7 @@
    ]
   },
   {
-   "number": 14,
+   "number": 16,
    "id": "q15",
    "s": "sleep",
    "type": "single",
@@ -375,7 +401,7 @@
    ]
   },
   {
-   "number": 15,
+   "number": 17,
    "id": "q16",
    "s": "sleep",
    "type": "single",
@@ -388,7 +414,7 @@
    ]
   },
   {
-   "number": 16,
+   "number": 18,
    "id": "q17",
    "s": "sleep",
    "type": "grid",
@@ -462,7 +488,7 @@
    ]
   },
   {
-   "number": 17,
+   "number": 19,
    "id": "q18",
    "s": "sleep",
    "type": "multi",
@@ -482,7 +508,7 @@
    ]
   },
   {
-   "number": 18,
+   "number": 20,
    "id": "q19",
    "s": "sleep",
    "type": "multi",
@@ -502,7 +528,7 @@
    ]
   },
   {
-   "number": 19,
+   "number": 21,
    "id": "q20",
    "s": "movement",
    "type": "single",
@@ -519,7 +545,7 @@
    ]
   },
   {
-   "number": 20,
+   "number": 22,
    "id": "q21",
    "s": "movement",
    "type": "single",
@@ -538,7 +564,7 @@
    ]
   },
   {
-   "number": 21,
+   "number": 23,
    "id": "q22",
    "s": "movement",
    "type": "single",
@@ -551,7 +577,7 @@
    ]
   },
   {
-   "number": 22,
+   "number": 24,
    "id": "q23",
    "s": "movement",
    "type": "single",
@@ -564,7 +590,7 @@
    ]
   },
   {
-   "number": 23,
+   "number": 25,
    "id": "q24",
    "s": "movement",
    "type": "single",
@@ -578,7 +604,7 @@
    ]
   },
   {
-   "number": 24,
+   "number": 26,
    "id": "q25",
    "s": "movement",
    "type": "multi",
@@ -601,7 +627,7 @@
    ]
   },
   {
-   "number": 25,
+   "number": 27,
    "id": "q26",
    "s": "movement",
    "type": "multi",
@@ -616,7 +642,7 @@
    ]
   },
   {
-   "number": 26,
+   "number": 28,
    "id": "q27",
    "s": "movement",
    "type": "multi",
@@ -636,7 +662,7 @@
    ]
   },
   {
-   "number": 27,
+   "number": 29,
    "id": "q29",
    "s": "movement",
    "type": "multi",
@@ -653,7 +679,7 @@
    ]
   },
   {
-   "number": 28,
+   "number": 30,
    "id": "q30",
    "s": "mind",
    "type": "single",
@@ -666,7 +692,7 @@
    ]
   },
   {
-   "number": 29,
+   "number": 31,
    "id": "q31",
    "s": "mind",
    "type": "single",
@@ -680,7 +706,7 @@
    ]
   },
   {
-   "number": 30,
+   "number": 32,
    "id": "q32",
    "s": "mind",
    "type": "grid",
@@ -713,7 +739,7 @@
    ]
   },
   {
-   "number": 31,
+   "number": 33,
    "id": "q33",
    "s": "mind",
    "type": "multi",
@@ -735,7 +761,7 @@
    ]
   },
   {
-   "number": 32,
+   "number": 34,
    "id": "q34",
    "s": "mind",
    "type": "multi",
@@ -762,7 +788,7 @@
    ]
   },
   {
-   "number": 33,
+   "number": 35,
    "id": "q36",
    "s": "connection",
    "type": "grid",
@@ -793,7 +819,7 @@
    ]
   },
   {
-   "number": 34,
+   "number": 36,
    "id": "q37",
    "s": "connection",
    "type": "multi",
@@ -813,7 +839,7 @@
    ]
   },
   {
-   "number": 35,
+   "number": 37,
    "id": "q38",
    "s": "connection",
    "type": "multi",
@@ -833,7 +859,7 @@
    ]
   },
   {
-   "number": 36,
+   "number": 38,
    "id": "q40",
    "s": "prevention",
    "type": "grid",
@@ -856,7 +882,7 @@
    ]
   },
   {
-   "number": 37,
+   "number": 39,
    "id": "q41",
    "s": "prevention",
    "type": "single",
@@ -870,7 +896,7 @@
    ]
   },
   {
-   "number": 38,
+   "number": 40,
    "id": "q42",
    "s": "prevention",
    "type": "single",
@@ -882,7 +908,7 @@
    ]
   },
   {
-   "number": 39,
+   "number": 41,
    "id": "q43",
    "s": "prevention",
    "type": "single",
@@ -897,7 +923,7 @@
    ]
   },
   {
-   "number": 40,
+   "number": 42,
    "id": "q44",
    "s": "prevention",
    "type": "single",
@@ -912,7 +938,7 @@
    ]
   },
   {
-   "number": 41,
+   "number": 43,
    "id": "q45",
    "s": "prevention",
    "type": "single",
@@ -927,7 +953,7 @@
    ]
   },
   {
-   "number": 42,
+   "number": 44,
    "id": "q46",
    "s": "prevention",
    "type": "single",
@@ -940,7 +966,7 @@
    ]
   },
   {
-   "number": 43,
+   "number": 45,
    "id": "q48",
    "s": "prevention",
    "type": "multi",
@@ -952,7 +978,7 @@
    ]
   },
   {
-   "number": 44,
+   "number": 46,
    "id": "q51",
    "s": "prevention",
    "type": "single",
@@ -965,7 +991,7 @@
    ]
   },
   {
-   "number": 45,
+   "number": 47,
    "id": "q52",
    "s": "prevention",
    "type": "multi",
@@ -986,7 +1012,7 @@
    ]
   },
   {
-   "number": 46,
+   "number": 48,
    "id": "q54",
    "s": "life",
    "type": "habit",
@@ -999,7 +1025,7 @@
    ]
   },
   {
-   "number": 47,
+   "number": 49,
    "id": "q58",
    "s": "life",
    "type": "multi",
@@ -1019,7 +1045,7 @@
    ]
   },
   {
-   "number": 48,
+   "number": 50,
    "id": "q55",
    "s": "life",
    "type": "single",
@@ -1034,7 +1060,7 @@
    ]
   },
   {
-   "number": 49,
+   "number": 51,
    "id": "q56",
    "s": "life",
    "type": "single",
@@ -1046,7 +1072,7 @@
    ]
   },
   {
-   "number": 50,
+   "number": 52,
    "id": "q57",
    "s": "life",
    "type": "multi",

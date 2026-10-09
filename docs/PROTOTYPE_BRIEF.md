@@ -8,7 +8,7 @@
 | Step | Status in this repo |
 |---|---|
 | Sign-up and consent (health data is special category under GDPR) | To build. The prototype only asks for an optional name, email and mobile. |
-| Assessment: 50 questions in 9 sections, about 15 minutes; questions shown only when they apply | Built (`core/questions.js`, `src/app.html`). |
+| Assessment: 52 questions in 9 sections (two shown only when symptoms are reported), about 15 minutes; questions shown only when they apply | Built (`core/questions.js`, `src/app.html`). |
 | Draft Good Span shown straight after: Starting Position, priorities, 3 priority practices + up to 3 lighter touches with "Why this is in your Good Span", weekly time, months 2–3 (provisional), months 4–6 themes, foundations, New Position, Your next Good Span, references, disclaimer | Built. |
 | "Not right for me" on each practice (Rule 13) | Built (requests kept in the browser). |
 | Responses to the team's Google Sheet; saved plan copy link | Built (`scripts/Code.gs`, `worker.js`). |

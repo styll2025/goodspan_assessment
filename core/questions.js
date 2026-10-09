@@ -20,6 +20,8 @@ const QUESTIONS = [
   { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Prefer not to say'] },
   { id: 'q4', s: 'about', type: 'multi', text: 'Has a doctor or other healthcare professional ever told you that you have any of these?', options: ['A heart condition', 'High blood pressure', 'Diabetes (including if you take insulin or other blood-sugar medicine)', 'Kidney disease', 'A lung condition, such as asthma or COPD', 'Something else', 'None of these', 'Prefer not to say'] },
   { id: 'q5', s: 'about', type: 'multi', text: 'In the past 3 months, have you experienced any of the following?', options: ['Pain, tightness or pressure in your chest', 'Shortness of breath with very little effort', 'Feeling dizzy, light-headed or fainting', 'Your heart racing, fluttering or beating irregularly', 'Swollen ankles', 'Pain in your calves when walking', 'None of these'] },
+  { id: 'q5a', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Did any of these happen during or just after physical activity?', options: ['Yes', 'No', 'Not sure'] },
+  { id: 'q5b', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Have you talked to a doctor about them?', options: ["Yes, and they're happy for me to be more active", "Yes, but I haven't been told it's OK to be more active yet", 'No, not yet'] },
   { id: 'q6', s: 'about', type: 'single', text: 'Are you currently pregnant or breastfeeding?', options: ['Pregnant', 'Breastfeeding', 'Neither', 'Prefer not to say'] },
   { id: 'q7', s: 'nutrition', type: 'grid', text: 'How does your eating pattern typically look?', rows: [
       ['veg', 'Vegetables and fruit on a typical day', ['None', '1-2 portions', '3-4 portions', '5 or more portions']],
@@ -107,6 +109,9 @@ function toFeatures(A) {
   p.kidney = has('q4', 'Kidney disease'); p.health_other = has('q4', 'Something else');
   p.high_bp = has('q4', 'High blood pressure'); p.lung = has('q4', 'A lung condition, such as asthma or COPD');
   p.symptoms = (A.q5 || []).some(x => x !== 'None of these');
+  p.symptoms_active = p.symptoms && A.q5a === 'Yes';   // during or just after activity
+  p.symptoms_cleared = p.symptoms && A.q5b === "Yes, and they're happy for me to be more active";   // a doctor has said it's OK to be more active
+  p.symptoms_txt = (A.q5 || []).filter(x => x !== 'None of these');
   p.pregnant = A.q6 === 'Pregnant'; p.breastfeeding = A.q6 === 'Breastfeeding';
   const veg = g('q7', 'veg'); p.veg = { 'None': 0, '1-2 portions': 1.5, '3-4 portions': 3.5, '5 or more portions': 5 }[veg] ?? 3;
   p.protein_meals = { 'None': 0, 'One': 1, 'Two': 2, 'All of them': 3 }[g('q7', 'protein')] ?? 2;
@@ -132,7 +137,7 @@ function toFeatures(A) {
   p.insomnia = (A.q13 || []).filter(x => INS[x]).map(x => INS[x]);
   p.wakes_early = has('q13', "I wake earlier than I want to and can't get back to sleep");
   p.snore = A.q14 === 'Yes';
-  p.caffeine_late = ['3-6pm', 'After 6pm'].includes(A.q15);
+  p.caffeine_late = ['3-6pm', 'After 6pm'].includes(A.q15); p.caffeine_when = A.q15 === 'After 6pm' ? 'after 6pm' : 'between 3pm and 6pm';
   const now = r => g('q17', r) === 'I do this now';
   const SL = { daylight: ['Morning daylight'], regular: ['Consistent sleep timing'], alcohol: ['Alcohol and sleep'], winddown: ['Slow breathing to wind down', 'Progressive muscle relaxation', 'Bedtime music'], tasks: ['Bedtime to-do list'], screens: ['Screen-free wind-down'], share: ['Sharing sleep plans with others', 'Sharing sleep learnings with others', 'Celebrating sleep wins'] };
   for (const k in SL) if (now(k)) p.doing.push(...SL[k]);
@@ -155,7 +160,7 @@ function toFeatures(A) {
   if (has('q19', 'Light in my bedroom') && !now('dark')) { p.hyg.push('Dark bedroom'); p.hyg_why['Dark bedroom'] = 'You said light in your bedroom affects your sleep.'; }
   if (has('q19', 'Noise') && !now('quiet')) { p.hyg.push('Bedroom noise'); p.hyg_why['Bedroom noise'] = 'You said noise affects your sleep.'; }
   if (has('q19', 'Bedroom temperature') && !now('cool')) { p.hyg.push('Cool bedroom'); p.hyg_why['Cool bedroom'] = 'You said bedroom temperature affects your sleep.'; }
-  if (p.caffeine_late || has('q19', 'Caffeine')) { p.hyg.push('Caffeine timing'); p.hyg_why['Caffeine timing'] = p.caffeine_late ? 'Your last caffeine is usually after 3pm.' : 'You said caffeine affects your sleep.'; }
+  if (p.caffeine_late || has('q19', 'Caffeine')) { p.hyg.push('Caffeine timing'); p.hyg_why['Caffeine timing'] = p.caffeine_late ? `Your last caffeine is usually ${p.caffeine_when}.` : 'You said caffeine affects your sleep.'; }
   if (has('q19', 'Screens or technology') && !now('dim')) { p.hyg.push('Evening light'); p.hyg_why['Evening light'] = 'You said screens affect your sleep.'; }
   p.hyg_done = [];
   [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].forEach(([r, f]) => { if (now(r)) p.hyg_done.push(f); });
@@ -164,6 +169,7 @@ function toFeatures(A) {
   const days = +(A.q20 || 0), mins = days ? (A.q21 === '150 or more' ? 150 : +(A.q21 || 0)) : 0;
   p.mvpa = days * mins;
   p.strength = { '0': 0, '1': 1, '2': 2, '3 or more': 3 }[A.q22] ?? 0;
+  if (p.strength >= 3) p.doing.push('Strength volume');   // already does strength 3 or more days a week
   p.sit8 = ['8-10', 'More than 10'].includes(A.q23);
   p.steps_low = A.q24 === 'Fewer than 5,000';
   const MV = { 'Yoga or Pilates': ['Stretching', 'Yoga for stress'], 'Stretching or mobility work': ['Stretching'], 'Balance exercises': ['Balance'], 'Take breaks from sitting': ['Breaking up sitting'], 'Walk after meals': ['Walking after meals'], 'Short bursts of vigorous activity, such as taking stairs fast': ['Movement snacks'], 'Interval training': ['Harder cardio and long intervals', 'Short intervals'], 'Exercise with others or in a group': ['Group activity', 'Walking with others'], 'Take part in activity challenges': ['Activity challenges'], 'Walk or cycle to get places': ['Active travel'] };
@@ -174,7 +180,7 @@ function toFeatures(A) {
   p.gym = has('q26', 'Gym or studio') || has('q26', 'Sports facility or club');
   // Rule 14: what the member enjoys and where they like to move
   const EJ = { 'Being outdoors': 'outdoors', 'Listening to music': 'music', 'Making or creating things': 'making', 'Writing': 'writing', 'Being active with other people': 'social', 'Quiet time on my own': 'quiet', 'Stretching, yoga or Pilates': 'stretch', 'Sport': 'sport', 'Cooking': 'cooking' };
-  p.enjoy = (A.q58 || []).map(o => EJ[o]).filter(Boolean);
+  p.enjoy = (A.q58 || []).map(o => EJ[o]).filter(Boolean); p.likes = p.enjoy.slice();   // likes: what they said they enjoy; enjoy also includes where they like to be active
   if (has('q26', 'Outdoors')) p.enjoy.push('outdoors'); if (has('q26', 'At home')) p.enjoy.push('home'); if (has('q26', 'At work')) p.enjoy.push('work');
   if (has('q26', 'Sports facility or club')) p.enjoy.push('sport'); if (has('q26', 'Gym or studio')) p.enjoy.push('gym');
   p.enjoy = [...new Set(p.enjoy)];
@@ -182,13 +188,15 @@ function toFeatures(A) {
   p.fall = has('q29', 'A fall in the past 12 months');
   if (has('q29', 'A health condition that affects movement or exercise') || has('q29', 'Something else')) p.health_other = true;
   p.nature_low = ['Less than 30 minutes', '30 minutes to 2 hours'].includes(A.q30);
+  if (['2 to 3 hours', 'More than 3 hours'].includes(A.q30)) p.doing.push('Time in nature');   // already meets the 2 hours a week: not offered as 'more of'
   p.sm_high = A.q31 === 'More than 2 hours'; p.no_sm = A.q31 === "I don't use social media";
   p.mind_shown = !!QUESTIONS.find(q => q.id === 'q32').show(A);
   if (p.mind_shown && A.q32) {
     const sc = r => ({ 'Not at all': 0, 'Several days': 1, 'More than half the days': 2, 'Nearly every day': 3 }[g('q32', r)] || 0);
     p.phq4_pos = sc('anx1') + sc('anx2') >= 3 || sc('dep1') + sc('dep2') >= 3;
+    p.phq4_often = ['anx1', 'anx2', 'dep1', 'dep2'].some(r => sc(r) >= 2);
   }
-  const MD = { 'Yoga or Pilates': ['Yoga for stress'], 'Listening to music to relax': ['Music to unwind'], 'Creative hobbies, such as drawing, crafts or playing an instrument': ['Enjoyable leisure'], 'Short breaks during the day': ['Micro-breaks'], 'Meditation or mindfulness': ['Meditation'], 'Journalling or reflection': ['Expressive writing'], 'Breathing or relaxation practices': ['Slow breathing'], 'Time for hobbies or enjoyable activities': ['Enjoyable leisure'], 'Limits on social media use': ['Social media limits'], 'A gratitude practice': ['Three good things'], 'Reframing stressful thoughts': ['Reframing'], 'Naming my feelings': ['Naming emotions'], 'Setting aside focused work time': ['Focused work', 'Present-moment attention'], 'Time away from work': ['Time away from work'], 'Working towards goals that matter to me': ['Sense of purpose'], 'Tools for building habits, such as if-then plans': ['Habit building', 'If-then planning'] };
+  const MD = { 'Yoga or Pilates': ['Yoga for stress', 'Stretching'], 'Listening to music to relax': ['Music to unwind'], 'Creative hobbies, such as drawing, crafts or playing an instrument': ['Enjoyable leisure'], 'Short breaks during the day': ['Micro-breaks'], 'Meditation or mindfulness': ['Meditation'], 'Journalling or reflection': ['Expressive writing'], 'Breathing or relaxation practices': ['Slow breathing'], 'Time for hobbies or enjoyable activities': ['Enjoyable leisure'], 'Limits on social media use': ['Social media limits'], 'A gratitude practice': ['Three good things'], 'Reframing stressful thoughts': ['Reframing'], 'Naming my feelings': ['Naming emotions'], 'Setting aside focused work time': ['Focused work', 'Present-moment attention'], 'Time away from work': ['Time away from work'], 'Working towards goals that matter to me': ['Sense of purpose'], 'Tools for building habits, such as if-then plans': ['Habit building', 'If-then planning'] };
   for (const o of (A.q34 || [])) if (MD[o]) p.doing.push(...MD[o]);
   p.mind_none = has('q34', 'None of these');
   const ph = g('q36', 'phone'), meet = g('q36', 'meet');
@@ -210,10 +218,12 @@ function toFeatures(A) {
   p.sunburn = has('q48', "I've been sunburnt, or used a sunbed, in the past 12 months");
   p.hearing_diff = has('q48', 'I often find it hard to follow conversations, or ask people to repeat themselves');
   p.learn_rare = A.q51 === 'Rarely or never';
+  if (['About once a week', 'Several times a week'].includes(A.q51)) p.doing.push('Learning new skills');   // already learns something new weekly
+  p.drinks_rare = ['Monthly or less', '2-4 times a month'].includes(A.q43);
   for (const q of QUESTIONS) if (q.goals) p.goals[q.goals] = (A[q.id] || []).map(o => GOAL_KEYS[q.goals][q.options.indexOf(o)]).filter(Boolean);
   const mg = p.goals.Mind || [], vg = p.goals.Movement || [];
   if ((mg.includes('focus') || mg.includes('phone')) && !has('q34', 'Keeping notifications turned off')) { p.hyg.push('Notifications'); p.hyg_why['Notifications'] = mg.includes('focus') ? 'You picked focus and concentration as a goal.' : 'You picked less phone time as a goal.'; }
-  if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) { p.hyg.push('Recovery'); p.hyg_why['Recovery'] = vg.includes('performance') ? 'You picked improving performance as a goal.' : "You're already active on most days."; }
+  if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) { p.hyg.push('Recovery'); p.hyg_why['Recovery'] = vg.includes('performance') ? 'You picked improving performance as a goal.' : "You already do 150 minutes or more of activity a week."; }
   if (A.q24 === "I don't track my steps" && vg.includes('everyday')) { p.hyg.push('Step tracking'); p.hyg_why['Step tracking'] = "You'd like more everyday movement and don't track your steps yet."; }
   if (A.q54 && A.q54.text && A.q54.text.trim()) p.own_habit = [A.q54.text.trim(), A.q54.choice === 'Share this with my Pilot so they can support me' ? 'share' : 'private'];
   // agreed per-practice baselines (rules.json level_setting): the level that is the member's next step; 'skip' = already at the top
@@ -222,6 +232,7 @@ function toFeatures(A) {
   bl['Daily steps'] = { 'Fewer than 5,000': 'Learning', '5,000-7,999': 'Developing', '8,000-9,999': 'skip', '10,000 or more': 'skip' }[A.q24];
   bl['Time in nature'] = { 'Less than 30 minutes': 'Learning', '30 minutes to 2 hours': 'Developing', '2 to 3 hours': 'Mastering', 'More than 3 hours': 'skip' }[A.q30];
   bl['Social media limits'] = { 'More than 2 hours': 'Learning', '1-2 hours': 'Developing', '30-60 minutes': 'Mastering', 'Less than 30 minutes': 'skip' }[A.q31];
+  bl['Learning new skills'] = { 'Rarely or never': 'Learning', 'A few times a month': 'Developing' }[A.q51];
   bl['Whole grains'] = F4(g('q7', 'grains'), ['Learning', 'Learning', 'Developing', 'Mastering']);
   bl['Beans and lentils'] = F4(g('q7', 'beans'), ['Learning', 'Learning', 'Developing', 'Mastering']);
   bl['Nuts'] = F4(g('q7', 'nuts'), ['Learning', 'Developing', 'Mastering', 'skip']);
@@ -239,7 +250,7 @@ function toFeatures(A) {
   // plain-language reasons from their own answers, used when a practice isn't chosen through a goal or a signal
   const W = {};
   if (g('q7', 'veg') === '3-4 portions') W['Balanced plate'] = 'You eat 3-4 portions of vegetables and fruit a day; this helps you reach 5 or more.';
-  const gr = g('q7', 'grains'); if (gr && gr !== '6–7 days a week' && gr !== 'Rarely or never') W['Whole grains'] = `You eat whole grains on ${gr.replace(' a week', '')} a week; this makes them a daily habit.`;
+  // whole grains on some days is not offered as 'more of' (agreed October 2026)
   const nu = g('q7', 'nuts'); if (nu === 'Rarely or never') W['Nuts'] = 'You rarely eat nuts; a small handful most days is linked with better heart health.';
   const MW = { screen: ['Screen-free meals', 'you rarely eat without a screen'], attention: ['Attention to food', 'you rarely pay attention to the taste and smell of your food'], slow: ['Slow eating', 'you rarely eat slowly'], variety: ['Plant variety', 'you rarely eat a wide variety of plant foods'], out: ['Eating out and on the move', "you rarely have a plan for eating well when you're out"] };
   for (const k in MW) if (g('q8', k) === 'Rarely') W[MW[k][0]] = 'You said ' + MW[k][1] + '.';

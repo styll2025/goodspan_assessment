@@ -64,6 +64,7 @@ const ENJOY = ev('ENJOY'), WORK = ev('WORK_FAMS'), GOAL_TXT = ev('GOAL_TXT'), AR
 const CAT = {}; for (const r of DATA.lib) CAT[r.p + '|' + r.f] = r.c;
 const R = ['time', 'routine', 'already', 'pillar', 'health', 'other'];
 const out = []; let nIssues = 0, nWarn = 0, nr = 0;
+fs.writeFileSync('personas50.json', JSON.stringify(U));
 for (const s of U) {
   const f = toFeatures(s.A), o = E.plan(JSON.parse(JSON.stringify(f))), o2 = E.plan(JSON.parse(JSON.stringify(f)));
   const det = JSON.stringify(o.months.map(m => m.map(x => [x.fam, x.row.l, x.why]))) === JSON.stringify(o2.months.map(m => m.map(x => [x.fam, x.row.l, x.why])));
