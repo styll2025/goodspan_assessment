@@ -1085,7 +1085,7 @@ function renderAssess() {
     ${missingMsg()}
     <nav class="steps" aria-label="Sections">${SECTIONS.map((s, i) => `<button type="button" data-sec="${i}" ${i === sec ? 'aria-current="step"' : ''}>${esc(s.title)} <span class="ct">${counts[i][0]}/${counts[i][1]}</span></button>`).join('')}</nav>
     <form class="qwrap" id="qform" novalidate>${qs.map(q => qHTML(q, nums[q.id])).join('')}</form>
-    <div class="nav"><button class="btn" type="button" id="back" ${sec === 0 ? 'disabled' : ''}>Back</button>
+    <div class="nav"><button class="btn" type="button" id="back">Back</button>
       ${sec < SECTIONS.length - 1 ? `<button class="btn primary" type="button" id="next">Next: ${esc(SECTIONS[sec + 1].title)}</button>` : `<button class="btn primary" type="button" id="finish">See my Good Span</button>`}</div>
   </div>`;
   if (tried) QUESTIONS.filter(q => q.s === S.id && visible(q) && !q.optional && !answered(q)).forEach(q => { const el = document.querySelector(`[data-q="${q.id}"]`); if (el) el.classList.add('missing'); });
@@ -1093,7 +1093,10 @@ function renderAssess() {
   f.addEventListener('submit', e => e.preventDefault());
   f.addEventListener('input', onInput); f.addEventListener('change', onInput);
   document.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => { sec = +b.dataset.sec; save(); renderAssess(); scrollTo(0, 0); });
-  document.getElementById('back').onclick = () => { sec--; save(); renderAssess(); scrollTo(0, 0); };
+  document.getElementById('back').onclick = () => {
+    if (sec === 0) { mode = 'welcome'; save(); render(); scrollTo(0, 0); return; }
+    sec--; save(); renderAssess(); scrollTo(0, 0);
+  };
   const nx = document.getElementById('next'); if (nx) nx.onclick = () => { sec++; save(); renderAssess(); scrollTo(0, 0); };
   const fin = document.getElementById('finish'); if (fin) fin.onclick = () => {
     const missing = QUESTIONS.filter(q => visible(q) && !q.optional && !answered(q));
