@@ -21,8 +21,15 @@ for r in ws.iter_rows(min_row=2, values_only=True):
                 'ex': float(g('Extra Good Span time (min/week)') or 0), 'x': xs, 'eq': bool(eq) and str(eq).strip() not in ('None', 'No', ''),
                 'ref': ' | '.join(s.strip() for s in str(g('References') or '').split('\n') if s.strip())})
     full.append({h: (r[i] if not (isinstance(r[i], str) and r[i].startswith('=')) else None) for h, i in ix.items() if h != 'Plan text (generated)'})
+wb = ws.parent
+# foundations: member-facing reason ("Why it helps") from the Hygiene checklist sheet; theme descriptions from the Themes sheet
+hs = wb['Hygiene checklist']; hh = [c.value for c in hs[1]]
+why = {r[hh.index('Family')]: r[hh.index('Why it helps (member-facing)')] for r in hs.iter_rows(min_row=2, values_only=True) if r[0] and 'Why it helps (member-facing)' in hh}
+ts = wb['Themes']; themes = {r[1]: r[2] for r in ts.iter_rows(min_row=2, values_only=True) if r[1]}
 p = os.path.join(ROOT, 'core', 'data.json'); d = json.load(open(p))
-d['lib'] = lib; json.dump(d, open(p, 'w'), ensure_ascii=False)
+d['lib'] = lib; d['themes'] = themes
+for h in d['hyg']: h['why'] = why.get(h['f'], h.get('why', '')) or ''
+json.dump(d, open(p, 'w'), ensure_ascii=False)
 os.makedirs(os.path.join(ROOT, 'data'), exist_ok=True)
 json.dump(full, open(os.path.join(ROOT, 'data', 'library.json'), 'w'), ensure_ascii=False, indent=1)
 print(len(lib), 'practices written to core/data.json and data/library.json')

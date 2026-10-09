@@ -27,6 +27,8 @@ function check(f, o) {
   const m1 = o.months[0];
   if (m1.filter(x => x.role === 'Priority').length > 3) issues.push('More than 3 priority practices');
   if (m1.filter(x => x.role === 'Lighter touch').length > 3) issues.push('More than 3 lighter touches');
+  if (m1.length > 6) issues.push('More than 6 practices in month 1');
+  if (m1.length < 5 && o.minutes[0] < o.budget - 15) issues.push('Fewer than 5 practices in month 1 with time to spare: ' + m1.length);
   for (const x of all) {
     for (const op of f.optout) for (const t of (OPT[op] || [])) if (t === x.fam || t === x.fam + '.' + x.row.l) issues.push(`Opted-out practice offered: ${x.fam} (${x.row.l})`);
     const ex = x.row.x.filter(t => cond.has(t)); if (ex.length) issues.push(`Excluded practice offered: ${x.fam} (${ex.join(', ')})`);
@@ -44,7 +46,6 @@ function check(f, o) {
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms') || cond.has('Heart, metabolic or kidney condition and inactive');
   if (!held && f.change !== 'small' && o.minutes[0] < o.budget / 3 && !m1.some(x => o.extraMinutes(x.row) >= 15)) issues.push(`Plan adds only ${Math.round(o.minutes[0])} of ${o.budget} minutes (minimum-time rule could not find a practice)`);
-  if (m1.length < 3 && o.minutes[0] < o.budget - 15) issues.push(`Only ${m1.length} practices in month 1`);   // fewer is fine when their time is already used
   return issues;
 }
 

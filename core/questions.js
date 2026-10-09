@@ -151,11 +151,12 @@ function toFeatures(A) {
   if (has('q19', 'Screens or technology')) p.sleep_disrupt.push('Screen-free wind-down');
   if (has('q19', 'Alcohol')) p.sleep_disrupt.push('Alcohol and sleep');
   p.carer = has('q19', 'Caring or family responsibilities'); p.schedule = has('q19', 'Work or schedule'); p.sleep_pain = has('q19', 'Pain or physical symptoms');
-  if (has('q19', 'Light in my bedroom') && !now('dark')) p.hyg.push('Dark bedroom');
-  if (has('q19', 'Noise') && !now('quiet')) p.hyg.push('Bedroom noise');
-  if (has('q19', 'Bedroom temperature') && !now('cool')) p.hyg.push('Cool bedroom');
-  if (p.caffeine_late || has('q19', 'Caffeine')) p.hyg.push('Caffeine timing');
-  if (has('q19', 'Screens or technology') && !now('dim')) p.hyg.push('Evening light');
+  p.hyg_why = {};
+  if (has('q19', 'Light in my bedroom') && !now('dark')) { p.hyg.push('Dark bedroom'); p.hyg_why['Dark bedroom'] = 'You said light in your bedroom affects your sleep.'; }
+  if (has('q19', 'Noise') && !now('quiet')) { p.hyg.push('Bedroom noise'); p.hyg_why['Bedroom noise'] = 'You said noise affects your sleep.'; }
+  if (has('q19', 'Bedroom temperature') && !now('cool')) { p.hyg.push('Cool bedroom'); p.hyg_why['Cool bedroom'] = 'You said bedroom temperature affects your sleep.'; }
+  if (p.caffeine_late || has('q19', 'Caffeine')) { p.hyg.push('Caffeine timing'); p.hyg_why['Caffeine timing'] = p.caffeine_late ? 'Your last caffeine is usually after 3pm.' : 'You said caffeine affects your sleep.'; }
+  if (has('q19', 'Screens or technology') && !now('dim')) { p.hyg.push('Evening light'); p.hyg_why['Evening light'] = 'You said screens affect your sleep.'; }
   p.hyg_done = [];
   [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].forEach(([r, f]) => { if (now(r)) p.hyg_done.push(f); });
   if (["I don't have caffeine", 'Before 12pm'].includes(A.q15)) p.hyg_done.push('Caffeine timing');
@@ -211,9 +212,9 @@ function toFeatures(A) {
   p.learn_rare = A.q51 === 'Rarely or never';
   for (const q of QUESTIONS) if (q.goals) p.goals[q.goals] = (A[q.id] || []).map(o => GOAL_KEYS[q.goals][q.options.indexOf(o)]).filter(Boolean);
   const mg = p.goals.Mind || [], vg = p.goals.Movement || [];
-  if ((mg.includes('focus') || mg.includes('phone')) && !has('q34', 'Keeping notifications turned off')) p.hyg.push('Notifications');
-  if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) p.hyg.push('Recovery');
-  if (A.q24 === "I don't track my steps" && vg.includes('everyday')) p.hyg.push('Step tracking');
+  if ((mg.includes('focus') || mg.includes('phone')) && !has('q34', 'Keeping notifications turned off')) { p.hyg.push('Notifications'); p.hyg_why['Notifications'] = mg.includes('focus') ? 'You picked focus and concentration as a goal.' : 'You picked less phone time as a goal.'; }
+  if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) { p.hyg.push('Recovery'); p.hyg_why['Recovery'] = vg.includes('performance') ? 'You picked improving performance as a goal.' : "You're already active on most days."; }
+  if (A.q24 === "I don't track my steps" && vg.includes('everyday')) { p.hyg.push('Step tracking'); p.hyg_why['Step tracking'] = "You'd like more everyday movement and don't track your steps yet."; }
   if (A.q54 && A.q54.text && A.q54.text.trim()) p.own_habit = [A.q54.text.trim(), A.q54.choice === 'Share this with my Pilot so they can support me' ? 'share' : 'private'];
   // agreed per-practice baselines (rules.json level_setting): the level that is the member's next step; 'skip' = already at the top
   const F4 = (v, map) => map[[...FREQ4].indexOf(v)];
