@@ -170,7 +170,14 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .grid td,.grid th{padding:10px 8px;font-size:15px;line-height:20px}
 .grid td.c{text-align:center}
 .grid input{accent-color:var(--plum);width:18px;height:18px}
-.grid select{font:inherit;font-size:15px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+.grid:has(select) table{min-width:0}
+.grid tr:has(select) td{vertical-align:middle}
+.grid tr:has(select) td:last-child{width:1%;white-space:nowrap;padding-left:24px}
+.grid select{display:block;box-sizing:border-box;width:220px;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+@media (max-width:520px){
+  .grid tr:has(select) td:last-child{padding-left:12px}
+  .grid select{width:176px}
+}
 textarea{font:inherit;font-size:17px;width:100%;min-height:80px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .nav{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:24px 64px;border-top:1px solid var(--line)}
 .intro{padding-block:48px 0;display:grid;gap:16px;max-width:820px}
