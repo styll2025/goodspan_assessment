@@ -57,6 +57,11 @@ textarea{font:inherit;font-size:17px;width:100%;min-height:80px;padding:12px 16p
 .nrcount{margin-top:16px}
 .logo{height:18px;display:block}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo{filter:invert(1)}}
+.pace{margin-top:28px;padding:20px 24px;border-radius:24px;background:var(--surface-alt);color:var(--plum);max-width:760px}
+.pace p:last-child{margin-top:8px}
+.closing{max-width:820px}
+.closing p{margin-top:16px;font-size:19px;line-height:28px}
+td b{font-weight:400;font-size:17px}
 .notice{margin:0;padding:14px 18px;border-radius:16px;background:var(--surface-alt);color:var(--plum);border:1px solid var(--plum)}
 fieldset.missing legend{color:var(--orange)}
 fieldset.missing{border-left:3px solid var(--orange);padding-left:14px}
@@ -221,7 +226,14 @@ function nrHandle(e, P) {
     done(i, 'Sent to your Pilot', `“${txt.trim().slice(0, 140)}${txt.trim().length > 140 ? '…' : ''}” Your Pilot will suggest a better practice with you.`); return; }
   if (d.undo !== undefined) { delete REQ[+d.undo]; all(); }
 }
+function cellTxt(y) { return `${esc(y.row.l)} · ${esc(y.row.w)} ${esc(y.row.d)}.`; }
 function chg(y) {
+  if (y.change === 'SWAP') return `<span class="ch SWAP">SWAP</span><small><b>${esc(y.fam)}</b> (${esc(y.area)})</small><small>${cellTxt(y)}${y.note ? ' ' + esc(y.note[0].toUpperCase() + y.note.slice(1)) + '.' : ''}</small>`;
+  if (y.change === 'LEVEL UP') return `<span class="ch LEVEL">LEVEL UP</span><small>${cellTxt(y)}</small>`;
+  if (y.change === 'DONE') return `<span class="ch">DONE</span><small>${esc(y.note || '')}</small>`;
+  return `<span class="ch">CONTINUE</span><small>${cellTxt(y)}</small>${y.note ? `<small>${esc(y.note[0].toUpperCase() + y.note.slice(1))}.</small>` : ''}`;
+}
+function chgOld(y) {
   if (y.change === 'SWAP') return `<span class="ch SWAP">SWAP</span><br>${esc(y.row.w)} <small>${esc(y.row.l)}${y.note ? ' · ' + esc(y.note) : ''}</small>`;
   if (y.change === 'LEVEL UP') return `<span class="ch LEVEL">LEVEL UP</span><small>${esc(y.row.l)}: ${esc(y.row.d)}</small>`;
   if (y.change === 'DONE') return `<span class="ch">DONE</span><small>${esc(y.note || '')}</small>`;
@@ -238,6 +250,17 @@ function introLine(P) {
   if (extra.length) parts.push(`We've also added a well-established practice in ${list(extra)}.`);
   return parts.join(' ');
 }
+const PACE_TXT = {
+  small: "You told us you'd like small, easy steps. So every practice starts at its easiest level, nothing levels up in month 2, and at most one practice levels up in month 3, and only if it's going well and you feel ready.",
+  mid: "You told us you'd like something in between. So practices start at a manageable level based on your answers, and up to two can level up each month, if they're going well and you feel ready.",
+  big: "You told us you're ready for a bigger challenge. So practices start a level higher where it's safe, and any practice can level up each month, as long as it fits your time and you feel ready."
+};
+const THEME_WHY = {
+  pri: a => `Builds on your ${a.toLowerCase()} practices from months 1 to 3.`,
+  light: a => `Takes your lighter touch in ${a.toLowerCase()} further.`,
+  room: a => `Your answers show some room to grow in ${a.toLowerCase()}.`,
+  next: a => `A well-established area to explore next.`
+};
 function renderPlan() {
   const p = toFeatures(A), P = ENGINE.plan(p), m1 = P.months[0];
   const pri = m1.filter(x => x.role === 'Priority'), lt = m1.filter(x => x.role === 'Lighter touch');
@@ -269,7 +292,7 @@ function renderPlan() {
     <div class="prio">${P.pri.map((a, k) => `<div><h3>${k + 1}. ${a}</h3><p class="muted">${P.wish.includes(a) ? (P.opp[a] ? 'You chose this, and your answers point here too.' : 'You chose this.') : (P.opp[a] ? 'Your answers point here.' : 'You\'re doing well here; this is a small, well-established next step.')}</p><ul>${reasons(a)}</ul></div>`).join('')}</div>
     <h2 style="margin-top:72px">Your ${pri.length} priority practice${pri.length === 1 ? '' : 's'}.</h2><p class="muted" style="margin-top:12px">What matters most right now. Month 1 is your starting point. If a practice isn't right for you, tell us: you can ask for up to ${MAX_REQ} changes at each check-in.</p>
     <div class="cards">${pri.map(x => card(x, P)).join('')}</div>
-    ${lt.length ? `<div class="light"><h2 style="margin-top:72px">Lighter touches.</h2><p class="muted" style="margin-top:12px">Small, easy practices from other areas your answers point to.</p><div class="cards">${lt.map(x => card(x, P)).join('')}</div></div>` : ''}
+    ${lt.length ? `<div class="light"><h2 style="margin-top:72px">Lighter touches.</h2><p class="muted" style="margin-top:12px">Small, easy practices that sit alongside your priorities.</p><div class="cards">${lt.map(x => card(x, P)).join('')}</div></div>` : ''}
     ${own && own[1] === 'share' ? `<div class="own"><p class="kicker">Your own practice</p><p style="font-size:26px;line-height:32px;margin-top:10px">“${esc(own[0])}”</p><p style="margin-top:10px">You shared this with your Pilot. They'll help you shape it into a practice.</p></div>` : ''}
   </div></section>
   <section class="inv"><div class="wrap"><p class="kicker">Your time</p><h2>Your Good Span adds about ${mins(P.minutes[0])} minutes a week to what you already do.</h2>
@@ -279,18 +302,21 @@ function renderPlan() {
   <section><div class="wrap"><p class="kicker">Months 2 and 3 · provisional</p><h2>How your Good Span could evolve.</h2>
     <p style="margin-top:16px;max-width:680px">What comes next depends on how each practice goes and on your conversations with your Pilot. This is one possible path, not a fixed one. Each month, every practice will:</p>
     <div class="outcomes"><div><span class="ch">CONTINUE</span><span>It needs more time to become established.</span></div><div><span class="ch LEVEL">LEVEL UP</span><span>You're ready for a more advanced version.</span></div><div><span class="ch SWAP">SWAP</span><span>Another practice takes its place: when a one-off is done, when you're ready for the next step, or when you've told us it isn't right for you.</span></div></div>
-    <div class="tbl"><table><thead><tr><th>Practice</th><th>Month 1</th><th>Month 2 (provisional)</th><th>Month 3 (provisional)</th></tr></thead>
-    <tbody>${m1.map((x, k) => `<tr><td>${esc(x.fam)}<small>${esc(x.role)}</small></td><td>${esc(x.row.l)}<small>${esc(x.row.d)}</small></td><td>${chg(P.months[1][k])}</td><td>${chg(P.months[2][k])}</td></tr>`).join('')}</tbody></table></div>
-    <p class="ui muted" style="margin-top:16px">Your pace: ${esc(paceLabel)}</p></div></section>
+    <div class="tbl"><table><thead><tr><th>Practice and pillar</th><th>Month 1</th><th>Month 2 (provisional)</th><th>Month 3 (provisional)</th></tr></thead>
+    <tbody>${m1.map((x, k) => `<tr><td><b>${esc(x.fam)}</b><small>${esc(x.area)} · ${esc(x.role)}</small></td><td><span class="ch">START</span><small>${cellTxt(x)}</small></td><td>${chg(P.months[1][k])}</td><td>${chg(P.months[2][k])}</td></tr>`).join('')}</tbody></table></div>
+    <div class="pace"><p class="kicker">Your pace · ${esc(paceLabel)}</p><p>${esc(PACE_TXT[p.change] || PACE_TXT.mid)}</p></div></div></section>
   <section class="alt"><div class="wrap two">
-    <div><p class="kicker">Months 4 to 6</p><h2>Your themes.</h2><p style="margin-top:16px">At your mid-Span check-in you'll choose the practices within each theme, based on how months 1 to 3 went.</p></div>
-    <div><ul class="list" style="margin-top:0">${P.themes.map(t => `<li><span class="ui">${esc(t[0])}</span><span>${esc(t[1])}</span></li>`).join('')}</ul></div></div></section>
+    <div><p class="kicker">Months 4 to 6</p><h2>Your themes.</h2><p style="margin-top:16px">In months 4 to 6 you move from single practices to themes: groups of related practices. At your mid-Span check-in you'll choose the practices within each theme, based on how months 1 to 3 went. Here's why we've suggested these four.</p></div>
+    <div><ul class="list" style="margin-top:0">${P.themes.map(t => `<li><span class="ui">${esc(t[0])}</span><span><b>${esc(t[1])}</b>${(DATA.themes || {})[t[1]] ? `<br><span class="muted">${esc(DATA.themes[t[1]])}</span>` : ''}<br>${esc((THEME_WHY[t[2]] || THEME_WHY.next)(t[0]))}</span></li>`).join('')}</ul></div></div></section>
   <section class="fnd"><div class="wrap two">
     <div><p class="kicker">From month 1 · all six months</p><h2>Your foundations.</h2><p style="margin-top:16px">Simple everyday habits that support everything else. They're separate from your practices and themes: start them now, keep them going in the background, and tick them off once they're in place.</p></div>
-    <div><ul class="list" style="margin-top:0">${P.foundations.map((f, i) => `<li><span class="ui">${esc(f.p)}</span><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="fd${i}" style="accent-color:var(--plum);width:18px;height:18px;margin-top:3px;flex:none"><span>${esc(f.t)}</span></label></li>`).join('') || '<li><span></span><span class="muted">None for now.</span></li>'}</ul></div></div></section>
+    <div><ul class="list" style="margin-top:0">${P.foundations.map((f, i) => `<li><span class="ui">${esc(f.p)}</span><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="fd${i}" style="accent-color:var(--plum);width:18px;height:18px;margin-top:3px;flex:none"><span>${esc(f.t)}<br><span class="muted">${esc(f.because || 'A simple everyday habit that helps most people.')} ${esc(f.why || '')}</span></span></label></li>`).join('') || '<li><span></span><span class="muted">None for now.</span></li>'}</ul></div></div></section>
   <section class="inv"><div class="wrap next">
     <div><p class="kicker">03 · New Position</p><h2>Where you'll be after six months.</h2><p>At the end of month 6 you'll repeat a short assessment. We'll show your New Position next to your Starting Position, so you can see what has changed.</p></div>
-    <div><p class="kicker">04 · Your next Good Span</p><h2>Where you go from there.</h2><p>Your New Position becomes the starting point for your next Good Span.</p></div></div></section>
+    <div><p class="kicker">04 · Your next Good Span</p><h2>Where you go from there.</h2><p>Your New Position becomes the starting point for your next Good Span: we keep what's working, build on what's going well, and choose the next step together.</p></div></div></section>
+  <section><div class="wrap closing"><p class="kicker">One step at a time</p><h2>Healthy habits are built one step at a time.</h2>
+    <p>You don't need to get everything right at once. Start with the practices for this month, keep going with what works, and adjust what doesn't. Some weeks will go better than others, and that's part of it. Small changes, kept up, add up over time.</p>
+    <p>Your Pilot is there whenever you need them, at your check-ins and in between.</p></div></section>
   <div class="wrap"><section style="padding-block:56px 0"><p class="kicker">References</p><h2>The science behind your plan.</h2><ol class="refs">${refs.map(r => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <p class="disc muted">Your Good Span plan is designed to support everyday wellbeing and healthy habits. It's not a substitute for personalised medical care.</p></div></div>`;
   document.getElementById('edit').onclick = () => { REQ = {}; OPEN = null; CUR = null; mode = 'assess'; sec = 0; save(); render(); scrollTo(0, 0); };

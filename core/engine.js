@@ -41,7 +41,7 @@ const ENJOY = {
   stretch: ['Yoga for stress', 'Stretching', 'Balance'],
   sport: ['Weekly cardio', 'Building up cardio', 'Harder cardio and long intervals', 'Short intervals', 'Activity challenges', 'Group activity', 'Strength sessions', 'Strength volume'],
   cooking: ['Meal planning and home cooking', 'Shared meals', 'Sharing recipes with others', 'Food memories', 'Plant variety', 'Beans and lentils', 'Whole grains'],
-  home: ['Strength sessions', 'Stretching', 'Balance', 'Yoga for stress', 'Movement snacks'],
+  home: ['Strength sessions', 'Stretching', 'Yoga for stress', 'Movement snacks'],
   gym: ['Strength sessions', 'Strength volume', 'Harder cardio and long intervals', 'Short intervals'],
   work: ['Breaking up sitting', 'Micro-breaks', 'Movement snacks', 'Walking after meals'],
 };
@@ -182,7 +182,8 @@ function makeEngine(DATA) {
   const optedOut = (fam, level, optout) => optout.some(o => (OPTOUT[o] || []).some(x => x === fam || x === fam + '.' + level));
 
   function why(p, S, x, wish) {
-    const base = whyBase(p, S, x, wish), f = x.fam;
+    let base = whyBase(p, S, x, wish); const f = x.fam;
+    if (x.fill && base === x.row.why) base = 'A small, well-established habit to add alongside your priorities. ' + base;
     const ej = (p.enjoy || []).find(k => (ENJOY[k] || []).includes(f));
     return ej && ENJOY_TXT[ej] ? base + ' ' + ENJOY_TXT[ej] : base;
   }
@@ -294,9 +295,9 @@ function makeEngine(DATA) {
       || (a === 'Movement' && f === 'Strength sessions' && p.mvpa >= 150 && p.strength <= 1) || (a === 'Prevention' && f === 'Staying nicotine-free' && p.ex_smoker);
     const grp = f => OVERLAP.findIndex(g => g.includes(f));
     const log = [];
-    let longLT = false, variety = false; const overTime = [];
+    let longLT = false, variety = false, ltFill = false; const overTime = [];
     const pick = (a, role, chosen, exclude = [], force = null, strict = false, evMin = null) => {
-      for (const f of ranked(a, role, strict || role === 'Lighter touch')) {
+      for (const f of ranked(a, role, strict || (role === 'Lighter touch' && !ltFill))) {
         if (exclude.includes(f) || chosen.some(x => x.fam === f)) continue;
         const newGoal = (p.goals[a] || []).some(g => (GOALMAP[a][g] || []).includes(f) && !chosen.some(x => x.area === a && (GOALMAP[a][g] || []).includes(x.fam)));
         if (variety && role === 'Priority' && !newGoal && chosen.some(x => x.role === 'Priority' && x.area === a && CAT.get(a + '|' + x.fam) === CAT.get(a + '|' + f))) continue;   // Rule 17 (never at the cost of a goal not yet covered)
@@ -440,6 +441,33 @@ function makeEngine(DATA) {
       }
       longLT = false;
     }
+    // Rule 4b: five practices in month 1 (3 priority + lighter touches). If the member's answers don't give enough lighter touches,
+    // add one from their answers or goals in any pillar (one per pillar), then a small, well-established practice (Foundation or Targeted,
+    // or something they enjoy), never "more of" something they already do. Lighter touches stay at 15 minutes or less.
+    const TARGET_PRACTICES = 5, ltN = () => chosen.filter(x => x.role === 'Lighter touch').length;
+    for (let g = 0; g < 6 && chosen.length < TARGET_PRACTICES && ltN() < 3; g++) {
+      const usedA = new Set(chosen.filter(x => x.role === 'Lighter touch').map(x => x.area));
+      let z = null;
+      for (const a of order) { if (usedA.has(a)) continue; const tr = []; for (let k = 0; k < 30 && !z; k++) { const y = pick(a, 'Lighter touch', chosen, tr); if (!y) break; if (total(chosen) + extraMinutes(p, y.row) <= budget) z = y; else tr.push(y.fam); } if (z) break; }
+      if (!z) {
+        ltFill = true;
+        // gather the candidates from every pillar and take the best fit: something they enjoy, then Foundation evidence, then the shortest
+        const cands = [];
+        for (const a of order) {
+          if (usedA.has(a)) continue;
+          const tried = [];
+          for (let k = 0; k < 30; k++) { const y = pick(a, 'Lighter touch', chosen, tried); if (!y) break; tried.push(y.fam);
+            if ((y.row.ev !== 'Explore' || enjoyed(y.fam)) && total(chosen) + extraMinutes(p, y.row) <= budget) cands.push(y); }
+        }
+        const sc = y => (enjoyed(y.fam) ? 4 : 0) + (y.row.ev === 'Foundation' ? 2 : 0) - extraMinutes(p, y.row) / 100;
+        cands.sort((u, v) => (sc(v) - sc(u)) || (order.indexOf(u.area) - order.indexOf(v.area)));
+        z = cands[0] || null;
+        ltFill = false;
+        if (z) z.fill = true;
+      }
+      if (!z) break;
+      chosen.push(z); log.push([z.area, z.fam, z.row.l, z.fill ? 'lighter touch added to reach five practices (starting set)' : 'lighter touch added to reach five practices']);
+    }
     chosen.forEach(x => { x.change = 'START'; x.why = why(p, S, x, wish); });
     const months = [chosen.map(x => Object.assign({}, x))];
     for (const m of [2, 3]) {
@@ -490,13 +518,13 @@ function makeEngine(DATA) {
     const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
     const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
-    const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length)));
+    const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
     const used = new Set(), themes = [];
     for (const a of [...(pri.length === 1 ? [pri[0], pri[0]] : pri), ...light, ...order.filter(x => !pri.includes(x) && !light.includes(x))]) {
       if (themes.length >= 4) break;
       for (const f of ranked(a, 'Priority')) {
         const t = CAT.get(a + '|' + f), lv = famOf(a, f);
-        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t]); used.add(t); break; }
+        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, pri.includes(a) ? 'pri' : chosen.some(x => x.role === 'Lighter touch' && x.area === a) ? 'light' : (opp[a] >= 1 || (p.goals[a] || []).length) ? 'room' : 'next']); used.add(t); break; }
       }
     }
     const notes = pilotNotes(p, c);
