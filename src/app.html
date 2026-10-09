@@ -363,8 +363,7 @@ function renderWelcome() {
     : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
       <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
       <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
-      <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label>
-      <p class="hint">Optional. Only used so the team can follow up on your test, and kept private.</p></form>
+      <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label></form>
       <div class="nav" style="border:0"><span></span><button class="btn primary" type="button" id="go">Start</button></div>`}
   </div></div>`;
   const go = document.getElementById('go');
