@@ -2,7 +2,7 @@
 
 A member answers the assessment and gets a personalised six-month **Good Span**, built by a rule-based, deterministic engine from their own answers. This repository holds the live prototype, the engine, the assessment, the practice library and the complete rules.
 
-**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine) at the site root. The earlier version's files (`web/`, `engine/`, `app.py`, `data/assessment.json`, `data/practices.json`, `data/rules.json`, `data/hygiene_checklist.json`, `tests/*.py`, `design/plan_reference.html`, `source/*v6*`) are still in the repository but no longer used by the live page; tidy them into a `legacy/` folder when convenient.
+**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine).
 
 Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROTOTYPE_BRIEF.md`](docs/PROTOTYPE_BRIEF.md) (what to build next).
 
@@ -26,7 +26,7 @@ Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROT
 | `scripts/` | `build.mjs` (builds `index.html`), `library_to_json.py` (workbook → engine data), `Code.gs` (Google Sheet webhook). |
 | `design/` | Brand tokens, fonts, logos, guidelines, contrast matrix. |
 | `worker.js`, `wrangler.jsonc` | Cloudflare Worker: serves the site and saves plan copies (`POST /api/plans` → `/plans/<id>.html`). |
-| `docs/CURSOR_RULES.md` | Ground rules for Cursor. Copy to `.cursor/rules/goodspan.mdc` so Cursor applies them automatically. |
+| `.cursor/rules/goodspan.mdc` | Ground rules for Cursor in this repo. |
 
 ## Run it
 
@@ -59,7 +59,7 @@ answers (A) ──► toFeatures(A) ──► features (p) ──► engine.plan
   1. sends the answers, the plan summary and the Pilot notes to the team's **Google Sheet** (`scripts/Code.gs`; one row per member, columns named `v7 <section>: <question>`);
   2. saves a static copy of the plan through the Worker and shows "Open saved copy"; the link is added to the member's row.
 - "Download my Good Span (JSON)" gives the answers and plan (no Pilot notes) for testing.
-- Answers stay in that browser only (`localStorage`); "Start again" clears them.
+- Answers stay in that browser only (`localStorage`); clicking the logo starts again and clears them (after asking).
 
 **Update the Apps Script:** paste the new `scripts/Code.gs` into the sheet's Apps Script and deploy a new version, so rows are matched by member reference rather than by name.
 
