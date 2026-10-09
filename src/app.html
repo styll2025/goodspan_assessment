@@ -25,18 +25,30 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .opt input{margin-top:3px;accent-color:var(--plum);width:18px;height:18px;flex:none}
 .opt:has(input:checked){background:var(--surface-alt);color:var(--plum);border-color:var(--plum)}
 .opt:has(input:disabled){opacity:.45}
-.grid{overflow-x:auto}
-.grid table{min-width:560px}
-.grid td,.grid th{padding:10px 8px;font-size:15px;line-height:20px}
-.grid td.c{text-align:center}
-.grid input{accent-color:var(--plum);width:18px;height:18px}
-.grid:has(select) table{min-width:0}
-.grid tr:has(select) td{vertical-align:middle}
-.grid tr:has(select) td:last-child{width:1%;white-space:nowrap;padding-left:24px}
-.grid select{display:block;box-sizing:border-box;width:220px;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
-@media (max-width:520px){
-  .grid tr:has(select) td:last-child{padding-left:12px}
-  .grid select{width:176px}
+.qwrap{min-width:0}
+.menus{display:grid;min-width:0}
+.menurow{display:grid;grid-template-columns:minmax(0,1fr) 220px;column-gap:24px;row-gap:10px;align-items:center;padding:14px 0;border-top:1px solid var(--line);min-width:0}
+.menurow>*{min-width:0}
+.menurow span{font-size:15px;line-height:20px}
+.menurow select{display:block;box-sizing:border-box;width:100%;max-width:100%;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.rgrid{min-width:0}
+.rhead,.rrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,2fr);gap:8px 16px;align-items:center}
+.rhead{padding-bottom:8px}
+.rhcols,.ropts{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:8px}
+.rhcols span{font-family:var(--font-ui);font-weight:400;font-size:12px;letter-spacing:.03em;text-transform:uppercase;text-align:center;line-height:16px}
+.rrow{padding:12px 0;border-top:1px solid var(--line)}
+.rlab{font-size:15px;line-height:20px}
+.ropt{position:relative;display:flex;justify-content:center;align-items:center;margin:0}
+.ropt input{accent-color:var(--plum);width:18px;height:18px;flex:none}
+.ropt span{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media (max-width:640px){
+  .menurow{grid-template-columns:minmax(0,1fr)}
+  .rhead{display:none}
+  .rrow{grid-template-columns:minmax(0,1fr);gap:10px;padding:16px 0}
+  .ropts{grid-template-columns:minmax(0,1fr);gap:8px}
+  .ropt{justify-content:flex-start;gap:10px;align-items:flex-start;padding:10px 14px;border:1px solid var(--line);border-radius:14px}
+  .ropt span{position:static;width:auto;height:auto;margin:0;overflow:visible;clip:auto;white-space:normal;font-size:15px;line-height:20px}
+  .ropt:has(input:checked){background:var(--surface-alt);color:var(--plum);border-color:var(--plum)}
 }
 textarea{font:inherit;font-size:17px;width:100%;min-height:80px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .nav{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:24px 64px;border-top:1px solid var(--line)}
@@ -75,7 +87,7 @@ fieldset.missing legend{color:var(--orange)}
 .req{margin:6px 0 0;font-size:15px;color:var(--orange);text-transform:none;letter-spacing:0}
 fieldset.missing{border-left:3px solid var(--orange);padding-left:14px}
 .nm{display:grid;gap:10px;font-size:20px}
-.nm input{font:inherit;font-size:18px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:420px}
+.nm input{font:inherit;font-size:18px;width:100%;max-width:420px;box-sizing:border-box;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .ex-note{font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-muted)}
 </style>
 
@@ -111,8 +123,8 @@ function qHTML(q, n) {
     body = `<div class="opts">${q.options.map((o, i) => { const on = sel.includes(o); return `<label class="opt"><input type="checkbox" name="${q.id}" id="${q.id}_${i}" value="${esc(o)}" ${on ? 'checked' : ''} ${full && !on ? 'disabled' : ''}><span>${esc(o)}</span></label>`; }).join('')}</div>`;
   } else if (q.type === 'grid') {
     const g = v || {};
-    if (q.cols) body = `<div class="grid"><table><thead><tr><th></th>${q.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>${q.rows.map(([k, lab]) => `<tr><td>${esc(lab)}</td>${q.cols.map((c, j) => `<td class="c"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" aria-label="${esc(lab)}: ${esc(c)}" ${g[k] === c ? 'checked' : ''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-    else body = `<div class="grid"><table><tbody>${q.rows.map(([k, lab, opts]) => `<tr><td>${esc(lab)}</td><td><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`;
+    if (q.cols) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${q.rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    else body = `<div class="menus">${q.rows.map(([k, lab, opts]) => `<label class="menurow"><span>${esc(lab)}</span><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`).join('')}</div>`;
   } else if (q.type === 'habit') {
     const h = v || {};
     body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
