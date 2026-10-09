@@ -2,7 +2,7 @@
 
 A member answers the assessment and gets a personalised six-month **Good Span**, built by a rule-based, deterministic engine from their own answers. This repository holds the live prototype, the engine, the assessment, the practice library and the complete rules.
 
-**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine) at the site root. The earlier version's files (`web/`, `engine/`, `app.py`, `data/assessment.json`, `data/practices.json`, `data/rules.json`, `data/hygiene_checklist.json`, `tests/*.py`, `design/plan_reference.html`, `source/*v6*`) are still in the repository but no longer used by the live page; tidy them into a `legacy/` folder when convenient.
+**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine) at the site root. That earlier version now lives in `legacy/` (`legacy/app.py`, `legacy/web/`, `legacy/engine/`, `legacy/data/`, `legacy/tests/`, `legacy/design/plan_reference.html`, `legacy/source/assessment_v6.docx`) and is no longer used by the live page.
 
 Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROTOTYPE_BRIEF.md`](docs/PROTOTYPE_BRIEF.md) (what to build next).
 
