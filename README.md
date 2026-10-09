@@ -13,11 +13,11 @@ Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROT
 | `index.html` | **The live member prototype.** Built from `src/` and `core/` by `npm run build`; don't edit it by hand. |
 | `src/app.html`, `src/base.css` | The prototype's source: app shell and screens, design-system styles. |
 | `core/engine.js` | The plan engine. `makeEngine(DATA).plan(features)` returns a member's Good Span. Runs in the browser and in Node. |
-| `core/questions.js` | The assessment: `SECTIONS`, `QUESTIONS` (50 questions: ids, options, when each is shown) and `toFeatures(answers)`. |
+| `core/questions.js` | The assessment: `SECTIONS`, `QUESTIONS` (52 questions: ids, options, when each is shown) and `toFeatures(answers)`. |
 | `core/data.json` | Data the engine reads: `lib` (298 practices, generated from the library workbook), `hyg` (foundations), `goals`, `goalLabels`. |
 | `docs/RULES.md` | **The complete rules**: principle, plan structure, Rules 1–18, thresholds, signals and goals → practices, Pilot notes, "Not right for me", engine constants. |
 | `docs/PROTOTYPE_BRIEF.md`, `docs/OPEN_ITEMS.md` | What to build next; open items before launch. |
-| `source/GoodSpan_Longevity_Map_Assessment.docx` | The assessment (50 questions) with the internal rules, tables and revision notes. |
+| `source/GoodSpan_Longevity_Map_Assessment.docx` | The assessment (52 questions) with the internal rules, tables and revision notes. |
 | `source/Practice_library_and_mapping.xlsx` | The practice library (Practices, Hygiene checklist, Themes, Pilot notes, Change Log). **Source of truth for practices.** |
 | `source/Assessment_option_map.xlsx` | Every question and option: what it records, which rule uses it, what it does to the plan, how it personalises it. |
 | `source/Simulations_50.xlsx`, `source/Mind_review.xlsx` | Latest simulation findings; the Mind review (batch 2 awaiting approval). |

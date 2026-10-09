@@ -5,7 +5,7 @@
   "description": "The Good Span: assessment, rule-based plan engine and member prototype",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node tests/sims20.js && node tests/nr_test.js && node tests/sims30.js && node tests/sims50.js",
+    "test": "node tests/sims20.js && node tests/nr_test.js && node tests/sims30.js && node tests/sims50.js && node tests/safety_test.js",
     "test:fuzz": "node tests/audit.js",
     "test:e2e": "node scripts/build.mjs && node tests/e2e.js",
     "library": "python3 scripts/library_to_json.py && node scripts/build.mjs"

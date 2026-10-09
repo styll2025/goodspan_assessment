@@ -29,7 +29,7 @@ for (const { name, A } of require('./out/personas20.json')) {
       if (r === 'routine' && z.fam === y.fam) bad.push('routine: same family');
       if (r === 'pillar' && z.area === y.area) bad.push('pillar: same pillar');
       if (z.row.ev === 'Explore' && y.role === 'Priority' && !(p.goals[z.area] || []).some(gk => (DATA.goals[z.area][gk] || []).includes(z.fam))) bad.push('Explore without goal: ' + z.fam);
-      if ((P.conditions.includes('Exercise warning symptoms') || P.conditions.includes('Heart, metabolic or kidney condition and inactive')) && z.area === 'Movement' && z.row.l !== 'Learning') bad.push('safety cap broken');
+      if ((P.conditions.includes('Exercise warning symptoms, not yet cleared') || P.conditions.includes('Heart, metabolic or kidney condition and inactive')) && z.area === 'Movement' && z.row.l !== 'Learning') bad.push('safety cap broken');
     }
     if (bad.length) { issues += bad.length; console.log(name, y.fam, r, bad); }
     rows.push({ name, fam: y.fam, level: y.row.l, role: y.role, reason: r, action: o.action, options: (o.options || []).map(z => `${z.area} · ${z.fam} (${z.row.l}, +${Math.round(P.extraMinutes(z.row))})`) });

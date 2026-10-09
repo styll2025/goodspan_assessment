@@ -25,15 +25,15 @@ each answer in the table below adds to an area's score. A High signal counts 2 p
 
 ### Rule 2. Priorities
 
-each area's combined score = opportunity score + 2 if the member chose it in question 1. The highest combined area is the first priority; the second-highest is also a priority if it scores 2 or more. Ties: chosen areas first, then more High signals, then the order on the map. “I'm not sure yet” = opportunity score only.
+each area's combined score = opportunity score + 2 if the member chose it in question 1. The highest combined area is the first priority; the second-highest is also a priority if it scores 2 or more. Ties: chosen areas first, then more High signals, then the order on the map. “I'm not sure yet” = opportunity score only. On the plan, each priority shows why it was chosen: the goals the member picked there (first, when they chose the area), then what their answers show, each with a short, non-absolute reason (for example a guideline, or what the research links it with). A chosen area with no goals or signals says it was chosen and starts with well-supported practices; an area where the member is already doing well says so, and that one small step builds on what they do.
 
 ### Rule 3. Priority practices
 
-3. Two from the first priority area and one from the second (or all three from the first). Each is chosen in this order: (a) practices that answer this member's own goals and answers in that area (in an area the member chose, their first goal comes first, then any High signal, then their other goals and Medium signals; elsewhere signals come first; goals map through the “Goals → practices” table); (b) the same from the other priority area; (c) the area's starting set, Foundation-level practices only; (d) if there are still fewer than 3, the next areas by score, their own answers first, then Foundation practices. After a fall, Balance comes first in Movement; if the member already does 150+ minutes of activity but strength on 0-1 days, Strength comes first. Explore-level practices are priority practices only when they match one of the member's goals. An area the member chose never ends up with no practice: if nothing else fits, a Targeted practice from that area is used. A starting-set practice (one not linked to the member's goals or answers) is only used where their own answer shows they are at the start; it is never "more of" something they already do most days (for example, whole grains on 3–5 days a week or 3–4 portions of vegetables). If that leaves fewer than 3 priority practices, the plan has fewer. Alcohol practices are not used as starting-set fillers for people who drink little.
+3. Two from the first priority area and one from the second (or all three from the first). Each is chosen in this order: (a) practices that answer this member's own goals and answers in that area (in an area the member chose, their first goal comes first, then any High signal, then their other goals and Medium signals; elsewhere signals come first; goals map through the “Goals → practices” table); (b) the same from the other priority area; (c) the area's starting set, Foundation-level practices only; (d) if there are still fewer than 3, the next areas by score, their own answers first, then Foundation practices. After a fall, Balance comes first in Movement; if the member already does 150+ minutes of activity but strength on 0-1 days, Strength comes first. Explore-level practices are priority practices only when they match one of the member's goals. An area the member chose never ends up with no practice: if nothing else fits, a Targeted practice from that area is used. A starting-set practice (one not linked to the member's goals or answers) is only used where their own answer shows they are at the start; it is never "more of" something they already do most days (for example, whole grains on 3–5 days a week or 3–4 portions of vegetables). If that leaves fewer than 3 priority practices, the plan has fewer. Alcohol practices are not used as starting-set fillers for people who drink little. An area the member didn't choose and where their answers are already good ("doing well") gives at most one priority practice in the whole plan, at its easiest level and adding no more than 15 minutes a week; any space left goes to lighter touches (Rule 4). Every area the member chose that is a priority has at least one priority practice; if it has none, it takes the place of the last practice from an area that has two. A small gap the member's answers show (for example 3–4 portions of vegetables, or rarely eating slowly) can be used even if they are part-way there. The rules that fill time (7 and 7b) never add a practice in a pillar where the member is doing well. A pillar is only shown as a priority if it has a priority practice in month 1, or the member chose it.
 
 ### Rule 4. Lighter touches
 
-enough to make 6 practices in month 1 (3 priority practices + 3 lighter touches; when there are fewer priority practices, more lighter touches). If there isn't time for a sixth, the practice that adds the most time (never the first priority, never one that answers a High signal while another can change) starts one level lower, never below what the member already does. Each lighter touch adds no more than 15 minutes a week (stop-smoking and stop-vaping support is exempt), comes from a different pillar, and is chosen in this order: (a) one that answers the member's own answers or goals in another pillar with a combined score of 1 or more; (b) one that answers their own answers or goals in any pillar; (c) a small, well-established practice (Foundation or Targeted, or Explore only if it matches something they enjoy) that fits their time, choosing what they enjoy first, then Foundation evidence, then the shortest. A starting practice is never "more of" something they already do most days. If nothing fits the time, there are fewer.
+enough to make 6 practices in month 1 (3 priority practices + 3 lighter touches; when there are fewer priority practices, more lighter touches). If there isn't time for a sixth, the practice that adds the most time (never the first priority, never one that answers a High signal while another can change) starts one level lower, never below what the member already does. Each lighter touch adds no more than 15 minutes a week (stop-smoking and stop-vaping support is exempt), comes from a different pillar, and is chosen in this order: (a) one that answers the member's own answers or goals in another pillar with a combined score of 1 or more; (b) one that answers their own answers or goals in any pillar; (c) a small, well-established practice (Foundation or Targeted, or Explore only if it matches something they enjoy) that fits their time, choosing what they enjoy first, then Foundation evidence, then the shortest. A starting practice is never "more of" something they already do most days. If nothing fits the time, there are fewer. When a small, well-established practice is needed, the best fit comes first: a small gap their own answers show, then something they enjoy, then a practice where their answer shows they are at the start, then Foundation evidence, then the shortest. Where they like to be active (at home, at work, at the gym) counts for less than what they enjoy.
 
 ### Rule 5. Evidence level
 
@@ -41,7 +41,7 @@ every practice is Foundation (strong evidence, broadly applicable), Targeted (go
 
 ### Rule 6. Hard constraints, applied before anything is proposed
 
-(a) opted-out practice types are never proposed; (b) exclusions for health conditions, pregnancy, injury and the other flags in each practice's Exclude if; (c) Movement is held at Learning, with no vigorous practices, for exercise warning symptoms or a heart, metabolic or kidney condition with inactivity, until the Pilot has discussed it; (d) appetite for change limits the starting level and level-ups (see the notes on the time and change questions); with small, easy steps, a practice that has no easy level is not offered as a priority; (e) the extra Good Span time never goes over the member's weekly time.
+(a) opted-out practice types are never proposed; (b) exclusions for health conditions, pregnancy, injury and the other flags in each practice's Exclude if; (c) Movement is held at Learning, with no vigorous practices, for exercise warning symptoms or a heart, metabolic or kidney condition with inactivity, until the Pilot has discussed it; (d) appetite for change limits the starting level and level-ups (see the notes on the time and change questions); with small, easy steps, a practice that has no easy level is not offered as a priority; (e) the extra Good Span time never goes over the member's weekly time. (f) Never "more of" something they already do: 2 hours or more a week in nature (no Time in nature), learning something new weekly (no Learning new skills), strength on 3 or more days (no Strength volume), yoga or Pilates (no Stretching). (g) Members who drink less than weekly get no "drink less on some evenings" practices unless they picked drinking less as a goal. (h) Affectionate touch is not offered to members who rarely see or speak to anyone; eating-before-bed practices are left out with blood-sugar medicine, in pregnancy and when breastfeeding, and for members who opted out of eating windows or fasting. (i) With a safety hold (c), the month-1 movement practices carry the note "kept gentle for safety: please check with your doctor before doing more than this". The exception in (g) is a goal to drink less or saying alcohol affects their sleep, not other sleep goals. (j) Exercise warning symptoms (question 5) have two follow-ups (questions 6 and 7): whether they happened during or just after activity, and whether the member has talked to a doctor. Vigorous practices are always left out when any symptom is reported. The hold at Learning in (c) applies until a doctor is happy for them to be more active; after that the hold is lifted, but a bigger challenge still doesn't raise the movement starting level. Symptoms during or just after activity, not yet cleared, are marked as a priority in the Pilot note (encourage them to see their doctor before doing more). The Pilot note names the symptoms.
 
 ### Rule 7. Time
 
@@ -53,11 +53,11 @@ unless the member chose small, easy steps, if the plan adds less than a third of
 
 ### Rule 8. Starting level
 
-the member's own answer for that practice where the library maps one (vegetable portions, protein meals, sleep hours, activity minutes, strength days, sitting, steps (8,000 or more counts as already there), time in nature, social media, whole grains, beans, nuts, sugary drinks, processed food, salt, home cooking, eating before bed, and contact with friends, family, groups and volunteering). It is the member's next step, and the plan never offers a level below it, because that is something they already do (already at the top = don't offer it). With no answer for that practice, use the area's level on the Starting Position, but no higher than Developing. Then adjust for appetite for change and safety holds.
+the member's own answer for that practice where the library maps one (vegetable portions, protein meals, sleep hours, activity minutes, strength days, sitting, steps (8,000 or more counts as already there), time in nature, social media, whole grains, beans, nuts, sugary drinks, processed food, salt, home cooking, eating before bed, and contact with friends, family, groups and volunteering). It is the member's next step, and the plan never offers a level below it, because that is something they already do (already at the top = don't offer it). With no answer for that practice, use the area's level on the Starting Position, but no higher than Developing. Then adjust for appetite for change and safety holds. A bigger challenge doesn't raise the starting level in Movement for pregnancy, breastfeeding, a fall, pain or a joint limitation, a lung condition or high blood pressure. Habit building and If-then planning always start at their set-up step (Learning).
 
 ### Rule 9. Months 2–3 (provisional)
 
-Months 2-3 are provisional and set at each monthly check-in, with the Pilot's judgement where the member has one: CONTINUE (needs more time to become established) or LEVEL UP (the same practice one level higher: only if it fits the member's time, their appetite for change and any safety hold). The plan itself suggests SWAP only for clear reasons: a one-off practice is done (for example, a check-up is booked; the next practice must fit the member's time and can't be one already used; it comes from the same area, then the other priority areas, then the next areas; otherwise the space stays free and is shown as DONE), or the member has reached the top level and moves to the next practice in that group (for example, Building up cardio to Weekly cardio). Any other change comes from the member through Rule 13.
+Months 2-3 are provisional and set at each monthly check-in, with the Pilot's judgement where the member has one: CONTINUE (needs more time to become established) or LEVEL UP (the same practice one level higher: only if it fits the member's time, their appetite for change and any safety hold). The plan itself suggests SWAP only for clear reasons: a one-off practice is done (for example, a check-up is booked; the next practice must fit the member's time and can't be one already used; it comes from the same area, then the other priority areas, then the next areas; otherwise the space stays free and is shown as DONE), or the member has reached the top level and moves to the next practice in that group (for example, Building up cardio to Weekly cardio). Any other change comes from the member through Rule 13. One-off steps ("once this month"): a priority one-off moves to its next level the month after (it counts towards the pace; if the pace doesn't allow it yet, it shows as DONE and moves on the month after); a lighter-touch one-off, or one with no next level, is replaced by another practice; stop-smoking and stop-vaping steps carry on as "keep following your plan, with the support you set up". A mastered practice only moves to a next practice that is at least as demanding (never an easier one). Notes in months 2-3 are plain: "stays at this level for now, to keep to the pace you chose", "can level up if you'd like to give it more time", and, for a safety hold, "stays at this level for now, for safety; we'll talk it through with you before it steps up".
 
 ### Rule 10. Foundations
 
@@ -65,7 +65,7 @@ Months 2-3 are provisional and set at each monthly check-in, with the Pilot's ju
 
 ### Rule 11. Themes for months 4-6
 
-6 themes, each different. First one per pillar: the priority areas (two if there is only one), then the lighter-touch areas, then the other areas in order of the member's scores. If that gives fewer than six, a further theme from the priority areas, then the lighter-touch areas, until there are six. At mid-Span, use the theme where the member's practices went best.
+6 themes, each different. First one per pillar: the priority areas (two if there is only one), then the lighter-touch areas, then the other areas in order of the member's scores. If that gives fewer than six, a further theme from the priority areas, then the lighter-touch areas, until there are six. At mid-Span, use the theme where the member's practices went best. Each theme says why: it builds on practices from months 1-3 in that theme; it is another part of a priority area; it takes a lighter touch further; the member's answers show room to grow there; it links to goals they picked there; or it is a well-established area to explore next. A theme built on something the member opted out of (for example Mindfulness & Meditation after opting out of meditation) is not used. Rhythm (meal timing) is not used for members who opted out of eating windows or fasting, or who have a difficult relationship with food or preferred not to say.
 
 ### Rule 12. Pilot notes
 
@@ -81,7 +81,7 @@ Limits: at most one change per practice and two per check-in across the plan. Th
 
 ### Rule 14. Fit score
 
-The groups stay in the same order (the member's goals and clear needs first), but inside each group practices are ordered by how well they fit this member: +3 if it answers two or more of their goals or answers at once; +2 if it matches something they enjoy or where they like to be active; +1 for Foundation evidence, −1 for Explore (unless the member asked for it through a goal); −1 if it would take more than half of their weekly time; −1 with small, easy steps if it adds more than 15 minutes; −1 for practices over an hour a week when they have caring responsibilities, irregular hours or a busy schedule. Ties keep the library order, so the same answers always give the same plan. If nothing in the plan matches what they enjoy, one lighter touch may be swapped for one that does, as long as it still answers their own answers or goals.
+The groups stay in the same order (the member's goals and clear needs first), but inside each group practices are ordered by how well they fit this member: +3 if it answers two or more of their goals or answers at once; +2 if it matches something they enjoy or where they like to be active; +1 for Foundation evidence, −1 for Explore (unless the member asked for it through a goal); −1 if it would take more than half of their weekly time; −1 with small, easy steps if it adds more than 15 minutes; −1 for practices over an hour a week when they have caring responsibilities, irregular hours or a busy schedule. Ties keep the library order, so the same answers always give the same plan. If nothing in the plan matches what they enjoy, one lighter touch may be swapped for one that does, as long as it still answers their own answers or goals. The plan only says a practice is something the member enjoys when they said so in "Which of these do you enjoy?"; where they like to be active is described as a place (for example "You can do it outdoors, where you like to be active.").
 
 ### Rule 15. Life context
 
@@ -93,7 +93,7 @@ A sleep habit the member has tried without success is not offered as a priority 
 
 ### Rule 17. Variety
 
-The priority practices come from different themes wherever possible; two from the same theme only if nothing else from the member's own answers fits. Variety never removes a practice for a goal that has no practice yet, and never brings in a starting-set practice in place of one from their answers.
+The priority practices come from different themes wherever possible; two from the same theme only if nothing else from the member's own answers fits. Variety never removes a practice for a goal that has no practice yet, and never brings in a starting-set practice in place of one from their answers. Practices that do the same job are never in a plan together: Slow breathing, Slow breathing to wind down and Progressive muscle relaxation; Avoiding sunburn and Daily sunscreen; Focused work and Present-moment attention; Breaking up sitting and Micro-breaks; Habit building and If-then planning; Balanced plate and Protein at meals (plus the existing pairs for cardio, strength, alcohol, eating windows, shared meals, quitting, hearing and air quality).
 
 ### Rule 18. Every goal counts
 
@@ -109,42 +109,42 @@ Each answer adds to an area's opportunity score (High = 2, Medium = 1) and, wher
 
 | Pillar | Answer | Weight | What the member is told |
 |---|---|---|---|
-| Sleep | Usually sleeps less than 6 hours | High | You usually sleep less than 6 hours a night. Most adults need 7 or more hours for good health. |
-| Sleep | Usually sleeps 6-7 hours | Medium | You usually sleep 6-7 hours a night, a little under the 7 or more hours most adults need. |
-| Sleep | 2 or more sleep difficulties on 3+ nights a week | High | On 3 or more nights a week, [difficulties]. (Also adds a Pilot note.) |
-| Sleep | 1 sleep difficulty on 3+ nights a week | Medium | On 3 or more nights a week, [difficulty]. |
-| Sleep | Last caffeine after 3pm | Medium | Your last caffeine is usually after 3pm, which can make it harder to fall asleep. |
+| Sleep | Usually sleeps less than 6 hours | High | You usually sleep [5-6 hours / less than 5 hours] a night. Guidelines recommend 7 or more hours for adults. |
+| Sleep | Usually sleeps 6-7 hours | Medium | You usually sleep 6-7 hours a night, a little under the 7 or more hours guidelines recommend for adults. |
+| Sleep | 2 or more sleep difficulties on 3+ nights a week | High | On 3 or more nights a week, [difficulties]. A calmer, more regular evening routine helps many people sleep better. (Also adds a Pilot note.) |
+| Sleep | 1 sleep difficulty on 3+ nights a week | Medium | On 3 or more nights a week, [difficulty]. A calmer, more regular evening routine helps many people sleep better. |
+| Sleep | Last caffeine after 3pm | Medium | Your last caffeine is usually [between 3pm and 6pm / after 6pm], which can make it harder to fall asleep. |
 | Nutrition | No vegetables or fruit on a typical day | High | You don't usually eat vegetables or fruit. At least 5 portions a day are recommended. |
 | Nutrition | 1-2 portions of vegetables and fruit | Medium | You usually eat 1-2 portions of vegetables and fruit a day. At least 5 are recommended. |
-| Nutrition | Sugary drinks on 3+ days a week | Medium | You have sugary drinks on [3-5 / 6-7] days a week. |
-| Nutrition | Packaged or processed foods on 3+ days a week | Medium | You eat packaged or processed foods on [3-5 / 6-7] days a week. |
-| Nutrition | Whole grains rarely or never | Medium | You rarely eat whole grains. |
-| Nutrition | Beans, lentils or chickpeas rarely or never | Medium | You rarely eat beans, lentils or chickpeas. |
+| Nutrition | Sugary drinks on 3+ days a week | Medium | You have sugary drinks on [3-5 / 6-7] days a week. Swapping some for water or unsweetened drinks is an easy way to cut added sugar. |
+| Nutrition | Packaged or processed foods on 3+ days a week | Medium | You eat packaged or processed foods on [3-5 / 6-7] days a week. Eating more fresh and home-cooked food is linked with better long-term health. |
+| Nutrition | Whole grains rarely or never | Medium | You rarely eat whole grains. They add fibre, and eating more of them is linked with better heart and gut health. |
+| Nutrition | Beans, lentils or chickpeas rarely or never | Medium | You rarely eat beans, lentils or chickpeas. They are a good source of fibre and protein, and eating them more often is linked with better heart health. |
 | Nutrition | Rarely eats without a screen, pays attention to food, eats slowly, eats a variety of plants or plans for eating out | Ranking only | Puts the matching practice forward within Nutrition (it doesn't raise the Nutrition score). 'Sometimes' starts that practice one level up. |
-| Nutrition | Protein at no main meals or one | Medium | Most of your main meals don't include a source of protein. |
-| Nutrition | Adds salt on 6-7 days a week | Medium | You add salt to your food most days. |
-| Movement | Moderate or vigorous activity under 60 minutes a week (days × minutes) | High | You do about [X] minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes. |
-| Movement | Moderate or vigorous activity 60-149 minutes a week (practice: Building up cardio under 100 minutes, Weekly cardio from 100) | Medium | You do about [X] minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend. |
+| Nutrition | Protein at no main meals or one | Medium | Most of your main meals don't include a source of protein. Spreading protein across your meals helps you feel full and supports your muscles. |
+| Nutrition | Adds salt on 6-7 days a week | Medium | You add salt to your food most days. Many adults eat more salt than recommended, and cutting down helps keep blood pressure healthy. |
+| Movement | Moderate or vigorous activity under 60 minutes a week (days × minutes) | High | You do about [X] minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes, and even small increases are linked with better health. |
+| Movement | Moderate or vigorous activity 60-149 minutes a week (practice: Building up cardio under 100 minutes, Weekly cardio from 100) | Medium | You do about [X] minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend. Being more active is linked with better long-term health. |
 | Movement | A fall in the past 12 months | Medium | You've had a fall in the past 12 months. Balance practice can help you stay steady on your feet. (Also adds a Pilot note.) |
-| Movement | Strength exercise on 0-1 days a week | Medium | You do strength exercise on [0 / 1] days a week. Guidelines recommend 2 or more. |
-| Movement | Sits 8 or more hours a day | Medium | You sit for 8 or more hours on a typical day. |
-| Movement | Fewer than 5,000 steps a day (if tracked) | Medium | You take fewer than 5,000 steps on a typical day. |
-| Mind | Positive PHQ-4 screen (only when those questions were shown) | High | You've been feeling anxious or low on several days recently. Points to Self-compassion. (Also adds a Pilot note.) |
+| Movement | Strength exercise on 0-1 days a week | Medium | You do strength exercise on [0 / 1] days a week. Guidelines recommend 2 or more, to help keep your muscles and bones strong. |
+| Movement | Sits 8 or more hours a day | Medium | You sit for 8 or more hours on a typical day. Breaking up long periods of sitting is linked with better health, even for people who exercise. |
+| Movement | Fewer than 5,000 steps a day (if tracked) | Medium | You take fewer than 5,000 steps on a typical day. Walking more is linked with better health, and even small increases count. |
+| Mind | Positive PHQ-4 screen (only when those questions were shown) | High | You've been feeling anxious or low on [several days / more than half the days] recently. Small, regular practices can help support how you feel day to day. Points to Self-compassion. (Also adds a Pilot note.) |
 | Mind | Less than 2 hours a week in nature | Medium | You spend less than 2 hours a week in nature. People who spend at least 2 hours a week tend to report better health and wellbeing. |
-| Mind | Social media more than 2 hours a day | Medium | You spend more than 2 hours a day on social media. |
-| Mind | None of the listed Mind practices in their routine | Medium | None of the mind practices we asked about are part of your routine yet. |
-| Connection | Meets friends or family in person 'Never' and talks by phone or video 'Never' or 'Once' a month | High | You rarely see or speak to friends or family. |
-| Connection | Meets friends or family in person once a month or less | Medium | You see friends or family in person once a month or less. |
-| Connection | Never takes part in a group, club or class | Medium | You don't currently take part in a group, club or class. |
-| Connection | None of the listed connection habits | Medium | None of the everyday connection habits we asked about are part of your week yet. |
-| Prevention | Smokes daily (practice: quitting support if they want to stop; otherwise Smoke-free home and a Pilot note) | High | You smoke daily. Stopping is one of the biggest things you can do for your long-term health, and support makes it much more likely to work. |
+| Mind | Social media more than 2 hours a day | Medium | You spend more than 2 hours a day on social media. In several studies, cutting back was linked with better mood and sleep. |
+| Mind | None of the listed Mind practices in their routine | Medium | None of the mind practices we asked about are part of your routine yet. Short, regular practices can help you manage everyday stress and feel more settled. |
+| Connection | Meets friends or family in person 'Never' and talks by phone or video 'Never' or 'Once' a month | High | You rarely see or speak to friends or family. Regular contact with people who matter to you is linked with better health and wellbeing. |
+| Connection | Meets friends or family in person once a month or less | Medium | You see friends or family in person once a month or less. Regular time with people who matter to you is linked with better health and wellbeing. |
+| Connection | Never takes part in a group, club or class | Medium | You don't currently take part in a group, club or class. Being part of a group gives you regular contact and a sense of belonging, both linked with better wellbeing. |
+| Connection | None of the listed connection habits | Medium | None of the everyday connection habits we asked about are part of your week yet. Small everyday habits, like a kind act or a quick call, help build and keep connections. |
+| Prevention | Smokes daily (practice: quitting support if they want to stop; otherwise Smoke-free home and a Pilot note) | High | You smoke daily. Stopping brings real health benefits at any age, and support makes it much more likely to work. |
 | Prevention | Smokes occasionally, or vapes, and would like to stop | High | You [smoke occasionally / vape] and you'd like to stop. Support makes stopping much more likely to work. |
-| Prevention | Smokes occasionally, or vapes, and isn't ready to stop | Medium | You [smoke occasionally / vape]. (Also adds a Pilot note.) |
-| Prevention | AUDIT-C 8 or more | High | Your drinking is in the higher-risk range. (Also adds a Pilot note.) |
-| Prevention | AUDIT-C 5-7 | Medium | Your drinking is above lower-risk levels. |
+| Prevention | Smokes occasionally, or vapes, and isn't ready to stop | Medium | You [smoke occasionally / vape]. [Even light smoking carries health risks / Vaping is less harmful than smoking but not risk-free], and support is there whenever you feel ready. (Also adds a Pilot note.) |
+| Prevention | AUDIT-C 8 or more | High | Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems. (Also adds a Pilot note.) |
+| Prevention | AUDIT-C 5-7 | Medium | Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health. |
 | Prevention | Blood pressure last checked more than 2 years ago, never or not sure | Medium | Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly. |
-| Prevention | Sunburnt or used a sunbed in the past 12 months | Medium | You've [been sunburnt / used a sunbed] in the past 12 months. |
-| Prevention | Finds it hard to follow conversations | Medium | You often find it hard to follow conversations. (Also adds a Pilot note.) |
+| Prevention | Sunburnt or used a sunbed in the past 12 months | Medium | You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time. |
+| Prevention | Finds it hard to follow conversations | Medium | You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected. (Also adds a Pilot note.) |
 | Prevention | Learns something new rarely or never | Medium | You rarely learn new things or practise a challenging hobby, which helps keep the mind active. |
 
 ## Goals → practices
@@ -356,7 +356,8 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
 [
  [
   "Slow breathing",
-  "Slow breathing to wind down"
+  "Slow breathing to wind down",
+  "Progressive muscle relaxation"
  ],
  [
   "Building up cardio",
@@ -403,6 +404,26 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
  [
   "Air quality",
   "Indoor air"
+ ],
+ [
+  "Avoiding sunburn",
+  "Daily sunscreen"
+ ],
+ [
+  "Focused work",
+  "Present-moment attention"
+ ],
+ [
+  "Breaking up sitting",
+  "Micro-breaks"
+ ],
+ [
+  "Habit building",
+  "If-then planning"
+ ],
+ [
+  "Balanced plate",
+  "Protein at meals"
  ]
 ]
 ```
@@ -418,7 +439,7 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
 ```json
 {
  "Movement": [
-  "Exercise warning symptoms",
+  "Exercise warning symptoms, not yet cleared",
   "Heart, metabolic or kidney condition and inactive"
  ]
 }
@@ -429,9 +450,13 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
 ```json
 {
  "Movement": [
+  "Exercise warning symptoms",
   "Pregnant",
+  "Breastfeeding",
   "Fall in past 12 months",
-  "Pain, injury or joint limitation"
+  "Pain, injury or joint limitation",
+  "Lung condition",
+  "High blood pressure"
  ],
  "Mind": [
   "Positive PHQ-4 screen"
@@ -462,7 +487,8 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
   "Self-compassion.Developing"
  ],
  "fasting": [
-  "Daily eating window"
+  "Daily eating window",
+  "Gap between eating and bed"
  ],
  "tracking_food": [
   "Daily eating window",
@@ -569,9 +595,7 @@ The first priority practice and stop-smoking, stop-vaping and smoke-free-home pr
   "Shared meals",
   "Meals with new people",
   "Volunteering",
-  "Activity challenges",
-  "Talking to acquaintances",
-  "Reaching out"
+  "Activity challenges"
  ],
  "quiet": [
   "Meditation",

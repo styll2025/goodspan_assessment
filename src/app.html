@@ -251,13 +251,15 @@ function introLine(P) {
   return parts.join(' ');
 }
 const PACE_TXT = {
-  small: "You told us you'd like small, easy steps. So every practice starts at its easiest level, nothing levels up in month 2, and at most one practice levels up in month 3, and only if it's going well and you feel ready.",
-  mid: "You told us you'd like something in between. So practices start at a manageable level based on your answers, and up to two can level up each month, if they're going well and you feel ready.",
-  big: "You told us you're ready for a bigger challenge. So practices start a level higher where it's safe, and any practice can level up each month, as long as it fits your time and you feel ready."
+  small: "You told us you'd like small, easy steps. So every practice starts at its easiest level. Nothing levels up in month 2, and in month 3 at most one practice does, only if it's going well and you feel ready. Everything else stays as it is, so you're never changing much at once.",
+  mid: "You told us you'd like something in between. So each practice starts at a level that suits your answers. Each month, no more than two of your practices level up, and only if they're going well and you feel ready. The others stay as they are, so you're only changing a couple of things at a time, which makes new habits easier to keep.",
+  big: "You told us you're ready for a bigger challenge. So practices start a level higher where it's safe, and any of them can level up each month, as long as it fits your time and you feel ready."
 };
 const THEME_WHY = {
   pri: a => `Builds on your ${a.toLowerCase()} practices from months 1 to 3.`,
+  pri2: a => `Another part of your ${a.toLowerCase()} priority to build on.`,
   light: a => `Takes your lighter touch in ${a.toLowerCase()} further.`,
+  goal: a => `Links to the goals you picked in ${a.toLowerCase()}.`,
   room: a => `Your answers show some room to grow in ${a.toLowerCase()}.`,
   next: a => `A well-established area to explore next.`
 };
@@ -300,8 +302,8 @@ function renderPlan() {
     <div><span class="n">${P.budget}</span><span class="ui">Your limit (you told us ${esc(timeLabel)})</span></div>
     <div><span class="n">${mins(P.target[0])}</span><span class="ui">Total target minutes, including what you already do</span></div></div></div></section>
   <section><div class="wrap"><p class="kicker">Months 2 and 3 · provisional</p><h2>How your Good Span could evolve.</h2>
-    <p style="margin-top:16px;max-width:680px">What comes next depends on how each practice goes and on your conversations with your Pilot. This is one possible path, not a fixed one. Each month, every practice will:</p>
-    <div class="outcomes"><div><span class="ch">CONTINUE</span><span>It needs more time to become established.</span></div><div><span class="ch LEVEL">LEVEL UP</span><span>You're ready for a more advanced version.</span></div><div><span class="ch SWAP">SWAP</span><span>Another practice takes its place: when a one-off is done, when you're ready for the next step, or when you've told us it isn't right for you.</span></div></div>
+    <p style="margin-top:16px;max-width:680px">What comes next depends on how each practice goes. This is one possible path, not a fixed one. Each month, every practice will:</p>
+    <div class="outcomes"><div><span class="ch">CONTINUE</span><span>It needs more time to become established.</span></div><div><span class="ch LEVEL">LEVEL UP</span><span>You're ready for a more advanced version.</span></div><div><span class="ch SWAP">SWAP</span><span>Another practice takes its place: when a one-off is done, when you're ready for the next step, or when it isn't right for you.</span></div></div>
     <div class="tbl"><table><thead><tr><th>Practice and pillar</th><th>Month 1</th><th>Month 2 (provisional)</th><th>Month 3 (provisional)</th></tr></thead>
     <tbody>${m1.map((x, k) => `<tr><td><b>${esc(x.fam)}</b><small>${esc(x.area)} · ${esc(x.role)}</small></td><td><span class="ch">START</span><small>${cellTxt(x)}</small></td><td>${chg(P.months[1][k])}</td><td>${chg(P.months[2][k])}</td></tr>`).join('')}</tbody></table></div>
     <div class="pace"><p class="kicker">Your pace · ${esc(paceLabel)}</p><p>${esc(PACE_TXT[p.change] || PACE_TXT.mid)}</p></div></div></section>
@@ -316,7 +318,7 @@ function renderPlan() {
     <div><p class="kicker">04 · Your next Good Span</p><h2>Where you go from there.</h2><p>Your New Position becomes the starting point for your next Good Span: we keep what's working, build on what's going well, and choose the next step together.</p></div></div></section>
   <section><div class="wrap closing"><p class="kicker">One step at a time</p><h2>Healthy habits are built one step at a time.</h2>
     <p>You don't need to get everything right at once. Start with the practices for this month, keep going with what works, and adjust what doesn't. Some weeks will go better than others, and that's part of it. Small changes, kept up, add up over time.</p>
-    <p>Your Pilot is there whenever you need them, at your check-ins and in between.</p></div></section>
+    <p>You don't have to do it alone: we'll check in with you each month and adjust your plan with you.</p></div></section>
   <div class="wrap"><section style="padding-block:56px 0"><p class="kicker">References</p><h2>The science behind your plan.</h2><ol class="refs">${refs.map(r => `<li>${esc(r)}</li>`).join('')}</ol></section>
     <p class="disc muted">Your Good Span plan is designed to support everyday wellbeing and healthy habits. It's not a substitute for personalised medical care.</p></div></div>`;
   document.getElementById('edit').onclick = () => { REQ = {}; OPEN = null; CUR = null; mode = 'assess'; sec = 0; save(); render(); scrollTo(0, 0); };

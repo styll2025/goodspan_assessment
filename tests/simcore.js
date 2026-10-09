@@ -17,7 +17,9 @@ const BASE = { q2: '40-49', q3: 'Mostly regular daytime hours', q4: ['None of th
   q37: ['Share meals with others', 'Ask follow-up questions and really listen'], q38: ['Nothing in particular'], q40: { tobacco: 'Never', vape: 'Never' }, q43: '2-4 times a month', q44: '1-2', q45: 'Never',
   q46: 'In the past 12 months', q48: ['None of these'], q51: 'About once a week', q52: ['Nothing in particular'],
   q55: '1-2 hours', q56: 'Something in between', q57: ['None of these'], q58: ['None of these'] };
-const M = (name, o) => ({ name, A: Object.assign(JSON.parse(JSON.stringify(BASE)), o) });
+// the age band follows the age in the persona's name unless the persona sets it
+const AGE_BAND = n => { const m = /, (\d+)/.exec(n); if (!m) return null; const a = +m[1]; return a < 30 ? '18-29' : a < 40 ? '30-39' : a < 50 ? '40-49' : a < 60 ? '50-59' : a < 70 ? '60-69' : '70 or over'; };
+const M = (name, o) => ({ name, A: Object.assign(JSON.parse(JSON.stringify(BASE)), AGE_BAND(name) ? { q2: AGE_BAND(name) } : {}, o) });
 const LEVELS = ['Learning', 'Developing', 'Mastering'];
 const OVER = [['Slow breathing', 'Slow breathing to wind down'], ['Building up cardio', 'Weekly cardio', 'Activity for better sleep'], ['Harder cardio and long intervals', 'Short intervals'], ['Strength sessions', 'Strength volume'], ['Alcohol intake', 'Alcohol-free swaps', 'Alcohol and sleep'], ['Walking with others', 'Group activity'], ['Daily eating window', 'Gap between eating and bed'], ['Shared meals', 'Meals with new people'], ['Quitting with full support', 'Trying again to quit'], ['Three good things', 'Expressing gratitude'], ['Safe listening', 'Hearing protection'], ['Air quality', 'Indoor air']];
 const OPT = { meditation: ['Meditation'], journalling: ['Expressive writing', 'Three good things', 'Bedtime to-do list'], fasting: ['Daily eating window'], tracking_food: ['Daily eating window', 'Plant variety.Developing', 'Plant variety.Mastering', 'Salt.Mastering', 'Reducing sugar.Mastering', 'Protein at meals.Mastering'], touch: ['Affectionate touch'], early: ['Morning daylight.Mastering'], apps: ['Daily steps.Developing', 'Daily steps.Mastering'] };
@@ -36,7 +38,7 @@ function check(f, o) {
     if (f.doing.includes(x.fam)) issues.push(`Already-done practice offered: ${x.fam}`);
     if (x.row.eq && x.row.p === 'Movement' && !f.gym) issues.push(`Equipment practice without gym: ${x.fam}`);
   }
-  if (cond.has('Exercise warning symptoms') || cond.has('Heart, metabolic or kidney condition and inactive'))
+  if (cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive'))
     for (const x of all) if (x.area === 'Movement' && x.row.l !== 'Learning') issues.push(`Movement above Learning despite safety hold: ${x.fam} ${x.row.l}`);
   if (f.change === 'small') {
     if (o.months[1].some(x => x.change === 'LEVEL UP')) issues.push('Level-up in month 2 despite small steps');
@@ -45,8 +47,8 @@ function check(f, o) {
   }
   for (const x of m1) if (x.role === 'Priority' && x.row.ev === 'Explore' && !(f.goals[x.area] || []).flatMap(g => DATA.goals[x.area][g] || []).includes(x.fam)) issues.push(`Explore practice as priority without a matching goal: ${x.fam}`);
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
-  const held = cond.has('Exercise warning symptoms') || cond.has('Heart, metabolic or kidney condition and inactive');
-  if (!held && f.change !== 'small' && o.minutes[0] < o.budget / 3 && !m1.some(x => o.extraMinutes(x.row) >= 15)) issues.push(`Plan adds only ${Math.round(o.minutes[0])} of ${o.budget} minutes (minimum-time rule could not find a practice)`);
+  const held = cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive');
+  if (!held && f.change !== 'small' && o.minutes[0] < o.budget / 3 && !m1.some(x => o.extraMinutes(x.row) >= 15) && !o.pilot.some(n => n[0] === 'Low new time')) issues.push(`Plan adds only ${Math.round(o.minutes[0])} of ${o.budget} minutes (minimum-time rule could not find a practice)`);
   return issues;
 }
 
