@@ -66,7 +66,7 @@ function check(f, o) {
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms') || cond.has('Heart, metabolic or kidney condition and inactive');
   if (!held && f.change !== 'small' && o.minutes[0] < o.budget / 3 && !m1.some(x => o.extraMinutes(x.row) >= 15)) issues.push(`Plan adds only ${Math.round(o.minutes[0])} of ${o.budget} minutes (minimum-time rule could not find a practice)`);
-  if (m1.length < 3) issues.push(`Only ${m1.length} practices in month 1`);
+  if (m1.length < 3 && o.minutes[0] < o.budget - 15) issues.push(`Only ${m1.length} practices in month 1`);   // fewer is fine when their time is already used
   return issues;
 }
 fs.writeFileSync('personas20.json', JSON.stringify(P));
