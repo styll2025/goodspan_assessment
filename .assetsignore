@@ -17,3 +17,14 @@ engine/__pycache__
 Personalised Plan*
 worker.js
 .wrangler
+
+.cursor
+package.json
+node_modules
+src
+tests
+scripts
+legacy/app.py
+legacy/tests
+legacy/source
+legacy/docs

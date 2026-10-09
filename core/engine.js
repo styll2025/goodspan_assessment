@@ -107,8 +107,8 @@ function makeEngine(DATA) {
   function signals(p) {
     const a = {}; AREAS.forEach(x => a[x] = []);
     const add = (ar, w, t, f) => a[ar].push([w, t, f]);
-    if (p.sleep_h < 6) add('Sleep', 'H', `You usually sleep ${p.sleep_txt} a night. Most adults need 7 or more hours for good health.`, 'Enough sleep');
-    else if (p.sleep_h < 7) add('Sleep', 'M', 'You usually sleep 6-7 hours a night, a little under the 7 or more hours most adults need.', 'Enough sleep');
+    if (p.sleep_h < 6) add('Sleep', 'H', `You usually sleep ${p.sleep_txt} a night. Guidelines recommend 7 or more hours for adults.`, 'Enough sleep');
+    else if (p.sleep_h < 7) add('Sleep', 'M', 'You usually sleep 6-7 hours a night, a little under the 7 or more hours guidelines recommend for adults.', 'Enough sleep');
     const ins = p.insomnia || [];
     if (ins.length >= 2) add('Sleep', 'H', 'On 3 or more nights a week, ' + ins.join(' and ') + '.', 'Slow breathing to wind down');
     else if (ins.length === 1) add('Sleep', 'M', 'On 3 or more nights a week, ' + ins[0] + '.', 'Screen-free wind-down');
@@ -138,7 +138,7 @@ function makeEngine(DATA) {
     if (p.no_group) add('Connection', 'M', "You don't currently take part in a group, club or class.", 'Group membership');
     if (p.conn_none) add('Connection', 'M', 'None of the everyday connection habits we asked about are part of your week yet.', 'Acts of kindness');
     const qf = p.tried_quit ? 'Trying again to quit' : 'Quitting with full support';
-    if (p.smokes === 'daily') add('Prevention', 'H', 'You smoke daily. Stopping is one of the biggest things you can do for your long-term health, and support makes it much more likely to work.', p.want_quit ? qf : 'Smoke-free home');
+    if (p.smokes === 'daily') add('Prevention', 'H', 'You smoke daily. Stopping brings real health benefits at any age, and support makes it much more likely to work.', p.want_quit ? qf : 'Smoke-free home');
     else if (p.smokes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You smoke occasionally and you'd like to stop. Support makes stopping much more likely to work." : 'You smoke occasionally.', p.want_quit ? qf : 'Smoke-free home');
     else if (p.vapes) add('Prevention', p.want_quit ? 'H' : 'M', p.want_quit ? "You vape and you'd like to stop. Support makes stopping much more likely to work." : 'You vape.', p.want_quit ? 'Stopping vaping' : null);
     const au = p.audit || 0;
@@ -189,7 +189,9 @@ function makeEngine(DATA) {
   function whyBase(p, S, x, wish) {
     const a = x.area, f = x.fam, m = p.mvpa;
     if ((f === 'Strength sessions' || f === 'Strength volume') && m >= 150 && p.strength <= 1) return "You're already doing plenty of cardio but less strength work, so we're prioritising strength rather than adding more aerobic exercise.";
-    if ((f === 'Building up cardio' || f === 'Weekly cardio') && m < 150) return (m < 30 ? "You're not doing much moderate activity at the moment" : `You do about ${m} minutes of moderate activity a week`) + '; building towards 150 minutes is one of the biggest things you can do for your health.';
+    if ((f === 'Building up cardio' || f === 'Weekly cardio') && m < 150) return m < 30
+      ? "You're doing little moderate activity at the moment. Guidelines suggest 150–300 minutes a week; building up gradually is a realistic start, and even small increases are linked with better health."
+      : `You do about ${m} minutes of moderate activity a week. Guidelines suggest 150–300 minutes, so a little more is a realistic next step, and being more active is linked with better long-term health.`;
     if ((f === 'Harder cardio and long intervals' || f === 'Short intervals') && m >= 150) return 'Your weekly cardio is already above the guidelines, so this changes how you train rather than adding more time.';
     if (f === 'Balance' && p.fall) return "You mentioned a fall in the past year, so we've included balance practice to help you stay steady on your feet.";
     for (const [w, t, ff] of S[a]) if (ff === f) return wish.includes(a) ? `You told us you want to work on ${AREA_TXT[a]}, and ${t[0].toLowerCase()}${t.slice(1)}` : t;
@@ -287,6 +289,9 @@ function makeEngine(DATA) {
       for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16
       return out;
     };
+    const backed = (a, f) => (p.goals[a] || []).some(g => (GOALMAP[a][g] || []).includes(f)) || S[a].some(x => x[2] === f)
+      || (a === 'Sleep' && (p.sleep_disrupt || []).includes(f)) || (a === 'Nutrition' && (p.meal_rare || []).includes(f)) || (a === 'Movement' && f === 'Balance' && p.fall)
+      || (a === 'Movement' && f === 'Strength sessions' && p.mvpa >= 150 && p.strength <= 1) || (a === 'Prevention' && f === 'Staying nicotine-free' && p.ex_smoker);
     const grp = f => OVERLAP.findIndex(g => g.includes(f));
     const log = [];
     let longLT = false, variety = false; const overTime = [];
@@ -297,6 +302,9 @@ function makeEngine(DATA) {
         if (variety && role === 'Priority' && !newGoal && chosen.some(x => x.role === 'Priority' && x.area === a && CAT.get(a + '|' + x.fam) === CAT.get(a + '|' + f))) continue;   // Rule 17 (never at the cost of a goal not yet covered)
         const g = grp(f); if (g >= 0 && chosen.some(x => grp(x.fam) === g)) continue;
         const lv = famOf(a, f); if (!lv) continue;
+        // A starting-set practice (not from their goals or answers) is only offered where their own answer shows they're at the start:
+        // never "more of" something they already do most days (for example whole grains on 3–5 days a week).
+        if (!backed(a, f)) { const b1 = baseline(p, f); if (b1 && b1 !== 'Learning') { log.push([a, f, b1, 'starting set skipped: they already do this most of the time']); continue; } }
         let lvl = startLevel(a, f, role); if (lvl === null) continue;
         if (force) lvl = force;
         const b0 = baseline(p, f), minI = (b0 && cap(a) > 0) ? LEVELS.indexOf(b0) : 0;   // never offer a level below what they already do
@@ -495,14 +503,7 @@ function makeEngine(DATA) {
     if (overTime.length) notes.push(['Over time', `${overTime.join(' and ')} didn't fit in their weekly time, so ${overTime.length > 1 ? 'they were' : 'it was'} left out. Ask whether they'd like to make room for ${overTime.length > 1 ? 'them' : 'it'}.`]);
     if (p.change !== 'small' && months[0] && total(months[0]) < budget / 3 && !months[0].some(x => extraMinutes(p, x.row) >= 15)) notes.push(['Low new time', `The plan adds about ${Math.round(total(months[0]))} of the ${budget} minutes a week they have. Ask whether they'd like to use more of it.`]);
     if (p.own_habit && p.own_habit[1] === 'share' && p.own_habit[0]) notes.push(['Own habit', `Member would like to work on: “${p.own_habit[0]}”. Shape it into a practice with them at the pre-Span 1:1.`]);
-    const reasons = {};
-    AREAS.forEach(a => {
-      const fromSignals = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).slice(0, 3).map(x => x[1]);
-      if (fromSignals.length) { reasons[a] = fromSignals; return; }
-      // A priority filled from their answers, with no scored signal: show why each practice is there, as the signal lines do.
-      const seen = new Set();
-      reasons[a] = (months[0] || []).filter(x => x.area === a && x.role === 'Priority' && x.why && !seen.has(x.why) && seen.add(x.why)).map(x => x.why).slice(0, 3);
-    });
+    const reasons = {}; AREAS.forEach(a => reasons[a] = S[a].slice().sort((x, y) => (x[0] === 'H' ? 0 : 1) - (y[0] === 'H' ? 0 : 1)).slice(0, 3).map(x => x[1]));
     const target = ms => ms.reduce((t, x) => t + (x.change === 'DONE' ? 0 : x.row.tg), 0);
     // Rule 13: "Not right for me". The member gives a reason from a fixed list; each reason has one rule.
     // Returns up to 2 options that pass every hard rule, or hands the decision to the Pilot. Changes apply at the next check-in.

@@ -23,7 +23,7 @@
   }
 
   function assetBase() {
-    return new URL("design/assets/", document.baseURI).href;
+    return new URL("../design/assets/", document.baseURI).href;
   }
 
   async function fetchJson(path) {
@@ -97,7 +97,7 @@
     );
     const data = JSON.parse(raw);
     if (data.html) {
-      const originAssets = new URL("design/assets/", new URL(".", document.baseURI)).href;
+      const originAssets = new URL("../design/assets/", new URL(".", document.baseURI)).href;
       data.html = data.html.split("/design/assets/").join(originAssets);
       const saved = await savePlanCopy(data.html, payload.memberName || "", payload.planId || "");
       if (saved && saved.planId) {

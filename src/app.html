@@ -125,7 +125,7 @@ function renderAssess() {
     ${missingMsg()}
     <nav class="steps" aria-label="Sections">${SECTIONS.map((s, i) => `<button type="button" data-sec="${i}" ${i === sec ? 'aria-current="step"' : ''}>${esc(s.title)} <span class="ct">${counts[i][0]}/${counts[i][1]}</span></button>`).join('')}</nav>
     <form class="qwrap" id="qform" novalidate>${qs.map(q => qHTML(q, nums[q.id])).join('')}</form>
-    <div class="nav"><button class="btn" type="button" id="back">Back</button>
+    <div class="nav"><button class="btn" type="button" id="back" ${sec === 0 ? 'disabled' : ''}>Back</button>
       ${sec < SECTIONS.length - 1 ? `<button class="btn primary" type="button" id="next">Next: ${esc(SECTIONS[sec + 1].title)}</button>` : `<button class="btn primary" type="button" id="finish">See my Good Span</button>`}</div>
   </div>`;
   if (tried) QUESTIONS.filter(q => q.s === S.id && visible(q) && !q.optional && !answered(q)).forEach(q => { const el = document.querySelector(`[data-q="${q.id}"]`); if (el) el.classList.add('missing'); });
@@ -133,10 +133,7 @@ function renderAssess() {
   f.addEventListener('submit', e => e.preventDefault());
   f.addEventListener('input', onInput); f.addEventListener('change', onInput);
   document.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => { sec = +b.dataset.sec; save(); renderAssess(); scrollTo(0, 0); });
-  document.getElementById('back').onclick = () => {
-    if (sec === 0) { mode = 'welcome'; save(); render(); scrollTo(0, 0); return; }
-    sec--; save(); renderAssess(); scrollTo(0, 0);
-  };
+  document.getElementById('back').onclick = () => { sec--; save(); renderAssess(); scrollTo(0, 0); };
   const nx = document.getElementById('next'); if (nx) nx.onclick = () => { sec++; save(); renderAssess(); scrollTo(0, 0); };
   const fin = document.getElementById('finish'); if (fin) fin.onclick = () => {
     const missing = QUESTIONS.filter(q => visible(q) && !q.optional && !answered(q));
@@ -230,6 +227,17 @@ function chg(y) {
   if (y.change === 'DONE') return `<span class="ch">DONE</span><small>${esc(y.note || '')}</small>`;
   return `<span class="ch">CONTINUE</span>${y.note ? `<small>${esc(y.note)}</small>` : ''}`;
 }
+function introLine(P) {
+  const list = a => a.map(x => x.toLowerCase()).join(' and ');
+  const room = P.pri.filter(a => P.opp[a] >= 1), asked = P.pri.filter(a => !(P.opp[a] >= 1) && P.wish.includes(a)), extra = P.pri.filter(a => !(P.opp[a] >= 1) && !P.wish.includes(a));
+  const most = Math.max(...Object.values(P.opp));
+  const parts = [];
+  if (most <= 1) parts.push("Your answers show you're already doing well in most areas.");
+  if (room.length) parts.push(most <= 1 ? `Your Good Span starts with ${list(room)}, where there's a small next step.` : `Your answers show the most room to grow in ${list(room)}, so that's where your Good Span starts.`);
+  if (asked.length) parts.push(`${room.length ? 'It also includes' : 'Your Good Span starts with'} ${list(asked)}, as you asked.`);
+  if (extra.length) parts.push(`We've also added a well-established practice in ${list(extra)}.`);
+  return parts.join(' ');
+}
 function renderPlan() {
   const p = toFeatures(A), P = ENGINE.plan(p), m1 = P.months[0];
   const pri = m1.filter(x => x.role === 'Priority'), lt = m1.filter(x => x.role === 'Lighter touch');
@@ -244,9 +252,9 @@ function renderPlan() {
   const paceLabel = { small: 'Small, easy steps', mid: 'Something in between', big: 'A bigger challenge' }[p.change];
   document.getElementById('view').innerHTML = `<div>
   <div class="wrap hero">
-    <p class="kicker">Your Good Span · ${esc(new Date(member.planned || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }))}</p>
+    <p class="kicker">Your Good Span · ${esc(new Date(member.planned || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }))} · Ref ${esc(member.id)}</p>
     <h1>${nm ? esc(nm) + (/s$/i.test(nm) ? "'" : "'s") + ' Good Span.' : 'Your Good Span.'}</h1>
-    <p class="lead">${P.wish.length ? `You told us you'd like to improve ${esc(P.wish.join(' and ').toLowerCase())}.` : "You weren't sure where to start, so we've built your Good Span from your answers."} Your answers show the greatest opportunity in ${esc(P.pri.join(' and ').toLowerCase())}, so that's where your Good Span starts.</p>
+    <p class="lead">${P.wish.length ? `You told us you'd like to improve ${esc(P.wish.join(' and ').toLowerCase())}.` : "You weren't sure where to start, so we've built your Good Span from your answers."} ${introLine(P)}</p>
     <ol class="journey">
       <li><span class="pill">01</span><span class="lbl">Starting Position</span><span class="muted">Where you are today.</span></li>
       <li aria-current="step"><span class="pill">02</span><span class="lbl">Your Good Span</span><span class="muted">Your six-month journey.</span></li>
@@ -258,7 +266,7 @@ function renderPlan() {
   <section class="alt"><div class="wrap"><p class="kicker">01 · Starting Position</p><h2>Where you are today.</h2><div class="sp-grid">${spCards}</div>
     <div class="legend ui"><span>One bar: Learning, the most room to grow</span><span>Two: Developing</span><span>Three: Mastering</span></div></div></section>
   <section><div class="wrap"><p class="kicker">02 · Your Good Span</p><h2>Your priorities.</h2>
-    <div class="prio">${P.pri.map((a, k) => `<div><h3>${k + 1}. ${a}</h3><p class="muted">${P.wish.includes(a) ? (P.opp[a] ? 'You chose this, and your answers point here too.' : 'You chose this.') : 'Your answers point here.'}</p><ul>${reasons(a)}</ul></div>`).join('')}</div>
+    <div class="prio">${P.pri.map((a, k) => `<div><h3>${k + 1}. ${a}</h3><p class="muted">${P.wish.includes(a) ? (P.opp[a] ? 'You chose this, and your answers point here too.' : 'You chose this.') : (P.opp[a] ? 'Your answers point here.' : 'You\'re doing well here; this is a small, well-established next step.')}</p><ul>${reasons(a)}</ul></div>`).join('')}</div>
     <h2 style="margin-top:72px">Your ${pri.length} priority practice${pri.length === 1 ? '' : 's'}.</h2><p class="muted" style="margin-top:12px">What matters most right now. Month 1 is your starting point. If a practice isn't right for you, tell us: you can ask for up to ${MAX_REQ} changes at each check-in.</p>
     <div class="cards">${pri.map(x => card(x, P)).join('')}</div>
     ${lt.length ? `<div class="light"><h2 style="margin-top:72px">Lighter touches.</h2><p class="muted" style="margin-top:12px">Small, easy practices from other areas your answers point to.</p><div class="cards">${lt.map(x => card(x, P)).join('')}</div></div>` : ''}
@@ -358,15 +366,16 @@ async function afterPlan(P) {
 function renderWelcome() {
   const resume = member && Object.keys(A).length;
   document.getElementById('view').innerHTML = `<div class="wrap"><div class="intro welcome">
-    <h1>Welcome.</h1>
-    <p class="lead">This 15-minute assessment explores six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention.</p>
-    <p class="lead">Your answers will help us create a personalised Good Span, with practices tailored to you and clear explanations of why each one is recommended.</p>
+    <p class="kicker">Find your Good Span</p><h1>Welcome.</h1>
+    <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
     ${resume ? `<p>You have an assessment in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
       <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new assessment</button></div>`
     : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
       <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
+      <p class="hint">Optional. We use it to make your Good Span yours.</p>
       <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
-      <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label></form>
+      <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label>
+      <p class="hint">Optional. Only used so the team can follow up on your test, and kept private.</p></form>
       <div class="nav" style="border:0"><span></span><button class="btn primary" type="button" id="go">Start</button></div>`}
   </div></div>`;
   const go = document.getElementById('go');
