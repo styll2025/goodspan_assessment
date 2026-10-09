@@ -1,0 +1,387 @@
+<title>Find Your Good Span</title>
+<style>
+__BASECSS__
+/* assessment */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding-block:16px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.btn{font-family:var(--font-ui);font-size:13px;letter-spacing:.03em;text-transform:uppercase;height:40px;padding:0 24px;border-radius:var(--radius-pill);border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.primary{background:var(--button-fill);color:var(--button-ink);border-color:var(--button-fill)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.small{height:32px;padding:0 14px;font-size:12px}
+.examples{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.steps{display:flex;flex-wrap:wrap;gap:6px;margin-top:28px}
+.steps button{font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;text-transform:uppercase;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:999px;padding:6px 12px;cursor:pointer}
+.steps button[aria-current="step"]{background:var(--button-fill);color:var(--button-ink);border-color:var(--button-fill)}
+.steps button .ct{opacity:.7}
+.qwrap{display:grid;gap:40px;padding-block:40px 64px;max-width:820px}
+fieldset{border:0;margin:0;padding:0;display:grid;gap:14px;min-width:0}
+legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
+.qn{font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;display:block;margin-bottom:8px;color:var(--ink-muted)}
+.hint{color:var(--ink-muted);font-size:16px;line-height:22px}
+.opts{display:grid;gap:8px}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 16px;border:1px solid var(--line);border-radius:16px;cursor:pointer;font-size:17px;line-height:22px}
+.opt input{margin-top:3px;accent-color:var(--plum);width:18px;height:18px;flex:none}
+.opt:has(input:checked){background:var(--surface-alt);color:var(--plum);border-color:var(--plum)}
+.opt:has(input:disabled){opacity:.45}
+.grid{overflow-x:auto}
+.grid table{min-width:560px}
+.grid td,.grid th{padding:10px 8px;font-size:15px;line-height:20px}
+.grid td.c{text-align:center}
+.grid input{accent-color:var(--plum);width:18px;height:18px}
+.grid select{font:inherit;font-size:15px;padding:6px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:100%}
+textarea{font:inherit;font-size:17px;width:100%;min-height:80px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.nav{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;padding-block:24px 64px;border-top:1px solid var(--line)}
+.intro{padding-block:48px 0;display:grid;gap:16px;max-width:820px}
+.intro h1{font-size:clamp(40px,6vw,60px)}
+.pilotmode .pilot{border-style:solid}
+.bar{}@media (max-width:700px){.bar{position:static}}
+.refs{margin:24px 0 0;padding-left:18px;display:grid;gap:8px;font-size:14px;line-height:20px;color:var(--ink-muted);word-break:break-word}
+.ch{display:inline-flex;align-items:center;gap:6px;padding:0;border:0;border-radius:0;background:none!important;color:inherit!important;font-weight:600}
+.ch::before{content:"";width:8px;height:8px;border-radius:50%;border:1px solid currentColor;flex:none}
+.ch.LEVEL::before{background:var(--plum);border-color:var(--plum)}
+.ch.SWAP::before{background:var(--orange);border-color:var(--orange)}
+.nr{margin-top:16px;border-top:1px solid currentColor;padding-top:14px}
+.linkbtn{font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;text-transform:uppercase;background:none;border:0;padding:0;color:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.linkbtn:disabled{opacity:.5;cursor:not-allowed;text-decoration:none}
+.nrpanel{display:grid;gap:12px;margin-top:12px}
+.nrpanel fieldset{border:0;padding:0;margin:0;display:grid;gap:6px}
+.nrpanel legend{font-size:17px;margin-bottom:6px}
+.nrpanel .opt{background:var(--cream);color:var(--plum);border-color:var(--plum)}
+.nropts{display:grid;gap:8px}
+.nropt{display:grid;gap:6px;padding:14px 16px;border:1px solid currentColor;border-radius:16px}
+.nropt .t{font-size:18px;line-height:24px}
+.nrmsg{font-size:16px;line-height:22px}
+.nrrow{display:flex;flex-wrap:wrap;gap:8px}
+.req{display:inline-block;margin-top:12px;font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;text-transform:uppercase}
+.nrcount{margin-top:16px}
+.logo{height:18px;display:block}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo{filter:invert(1)}}
+.notice{margin:0;padding:14px 18px;border-radius:16px;background:var(--surface-alt);color:var(--plum);border:1px solid var(--plum)}
+fieldset.missing legend{color:var(--orange)}
+fieldset.missing{border-left:3px solid var(--orange);padding-left:14px}
+.nm{display:grid;gap:10px;font-size:20px}
+.nm input{font:inherit;font-size:18px;padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);max-width:420px}
+.ex-note{font-family:var(--font-ui);font-size:12px;letter-spacing:.03em;text-transform:uppercase;color:var(--ink-muted)}
+</style>
+
+<div class="bar"><div class="wrap">
+  <div class="brand"><img src="design/assets/tgs-logo-one-line-black.png" alt="The Good Span" class="logo"></div>
+  <div class="examples"><button class="btn small" id="reset" type="button" hidden>Start again</button></div>
+</div></div>
+<main id="view"></main>
+
+<script>__DATA_SCRIPT__</script>
+<script>__ENGINE__</script>
+<script>__QUESTIONS__</script>
+<script>
+const ENGINE = makeEngine(DATA);
+let REQ = {}, OPEN = null, CUR = null;   // "Not right for me" requests for the next check-in (prototype: kept in memory)
+const MAX_REQ = 2;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+// One member per assessment. Each member gets their own reference, their own answers and their own plan.
+// Prototype storage: this browser only (localStorage). Replace with your backend in the real product.
+const newMember = () => ({ id: 'GS-' + Math.random().toString(36).slice(2, 6).toUpperCase() + '-' + Date.now().toString(36).slice(-4).toUpperCase(), name: '', created: new Date().toISOString() });
+let A = {}, sec = 0, mode = 'welcome', member = null, tried = false;   // tried = they pressed 'See my Good Span' with questions still open
+try { const s = JSON.parse(localStorage.getItem('gs-member') || 'null'); if (s && s.member) { A = s.A || {}; sec = s.sec || 0; mode = s.mode || 'welcome'; member = s.member; REQ = s.REQ || {}; } } catch (e) {}
+const save = () => { try { localStorage.setItem('gs-member', JSON.stringify({ A, sec, mode, member, REQ })); } catch (e) {} };
+const visible = q => !q.show || q.show(A);
+const answered = q => { const v = A[q.id]; if (q.type === 'grid') return v && Object.keys(v).length >= q.rows.length; if (q.type === 'habit') return !!(v && (v.text || v.choice)); return Array.isArray(v) ? v.length > 0 : !!v; };
+
+function qHTML(q, n) {
+  const v = A[q.id];
+  let body = '';
+  if (q.type === 'single') body = `<div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}" id="${q.id}_${i}" value="${esc(o)}" ${v === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
+  else if (q.type === 'multi') {
+    const sel = v || [];
+    const full = q.max && sel.length >= q.max;
+    body = `<div class="opts">${q.options.map((o, i) => { const on = sel.includes(o); return `<label class="opt"><input type="checkbox" name="${q.id}" id="${q.id}_${i}" value="${esc(o)}" ${on ? 'checked' : ''} ${full && !on ? 'disabled' : ''}><span>${esc(o)}</span></label>`; }).join('')}</div>`;
+  } else if (q.type === 'grid') {
+    const g = v || {};
+    if (q.cols) body = `<div class="grid"><table><thead><tr><th></th>${q.cols.map(c => `<th class="c">${esc(c)}</th>`).join('')}</tr></thead><tbody>${q.rows.map(([k, lab]) => `<tr><td>${esc(lab)}</td>${q.cols.map((c, j) => `<td class="c"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" aria-label="${esc(lab)}: ${esc(c)}" ${g[k] === c ? 'checked' : ''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    else body = `<div class="grid"><table><tbody>${q.rows.map(([k, lab, opts]) => `<tr><td>${esc(lab)}</td><td><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></td></tr>`).join('')}</tbody></table></div>`;
+  } else if (q.type === 'habit') {
+    const h = v || {};
+    body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
+  }
+  const lim = q.type === 'multi' ? (q.max ? `Select up to ${q.max}.` : 'Select all that apply.') : q.type === 'grid' ? 'Select one for each row.' : q.type === 'single' ? 'Select one.' : '';
+  return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}</fieldset>`;
+}
+function missingMsg() {
+  if (!tried) return '';
+  const missing = QUESTIONS.filter(q => visible(q) && !q.optional && !answered(q));
+  if (!missing.length) return '<p class="notice" role="status">All done. Press “See my Good Span” at the end of this page.</p>';
+  const secs = [...new Set(missing.map(q => SECTIONS.find(x => x.id === q.s).title))];
+  return `<p class="notice" role="alert">${missing.length} question${missing.length > 1 ? 's' : ''} still need${missing.length > 1 ? '' : 's'} an answer so we can build your Good Span: ${esc(secs.join(', '))}. They're marked in orange.</p>`;
+}
+function renderAssess() {
+  const S = SECTIONS[sec];
+  let n = 0; const nums = {};
+  QUESTIONS.forEach(q => { if (visible(q)) nums[q.id] = ++n; });
+  const qs = QUESTIONS.filter(q => q.s === S.id && visible(q));
+  const counts = SECTIONS.map(s => { const v = QUESTIONS.filter(q => q.s === s.id && visible(q)); return [v.filter(answered).length, v.length]; });
+  document.getElementById('view').innerHTML = `<div class="wrap">
+    <div class="intro"><p class="kicker">Find your Good Span · ${sec + 1} of ${SECTIONS.length}</p><h1>${esc(S.title)}.</h1><p class="lead">${esc(S.intro)}</p></div>
+    ${missingMsg()}
+    <nav class="steps" aria-label="Sections">${SECTIONS.map((s, i) => `<button type="button" data-sec="${i}" ${i === sec ? 'aria-current="step"' : ''}>${esc(s.title)} <span class="ct">${counts[i][0]}/${counts[i][1]}</span></button>`).join('')}</nav>
+    <form class="qwrap" id="qform" novalidate>${qs.map(q => qHTML(q, nums[q.id])).join('')}</form>
+    <div class="nav"><button class="btn" type="button" id="back" ${sec === 0 ? 'disabled' : ''}>Back</button>
+      ${sec < SECTIONS.length - 1 ? `<button class="btn primary" type="button" id="next">Next: ${esc(SECTIONS[sec + 1].title)}</button>` : `<button class="btn primary" type="button" id="finish">See my Good Span</button>`}</div>
+  </div>`;
+  if (tried) QUESTIONS.filter(q => q.s === S.id && visible(q) && !q.optional && !answered(q)).forEach(q => { const el = document.querySelector(`[data-q="${q.id}"]`); if (el) el.classList.add('missing'); });
+  const f = document.getElementById('qform');
+  f.addEventListener('submit', e => e.preventDefault());
+  f.addEventListener('input', onInput); f.addEventListener('change', onInput);
+  document.querySelectorAll('[data-sec]').forEach(b => b.onclick = () => { sec = +b.dataset.sec; save(); renderAssess(); scrollTo(0, 0); });
+  document.getElementById('back').onclick = () => { sec--; save(); renderAssess(); scrollTo(0, 0); };
+  const nx = document.getElementById('next'); if (nx) nx.onclick = () => { sec++; save(); renderAssess(); scrollTo(0, 0); };
+  const fin = document.getElementById('finish'); if (fin) fin.onclick = () => {
+    const missing = QUESTIONS.filter(q => visible(q) && !q.optional && !answered(q));
+    if (missing.length) {
+      tried = true; const first = missing[0]; sec = SECTIONS.findIndex(x => x.id === first.s); save(); renderAssess(); scrollTo(0, 0);
+      const el = document.querySelector(`[data-q="${first.id}"]`); if (el) el.scrollIntoView({ block: 'center' });
+      return;
+    }
+    tried = false; mode = 'plan'; save(); render(); scrollTo(0, 0);
+  };
+}
+function onInput(e) {
+  const el = e.target; if (!el.name) return;
+  const [qid, sub] = el.name.split('.'); const q = QUESTIONS.find(x => x.id === qid);
+  if (q.type === 'single') A[qid] = el.value;
+  else if (q.type === 'multi') {
+    let sel = [...document.querySelectorAll(`input[name="${qid}"]:checked`)].map(x => x.value);
+    const ex = sel.filter(o => NONE_WORDS.test(o) || (q.exclusive || []).includes(o));
+    if (el.checked && ex.includes(el.value)) sel = [el.value];
+    else if (el.checked) sel = sel.filter(o => !ex.includes(o));
+    A[qid] = sel;
+  } else if (q.type === 'grid') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
+  else if (q.type === 'habit') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
+  save();
+  if (e.type === 'change' && el.type !== 'textarea') { const y = scrollY; renderAssess(); scrollTo(0, y); const t = document.getElementById(el.id); if (t) t.focus({ preventScroll: true }); }
+}
+
+/* ---------- plan ---------- */
+const AREAS = ENGINE.AREAS, LV = ENGINE.LEVELS;
+const mins = n => Math.round(n);
+function card(x, P) {
+  const i = P.months[0].indexOf(x);
+  const r = x.row, ex = P.extraMinutes(r);
+  return `<article class="card"><div style="min-width:0">
+    <div class="meta"><span class="chip">${esc(x.area)}</span><span class="chip">${esc(r.l)}</span><span class="chip ev-${esc(r.ev)}">${esc(r.ev)} evidence</span></div>
+    <p class="what">${esc(r.w)} <span class="dose">${esc(r.d)}</span>.</p><p class="det">${esc(r.t)}</p>
+    <div class="why"><b>Why this is in your Good Span</b>${esc(x.why)}</div>${x.note ? `<p class="muted" style="margin-top:8px;font-size:15px">${esc(x.note)}</p>` : ''}
+    <div class="nr" data-i="${i}">${nrBlock(x, i, P)}</div></div>
+    <div class="time"><span class="n">${ex > 0 ? '+' + mins(ex) : '0'}</span><span class="s">new minutes a week</span>
+    <span class="muted" style="margin-top:10px">Target: ${mins(r.tg)} min a week${ex < r.tg ? `<br>${ex === 0 ? 'Fits into what you already do' : 'Part of this you already do'}` : ''}</span></div></article>`;
+}
+
+const REASONS = [['time', 'It takes too much time'], ['routine', "It doesn't fit my routine"], ['already', 'I already do this'],
+  ['pillar', "I'd rather focus on another pillar"], ['health', 'A health or physical reason'], ['other', 'Something else']];
+function nrBlock(x, i, P) {
+  const q = REQ[i], n = Object.keys(REQ).length;
+  if (q) return `<p class="nrmsg"><b>${esc(q.label)}</b></p><p class="nrmsg muted" style="margin-top:4px">${esc(q.detail)}</p>
+    <button class="linkbtn" type="button" data-undo="${i}" style="margin-top:10px">Undo</button>`;
+  if (OPEN !== i) return n >= MAX_REQ ? `<button class="linkbtn" type="button" disabled>Not right for me</button><p class="muted" style="font-size:14px;margin-top:6px">You've asked for ${MAX_REQ} changes for this check-in, the most at one time.</p>`
+    : `<button class="linkbtn" type="button" data-open="${i}" aria-expanded="false">Not right for me</button>`;
+  const st = CUR && CUR.i === i ? CUR : null;
+  let out = `<div class="nrpanel"><fieldset><legend>What's not working?</legend>${REASONS.map(([k, t]) =>
+    `<label class="opt"><input type="radio" name="nr${i}" value="${k}" ${st && st.reason === k ? 'checked' : ''}><span>${t}</span></label>`).join('')}</fieldset>`;
+  if (st && st.reason === 'other') out += `<label class="nrmsg" for="nrt${i}">Tell us a little more. Your Pilot will read this and suggest a better practice with you.</label>
+    <textarea id="nrt${i}" maxlength="500"></textarea><div class="nrrow"><button class="btn small primary" type="button" data-send="${i}">Send to your Pilot</button></div>`;
+  else if (st && st.res) out += nrResult(st.res, i, P);
+  out += `<div class="nrrow"><button class="linkbtn" type="button" data-close="${i}">Cancel</button></div></div>`;
+  return out;
+}
+function nrResult(r, i, P) {
+  if (r.action === 'options') return `<p class="nrmsg">${r.options.length === 1 ? 'This option fits your answers and your time:' : 'These options fit your answers and your time. Pick one:'}</p><div class="nropts">${r.options.map((z, k) => {
+    const e = P.extraMinutes(z.row);
+    return `<div class="nropt"><span class="ui" style="font-size:12px;letter-spacing:.03em;text-transform:uppercase">${esc(z.area)} · ${esc(z.row.l)}${z.note ? ' · ' + esc(z.note) : ''}</span>
+      <span class="t">${esc(z.row.w)} ${esc(z.row.d)}.</span><span class="muted" style="font-size:15px">${e > 0 ? '+' + Math.round(e) + ' new minutes a week' : 'No extra time'} · ${esc(z.row.ev)} evidence</span>
+      <span style="font-size:15px">${esc(z.why)}</span><div><button class="btn small primary" type="button" data-pick="${i}:${k}">Choose this</button></div></div>`; }).join('')}</div>`;
+  if (r.action === 'pause') return `<p class="nrmsg">Thank you for telling us. We'll pause this practice and let your Pilot know, so you can talk it through before anything replaces it.</p><div class="nrrow"><button class="btn small primary" type="button" data-confirm="${i}:pause">Pause this practice</button></div>`;
+  if (r.locked) return `<p class="nrmsg">This practice answers one of the most important things in your assessment, so it isn't changed without a conversation. We'll ask your Pilot to talk it through with you at your next check-in.</p><div class="nrrow"><button class="btn small primary" type="button" data-confirm="${i}:talk">Ask to talk it through</button></div>`;
+  if (r.action === 'none') return `<p class="nrmsg">Nothing else fits your answers and your time right now. You can keep it for now, or pause it until your next check-in, where you'll decide together what comes next.</p><div class="nrrow"><button class="btn small" type="button" data-close="${i}">Keep it</button><button class="btn small primary" type="button" data-confirm="${i}:pause">Pause until my check-in</button></div>`;
+  return '';
+}
+function nrHandle(e, P) {
+  const t = e.target, d = t.dataset || {};
+  const rerender = i => { const el = document.querySelector(`.nr[data-i="${i}"]`); if (el) el.innerHTML = nrBlock(P.months[0][i], i, P); };
+  const all = () => document.querySelectorAll('.nr').forEach(el => { const i = +el.dataset.i; el.innerHTML = nrBlock(P.months[0][i], i, P); });
+  if (d.open !== undefined) { const prev = OPEN; OPEN = +d.open; CUR = null; if (prev !== null) rerender(prev); rerender(OPEN); return; }
+  if (d.close !== undefined) { OPEN = null; CUR = null; rerender(+d.close); return; }
+  if (e.type === 'change' && t.name && t.name.startsWith('nr') && t.type === 'radio') { const i = +t.name.slice(2); CUR = { i, reason: t.value, res: t.value === 'other' ? null : P.notRight(0, i, t.value) }; rerender(i); return; }
+  const done = (i, label, detail) => { REQ[i] = { label, detail }; OPEN = null; CUR = null; all(); };
+  if (d.pick) { const [i, k] = d.pick.split(':').map(Number), z = CUR.res.options[k];
+    done(i, `Change requested: ${z.row.w}`, `${z.area} · ${z.row.l}. This starts at your next check-in, once you've confirmed it.`); return; }
+  if (d.confirm) { const [i, kind] = d.confirm.split(':');
+    done(+i, kind === 'pause' ? 'Paused until your next check-in' : "You've asked to talk this through", "Your Pilot has been told and will go through it with you."); return; }
+  if (d.send) { const i = +d.send, txt = (document.getElementById('nrt' + i) || {}).value || '';
+    if (!txt.trim()) { document.getElementById('nrt' + i).focus(); return; }
+    done(i, 'Sent to your Pilot', `“${txt.trim().slice(0, 140)}${txt.trim().length > 140 ? '…' : ''}” Your Pilot will suggest a better practice with you.`); return; }
+  if (d.undo !== undefined) { delete REQ[+d.undo]; all(); }
+}
+function chg(y) {
+  if (y.change === 'SWAP') return `<span class="ch SWAP">SWAP</span><br>${esc(y.row.w)} <small>${esc(y.row.l)}${y.note ? ' · ' + esc(y.note) : ''}</small>`;
+  if (y.change === 'LEVEL UP') return `<span class="ch LEVEL">LEVEL UP</span><small>${esc(y.row.l)}: ${esc(y.row.d)}</small>`;
+  if (y.change === 'DONE') return `<span class="ch">DONE</span><small>${esc(y.note || '')}</small>`;
+  return `<span class="ch">CONTINUE</span>${y.note ? `<small>${esc(y.note)}</small>` : ''}`;
+}
+function renderPlan() {
+  const p = toFeatures(A), P = ENGINE.plan(p), m1 = P.months[0];
+  const pri = m1.filter(x => x.role === 'Priority'), lt = m1.filter(x => x.role === 'Lighter touch');
+  const nm = (member && member.name || '').trim();
+  const own = p.own_habit;
+  const refs = [...new Set(P.months.flat().map(x => x.row.ref).concat(P.foundations.map(h => h.ref)).filter(Boolean).flatMap(r => r.split(' | ')))].sort();
+  const spCards = AREAS.map(a => { const s = P.status[a], n = LV.indexOf(s) + 1, isP = P.pri.includes(a);
+    return `<div class="sp ${isP ? 'pri' : ''}"><div class="row"><span class="area">${a}</span><span class="tag">${isP ? 'Priority' : P.light.includes(a) ? 'Lighter touch' : ''}</span></div>
+      <div class="scale" aria-label="${a}: ${s}">${[1, 2, 3].map(k => `<span class="${k <= n ? 'on' : ''}"></span>`).join('')}</div><span>${s}</span></div>`; }).join('');
+  const reasons = a => (P.reasons[a] || []).map(r => `<li>${esc(r)}</li>`).join('');
+  const timeLabel = { '45-60': 'about 45–60 minutes', '1-2h': '1–2 hours', '2-4h': '2–4 hours', '4h+': 'more than 4 hours', 'varies': 'it varies (we plan for 45–60 minutes)' }[p.time];
+  const paceLabel = { small: 'Small, easy steps', mid: 'Something in between', big: 'A bigger challenge' }[p.change];
+  document.getElementById('view').innerHTML = `<div>
+  <div class="wrap hero">
+    <p class="kicker">Your Good Span · ${esc(new Date(member.planned || Date.now()).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }))} · Ref ${esc(member.id)}</p>
+    <h1>${nm ? esc(nm) + (/s$/i.test(nm) ? "'" : "'s") + ' Good Span.' : 'Your Good Span.'}</h1>
+    <p class="lead">${P.wish.length ? `You told us you'd like to improve ${esc(P.wish.join(' and ').toLowerCase())}.` : "You weren't sure where to start, so we've built your Good Span from your answers."} Your answers show the greatest opportunity in ${esc(P.pri.join(' and ').toLowerCase())}, so that's where your Good Span starts.</p>
+    <ol class="journey">
+      <li><span class="pill">01</span><span class="lbl">Starting Position</span><span class="muted">Where you are today.</span></li>
+      <li aria-current="step"><span class="pill">02</span><span class="lbl">Your Good Span</span><span class="muted">Your six-month journey.</span></li>
+      <li><span class="pill">03</span><span class="lbl">New Position</span><span class="muted">Where you are after six months.</span></li>
+      <li><span class="pill">04</span><span class="lbl">Your next Good Span</span><span class="muted">Where you go from there.</span></li>
+    </ol>
+    <div class="examples"><button class="btn small" type="button" id="edit">Edit my answers</button><button class="btn small" type="button" id="dl">Download my Good Span (JSON)</button>${member.planLink ? `<a class="btn small" href="${esc(member.planLink)}" target="_blank" rel="noopener">Open saved copy</a>` : ''}</div>
+  </div>
+  <section class="alt"><div class="wrap"><p class="kicker">01 · Starting Position</p><h2>Where you are today.</h2><div class="sp-grid">${spCards}</div>
+    <div class="legend ui"><span>One bar: Learning, the most room to grow</span><span>Two: Developing</span><span>Three: Mastering</span></div></div></section>
+  <section><div class="wrap"><p class="kicker">02 · Your Good Span</p><h2>Your priorities.</h2>
+    <div class="prio">${P.pri.map((a, k) => `<div><h3>${k + 1}. ${a}</h3><p class="muted">${P.wish.includes(a) ? (P.opp[a] ? 'You chose this, and your answers point here too.' : 'You chose this.') : 'Your answers point here.'}</p><ul>${reasons(a)}</ul></div>`).join('')}</div>
+    <h2 style="margin-top:72px">Your ${pri.length} priority practice${pri.length === 1 ? '' : 's'}.</h2><p class="muted" style="margin-top:12px">What matters most right now. Month 1 is your starting point. If a practice isn't right for you, tell us: you can ask for up to ${MAX_REQ} changes at each check-in.</p>
+    <div class="cards">${pri.map(x => card(x, P)).join('')}</div>
+    ${lt.length ? `<div class="light"><h2 style="margin-top:72px">Lighter touches.</h2><p class="muted" style="margin-top:12px">Small, easy practices from other areas your answers point to.</p><div class="cards">${lt.map(x => card(x, P)).join('')}</div></div>` : ''}
+    ${own && own[1] === 'share' ? `<div class="own"><p class="kicker">Your own practice</p><p style="font-size:26px;line-height:32px;margin-top:10px">“${esc(own[0])}”</p><p style="margin-top:10px">You shared this with your Pilot. They'll help you shape it into a practice.</p></div>` : ''}
+  </div></section>
+  <section class="inv"><div class="wrap"><p class="kicker">Your time</p><h2>Your Good Span adds about ${mins(P.minutes[0])} minutes a week to what you already do.</h2>
+    <div class="tband"><div><span class="n">${mins(P.minutes[0])}</span><span class="ui">New minutes a week, month 1</span></div>
+    <div><span class="n">${P.budget}</span><span class="ui">Your limit (you told us ${esc(timeLabel)})</span></div>
+    <div><span class="n">${mins(P.target[0])}</span><span class="ui">Total target minutes, including what you already do</span></div></div></div></section>
+  <section><div class="wrap"><p class="kicker">Months 2 and 3 · provisional</p><h2>How your Good Span could evolve.</h2>
+    <p style="margin-top:16px;max-width:680px">What comes next depends on how each practice goes and on your conversations with your Pilot. This is one possible path, not a fixed one. Each month, every practice will:</p>
+    <div class="outcomes"><div><span class="ch">CONTINUE</span><span>It needs more time to become established.</span></div><div><span class="ch LEVEL">LEVEL UP</span><span>You're ready for a more advanced version.</span></div><div><span class="ch SWAP">SWAP</span><span>Another practice takes its place: when a one-off is done, when you're ready for the next step, or when you've told us it isn't right for you.</span></div></div>
+    <div class="tbl"><table><thead><tr><th>Practice</th><th>Month 1</th><th>Month 2 (provisional)</th><th>Month 3 (provisional)</th></tr></thead>
+    <tbody>${m1.map((x, k) => `<tr><td>${esc(x.fam)}<small>${esc(x.role)}</small></td><td>${esc(x.row.l)}<small>${esc(x.row.d)}</small></td><td>${chg(P.months[1][k])}</td><td>${chg(P.months[2][k])}</td></tr>`).join('')}</tbody></table></div>
+    <p class="ui muted" style="margin-top:16px">Your pace: ${esc(paceLabel)}</p></div></section>
+  <section class="alt"><div class="wrap two">
+    <div><p class="kicker">Months 4 to 6</p><h2>Your themes.</h2><p style="margin-top:16px">At your mid-Span check-in you'll choose the practices within each theme, based on how months 1 to 3 went.</p></div>
+    <div><ul class="list" style="margin-top:0">${P.themes.map(t => `<li><span class="ui">${esc(t[0])}</span><span>${esc(t[1])}</span></li>`).join('')}</ul></div></div></section>
+  <section class="fnd"><div class="wrap two">
+    <div><p class="kicker">From month 1 · all six months</p><h2>Your foundations.</h2><p style="margin-top:16px">Simple everyday habits that support everything else. They're separate from your practices and themes: start them now, keep them going in the background, and tick them off once they're in place.</p></div>
+    <div><ul class="list" style="margin-top:0">${P.foundations.map((f, i) => `<li><span class="ui">${esc(f.p)}</span><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="fd${i}" style="accent-color:var(--plum);width:18px;height:18px;margin-top:3px;flex:none"><span>${esc(f.t)}</span></label></li>`).join('') || '<li><span></span><span class="muted">None for now.</span></li>'}</ul></div></div></section>
+  <section class="inv"><div class="wrap next">
+    <div><p class="kicker">03 · New Position</p><h2>Where you'll be after six months.</h2><p>At the end of month 6 you'll repeat a short assessment. We'll show your New Position next to your Starting Position, so you can see what has changed.</p></div>
+    <div><p class="kicker">04 · Your next Good Span</p><h2>Where you go from there.</h2><p>Your New Position becomes the starting point for your next Good Span.</p></div></div></section>
+  <div class="wrap"><section style="padding-block:56px 0"><p class="kicker">References</p><h2>The science behind your plan.</h2><ol class="refs">${refs.map(r => `<li>${esc(r)}</li>`).join('')}</ol></section>
+    <p class="disc muted">Your Good Span plan is designed to support everyday wellbeing and healthy habits. It's not a substitute for personalised medical care.</p></div></div>`;
+  document.getElementById('edit').onclick = () => { REQ = {}; OPEN = null; CUR = null; mode = 'assess'; sec = 0; save(); render(); scrollTo(0, 0); };
+  // Testing export: the member's answers and their plan (no Pilot notes: those are never shown to members).
+  document.getElementById('dl').onclick = () => {
+    const out = { member: { id: member.id, name: member.name, created: member.created, planned: member.planned }, answers: A,
+      plan: { priorities: P.pri, startingPosition: P.status, weeklyTimeLimit: P.budget, newMinutes: P.minutes.map(Math.round),
+        months: P.months.map((m, i) => ({ month: i + 1, practices: m.map(x => ({ role: x.role, pillar: x.area, practice: x.fam, level: x.row.l, text: `${x.row.w} ${x.row.d}.`, why: x.why, change: x.change || 'START', note: x.note || '' })) })),
+        themes: P.themes.map(t => ({ pillar: t[0], theme: t[1] })), foundations: P.foundations.map(h => ({ pillar: h.p, text: h.t })) },
+      notRightForMe: REQ };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a'); a.href = url; a.download = `good-span-${member.id}.json`; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
+  const v = document.getElementById('view'); v.onclick = e => nrHandle(e, P); v.onchange = e => nrHandle(e, P);
+  if (!member.sent) { member.sent = true; save(); afterPlan(P); }
+}
+// ---------- testing: responses to the team's Google Sheet, and a saved copy of the plan ----------
+// The sheet is internal (team and Pilots only). It receives the answers, the plan and the Pilot notes. Members never see Pilot notes.
+const SHEET_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbzpXkKREskdbihrlUqHZNde2WYYoZQLgzONj0RDXQzH-qLuB3FLzIF7p4MUV9iVk8kfrg/exec";
+const PLAN_SAVE_URLS = ["api/plans", "https://goodspan-longevity-map.saraportell.workers.dev/api/plans"];
+const VERSION = 'October 2026 · 50 questions · rules 1–18';
+function answerText(q, v) {
+  if (v == null) return '';
+  if (q.type === 'grid') return q.rows.map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
+  if (q.type === 'habit') return v.text ? `${v.text} (${v.choice || 'no choice'})` : '';
+  return Array.isArray(v) ? v.join('; ') : String(v);
+}
+function sheetRow(P, source) {
+  const row = { submittedAt: new Date().toISOString(), version: VERSION, memberRef: member.id, memberName: member.name || '', email: member.email || '', mobile: member.mobile || '', source };
+  // one column per question, the same for every member: section + question text (questions that weren't shown stay blank)
+  for (const q of QUESTIONS) { if (!visible(q)) continue; row[`v7 ${SECTIONS.find(x => x.id === q.s).title}: ${q.text}`] = answerText(q, A[q.id]); }
+  if (P) {
+    row.priorities = P.pri.join(', ');
+    row.startingPosition = Object.entries(P.status).map(([a, s]) => a + ': ' + s).join('; ');
+    row.weeklyLimit = P.budget; row.newMinutesMonth1 = Math.round(P.minutes[0]);
+    row.month1 = P.months[0].map(x => `${x.role}: ${x.fam} (${x.row.l})`).join('; ');
+    row.themes = P.themes.map(t => t[1]).join(', ');
+    row.foundations = P.foundations.map(h => h.f).join(', ');
+    row.pilotNotes = P.pilot.map(x => x[0] + ': ' + x[1]).join(' | ');
+  }
+  if (member.planLink) row.planLink = member.planLink;
+  return row;
+}
+async function sendToSheet(row) {
+  if (!SHEET_WEBHOOK_URL || location.protocol === 'file:') return;
+  try { await fetch(SHEET_WEBHOOK_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(row) }); }
+  catch (e) { console.error('Could not reach the Google Sheet', e); }
+}
+function planSnapshot() {
+  // A static copy of the member's plan page: no scripts, no buttons, absolute links to fonts and images.
+  const doc = document.documentElement.cloneNode(true);
+  doc.querySelectorAll('script, .bar, .examples, .nr, .nrpanel, #edit, #dl').forEach(el => el.remove());
+  doc.querySelectorAll('input').forEach(el => el.setAttribute('disabled', ''));
+  let html = '<!doctype html>\n' + doc.outerHTML;
+  const base = new URL('.', document.baseURI).href;
+  return html.split('url("design/assets/').join('url("' + base + 'design/assets/').split('src="design/assets/').join('src="' + base + 'design/assets/');
+}
+async function savePlanCopy() {
+  if (location.protocol === 'file:') return null;
+  for (const u of PLAN_SAVE_URLS) {
+    try {
+      const res = await fetch(new URL(u, document.baseURI).href, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ planId: member.id.replace(/[^A-Za-z0-9_-]/g, ''), html: planSnapshot() }) });
+      if (res.ok && (res.headers.get('content-type') || '').includes('json')) { const d = await res.json(); if (d.planLink) return d.planLink; }
+    } catch (e) { /* try the next address */ }
+  }
+  return null;
+}
+async function afterPlan(P) {
+  await sendToSheet(sheetRow(P, 'plan'));
+  const link = await savePlanCopy();
+  if (link) { member.planLink = link; save(); await sendToSheet({ memberName: member.name || '', email: member.email || '', memberRef: member.id, planLink: link }); if (mode === 'plan') { const y = scrollY; render(); scrollTo(0, y); } }
+}
+function renderWelcome() {
+  const resume = member && Object.keys(A).length;
+  document.getElementById('view').innerHTML = `<div class="wrap"><div class="intro welcome">
+    <p class="kicker">Find your Good Span</p><h1>Welcome.</h1>
+    <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
+    ${resume ? `<p>You have an assessment in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
+      <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new assessment</button></div>`
+    : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
+      <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
+      <p class="hint">Optional. We use it to make your Good Span yours.</p>
+      <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
+      <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label>
+      <p class="hint">Optional. Only used so the team can follow up on your test, and kept private.</p></form>
+      <div class="nav" style="border:0"><span></span><button class="btn primary" type="button" id="go">Start</button></div>`}
+  </div></div>`;
+  const go = document.getElementById('go');
+  if (go) { const start = () => { member = newMember(); member.name = document.getElementById('nm').value.trim(); member.email = document.getElementById('em').value.trim(); member.mobile = document.getElementById('mo').value.trim(); A = {}; REQ = {}; sec = 0; mode = 'assess'; save(); render(); scrollTo(0, 0); };
+    go.onclick = start; document.getElementById('wform').addEventListener('submit', e => { e.preventDefault(); start(); }); }
+  const c = document.getElementById('cont'); if (c) c.onclick = () => { mode = member.done ? 'plan' : 'assess'; save(); render(); };
+  const fr = document.getElementById('fresh'); if (fr) fr.onclick = () => { member = null; A = {}; REQ = {}; sec = 0; mode = 'welcome'; save(); render(); };
+}
+function render() {
+  document.getElementById('reset').style.display = mode === 'welcome' ? 'none' : '';
+  if (mode === 'plan' && member) { if (!member.planned) { member.planned = new Date().toISOString(); } member.done = true; save(); }
+  if (mode === 'plan') renderPlan(); else if (mode === 'assess') renderAssess(); else renderWelcome();
+}
+document.getElementById('reset').onclick = () => {
+  if (!confirm('Start a new assessment? Your current answers on this device will be cleared.')) return;
+  REQ = {}; OPEN = null; CUR = null; A = {}; sec = 0; member = null; mode = 'welcome'; tried = false; save(); render(); scrollTo(0, 0);
+};
+if (!member) mode = 'welcome';
+render();
+</script>

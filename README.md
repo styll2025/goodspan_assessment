@@ -1,60 +1,73 @@
-# The Good Span — Longevity Map prototype handoff
+# The Good Span: assessment and Good Span prototype
 
-Everything needed to build a working prototype of the **Longevity Map**: a member completes an assessment, gets a personalised six-month plan (six practices a month for months 1–3, four themes for months 4–6, plus a short foundations checklist), a Pilot reviews it at a 1:1, and the plan adapts each month.
+A member answers the assessment and gets a personalised six-month **Good Span**, built by a rule-based, deterministic engine from their own answers. This repository holds the live prototype, the engine, the assessment, the practice library and the complete rules.
 
-Start with `docs/PROTOTYPE_BRIEF.md` (what to build), then `docs/RULES.md` (how plans are made).
+**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine) at the site root. The earlier version's files (`web/`, `engine/`, `app.py`, `data/assessment.json`, `data/practices.json`, `data/rules.json`, `data/hygiene_checklist.json`, `tests/*.py`, `design/plan_reference.html`, `source/*v6*`) are still in the repository but no longer used by the live page; tidy them into a `legacy/` folder when convenient.
 
-## What's in this folder
+Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROTOTYPE_BRIEF.md`](docs/PROTOTYPE_BRIEF.md) (what to build next).
 
-| Path | What it is | Use it for |
-|---|---|---|
-| `data/assessment.json` | The v6 assessment: 48 questions with stable question and option IDs, types, limits, exclusive options and show-if rules | Render the assessment; store answers by ID |
-| `data/practices.json` | Practice library: 83 families × 3 levels (249 practices) in 27 themes, with how-to text, minutes per week, effort, equipment, exclusions and evidence | Plan content and plan logic |
-| `data/hygiene_checklist.json` | 11 "foundations" checklist items (e.g. dark bedroom, caffeine cut-off) that sit beside the plan, not in it | Foundations section of the plan |
-| `data/rules.json` | Every rule the engine applies: conditions, exclusions, level bands, goal/barrier maps, scoring weights, time budgets, progression, themes, Pilot flags | Engine configuration (don't hard-code these values) |
-| `engine/goodspan_engine.py` | Reference engine (Python 3.9+, no dependencies) that turns answers into a plan using the data files | Port to your stack or call as a service |
-| `tests/` | Property tests over 1,000 random valid members, outcome tests, a fixture member and its expected plan | Keep a port behaving the same |
-| `design/` | Brand tokens, fonts, logos, guidelines, contrast matrix, and `plan_reference.html` (static plan page rendered from the engine's output) | UI build |
-| `source/` | The original v6 assessment (Word) and the library + mapping workbook | Human-readable source of truth |
-| `docs/` | Prototype brief, rules in plain English, open items | Read first |
+## What's here
 
-## Quick start
+| Path | What it is |
+|---|---|
+| `index.html` | **The live member prototype.** Built from `src/` and `core/` by `npm run build`; don't edit it by hand. |
+| `src/app.html`, `src/base.css` | The prototype's source: app shell and screens, design-system styles. |
+| `core/engine.js` | The plan engine. `makeEngine(DATA).plan(features)` returns a member's Good Span. Runs in the browser and in Node. |
+| `core/questions.js` | The assessment: `SECTIONS`, `QUESTIONS` (50 questions: ids, options, when each is shown) and `toFeatures(answers)`. |
+| `core/data.json` | Data the engine reads: `lib` (298 practices, generated from the library workbook), `hyg` (foundations), `goals`, `goalLabels`. |
+| `docs/RULES.md` | **The complete rules**: principle, plan structure, Rules 1–18, thresholds, signals and goals → practices, Pilot notes, "Not right for me", engine constants. |
+| `docs/PROTOTYPE_BRIEF.md`, `docs/OPEN_ITEMS.md` | What to build next; open items before launch. |
+| `source/GoodSpan_Longevity_Map_Assessment.docx` | The assessment (50 questions) with the internal rules, tables and revision notes. |
+| `source/Practice_library_and_mapping.xlsx` | The practice library (Practices, Hygiene checklist, Themes, Pilot notes, Change Log). **Source of truth for practices.** |
+| `source/Assessment_option_map.xlsx` | Every question and option: what it records, which rule uses it, what it does to the plan, how it personalises it. |
+| `source/Simulations_50.xlsx`, `source/Mind_review.xlsx` | Latest simulation findings; the Mind review (batch 2 awaiting approval). |
+| `data/` | JSON exports: `library.json` (every library column), `questions.json`, `goals.json`, `foundations.json`. |
+| `tests/` | 20 + 30 + 50 simulated members, "Not right for me" checks, 3,000 random members, browser test. |
+| `scripts/` | `build.mjs` (builds `index.html`), `library_to_json.py` (workbook → engine data), `Code.gs` (Google Sheet webhook). |
+| `design/` | Brand tokens, fonts, logos, guidelines, contrast matrix. |
+| `worker.js`, `wrangler.jsonc` | Cloudflare Worker: serves the site and saves plan copies (`POST /api/plans` → `/plans/<id>.html`). |
+| `docs/CURSOR_RULES.md` | Ground rules for Cursor. Copy to `.cursor/rules/goodspan.mdc` so Cursor applies them automatically. |
+
+## Run it
 
 ```bash
-python app.py                                                         # prototype UI at http://127.0.0.1:8899
-python engine/goodspan_engine.py tests/fixtures/example_member.json   # prints a plan as JSON
-python tests/test_engine.py                                           # runs all tests (GS_CASES=1000 for more)
-python tests/random_answers.py 42                                     # a random valid answer set
-python design/render_plan_reference.py                                # re-renders the plan page from engine output
+npm run build          # rebuild index.html after editing src/ or core/
+npx serve .            # or: python3 -m http.server   → open http://localhost:3000 (or :8000)
+npm test               # 100 simulated members + 360 "Not right for me" checks: must report 0 issues
+npm run test:fuzz      # 3,000 random members through every rule (about 2 minutes)
+npm run library        # after editing source/Practice_library_and_mapping.xlsx (needs: pip install openpyxl)
+npm i -D playwright && npx playwright install chromium && npm run test:e2e   # full browser run, desktop and phone
 ```
 
-The prototype (`app.py`) serves the member assessment from `data/assessment.json`, calls `build_plan()` for the draft plan, and includes a simple Pilot view and monthly check-in. No extra Python packages are required.
+Deploy as before with Wrangler (`wrangler deploy`): the Worker serves `index.html` at the site root.
 
-## Data contracts (summary)
+## How it fits together
 
-**Answers** — keyed by question ID: `single` → `"option_id"`; `multi` → `["option_id"]`; `grid_single` → `{"row_id": "column_id"}`.
-
-**Plan** (output of `build_plan`):
-```json
-{ "focus_pillars": ["eat","move"], "focus_suggested": false,
-  "top_goals": {"eat": "heart_health"},
-  "months": [{ "month": 1, "total_minutes_per_week": 85,
-     "practices": [{ "practice_id": "salt.gentle", "family_id": "salt", "pillar": "eat", "role": "focus",
-                     "top_goal": true, "level": "gentle", "headline": "…", "how_to": "…",
-                     "minutes_per_week": 5, "micro": true, "change": "new" }] }],
-  "themes_months_4_6": [{"theme_id": "heart_healthy_eating", "name": "Heart-Healthy Eating", "pillar": "eat"}],
-  "hygiene_priority": [{"id": "bedroom_noise", "text": "…", "pillar": "sleep"}],
-  "references": ["APA reference for every practice and foundation in the plan", "…"],
-  "pilot_flags": [{"id": "snoring", "message": "…"}],
-  "conditions": ["…"], "weekly_budget_minutes": 150, "notes": ["…"] }
+```
+answers (A) ──► toFeatures(A) ──► features (p) ──► engine.plan(p) ──► plan (P) ──► screens (src/app.html)
+             core/questions.js                    core/engine.js
 ```
 
-**Monthly outcomes** (input for months 2–3): `[{family_id: "done" | "partly" | "not_yet" | "not_for_me"}, …]`.
-**Pilot input**: `{"conditions": ["non_drinker", "low_mood_flag", …], "released": ["alcohol_and_sleep.deep", …]}`.
+- **Answers** `A` are keyed by question id (`q1`…`q58`; gaps are questions removed over time). Single = string, multi = array, grid = `{rowKey: answer}`, personal habit = `{text, choice}`.
+- **Plan** `P` = `engine.plan(p)`: `status` (Starting Position), `pri` (priority pillars), `months[0..2]` (practices with role, level, text, `why`, change), `minutes`, `budget`, `themes`, `foundations`, **`pilot` (internal Pilot notes, never shown to members)**, `notRight(month, index, reason)` (Rule 13), `log`.
 
-## Important notes
+## Testing with members (what the prototype does)
 
-- The **Pilot guide** (pre-Span interview, safety questions, Portugal referral routes) lives as a Claude Doc: https://claude.ai/code/artifact/3d74d290-1cb3-403f-bb3c-6cb90d15a6aa — export it to Word or PDF from there.
-- The **plan page design** lives at https://claude.ai/artifact/JTCUtBrMk3vrCEAG9pEF6j; `design/plan_reference.html` is a static, engine-driven version of it.
-- Support services and safety messages are **never shown to members** — they go to the Pilot.
-- See `docs/OPEN_ITEMS.md` before building anything final.
+- Welcome screen: optional first name, email and mobile. Each member gets a unique reference (for example `GS-8HW2-EM7B`) and their own plan. No example personas.
+- The plan is built only when every shown question is answered (the personal habit question is optional).
+- When the plan is built, the prototype:
+  1. sends the answers, the plan summary and the Pilot notes to the team's **Google Sheet** (`scripts/Code.gs`; one row per member, columns named `v7 <section>: <question>`);
+  2. saves a static copy of the plan through the Worker and shows "Open saved copy"; the link is added to the member's row.
+- "Download my Good Span (JSON)" gives the answers and plan (no Pilot notes) for testing.
+- Answers stay in that browser only (`localStorage`); "Start again" clears them.
+
+**Update the Apps Script:** paste the new `scripts/Code.gs` into the sheet's Apps Script and deploy a new version, so rows are matched by member reference rather than by name.
+
+**Data protection:** answers include health information (special category data under GDPR). Keep the sheet restricted to the team and Pilots, and get explicit consent before testing with members.
+
+## Before launch
+
+- Safety rules (exclusions, holds, Pilot notes) reviewed by a qualified professional.
+- BST Bazaine licence (trial fonts in `design/assets/`).
+- Mind batch 2 (5 practice groups in `source/Mind_review.xlsx`) awaiting approval; not in the library yet.
+- Accessibility test with a screen reader.

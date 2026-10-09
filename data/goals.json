@@ -1,0 +1,319 @@
+{
+ "goals": {
+  "Nutrition": {
+   "protein": [
+    "Protein at meals",
+    "Balanced plate"
+   ],
+   "plants": [
+    "Balanced plate",
+    "Whole grains",
+    "Beans and lentils",
+    "Plant variety"
+   ],
+   "processed": [
+    "Less processed food"
+   ],
+   "sugar": [
+    "Reducing sugar"
+   ],
+   "heart": [
+    "Salt",
+    "Nuts"
+   ],
+   "planning": [
+    "Meal planning and home cooking"
+   ],
+   "out": [
+    "Eating out and on the move"
+   ],
+   "timing": [
+    "Gap between eating and bed",
+    "Daily eating window"
+   ],
+   "mindful": [
+    "Screen-free meals",
+    "Attention to food",
+    "Slow eating"
+   ]
+  },
+  "Sleep": {
+   "fall_asleep": [
+    "Slow breathing to wind down",
+    "Screen-free wind-down",
+    "Bedtime to-do list",
+    "Progressive muscle relaxation",
+    "Bedtime music"
+   ],
+   "stay_asleep": [
+    "Bed for sleep",
+    "Alcohol and sleep",
+    "Slow breathing to wind down",
+    "Progressive muscle relaxation"
+   ],
+   "more_sleep": [
+    "Enough sleep"
+   ],
+   "wake_time": [
+    "Consistent sleep timing",
+    "Morning daylight"
+   ],
+   "rested": [
+    "Enough sleep",
+    "Consistent sleep timing",
+    "Activity for better sleep"
+   ],
+   "schedule": [
+    "Consistent sleep timing",
+    "Morning daylight"
+   ],
+   "evening": [
+    "Screen-free wind-down",
+    "Slow breathing to wind down",
+    "Bedtime to-do list",
+    "Bedtime music"
+   ],
+   "morning": [
+    "Morning daylight",
+    "Activity for better sleep"
+   ]
+  },
+  "Movement": {
+   "fitness": [
+    "Weekly cardio",
+    "Building up cardio",
+    "Strength sessions"
+   ],
+   "strength": [
+    "Strength sessions",
+    "Strength volume"
+   ],
+   "cardio": [
+    "Weekly cardio",
+    "Building up cardio",
+    "Harder cardio and long intervals",
+    "Short intervals"
+   ],
+   "mobility": [
+    "Stretching"
+   ],
+   "balance": [
+    "Balance"
+   ],
+   "everyday": [
+    "Daily steps",
+    "Breaking up sitting",
+    "Walking after meals",
+    "Active travel",
+    "Movement snacks"
+   ],
+   "consistency": [
+    "Group activity",
+    "Walking with others",
+    "Activity challenges"
+   ],
+   "performance": [
+    "Harder cardio and long intervals",
+    "Short intervals",
+    "Strength volume"
+   ]
+  },
+  "Mind": {
+   "stress": [
+    "Slow breathing",
+    "Meditation",
+    "Reframing",
+    "Self-compassion",
+    "Yoga for stress",
+    "Micro-breaks",
+    "Savouring",
+    "Problem-solving steps",
+    "Music to unwind"
+   ],
+   "switch_off": [
+    "Time away from work",
+    "Slow breathing",
+    "Music to unwind",
+    "Yoga for stress",
+    "Social media limits"
+   ],
+   "focus": [
+    "Focused work",
+    "Micro-breaks",
+    "Present-moment attention"
+   ],
+   "emotions": [
+    "Self-compassion",
+    "Naming emotions",
+    "Using your own name",
+    "Expressive writing",
+    "Reframing",
+    "Problem-solving steps"
+   ],
+   "phone": [
+    "Social media limits"
+   ],
+   "me_time": [
+    "Enjoyable leisure",
+    "Time in nature"
+   ],
+   "enjoyment": [
+    "Three good things",
+    "Savouring",
+    "Best possible self",
+    "Enjoyable leisure",
+    "Time in nature"
+   ],
+   "rest": [
+    "Time in nature",
+    "Micro-breaks",
+    "Time away from work"
+   ],
+   "purpose": [
+    "Sense of purpose",
+    "Best possible self"
+   ],
+   "routines": [
+    "Habit building",
+    "If-then planning"
+   ]
+  },
+  "Connection": {
+   "meaningful": [
+    "Opening up",
+    "Feelings check-ins",
+    "Asking follow-up questions",
+    "Responding to good news"
+   ],
+   "new_people": [
+    "Talking to acquaintances",
+    "Meals with new people",
+    "Group membership"
+   ],
+   "shared": [
+    "Group membership",
+    "Meals with new people",
+    "Shared meals"
+   ],
+   "belonging": [
+    "Group membership",
+    "Affectionate touch",
+    "Talking to acquaintances"
+   ],
+   "time": [
+    "Reaching out",
+    "Shared meals",
+    "Calling instead of texting",
+    "Conversation at meals"
+   ],
+   "far": [
+    "Calling instead of texting",
+    "Reaching out"
+   ],
+   "meals": [
+    "Shared meals",
+    "Sharing recipes with others",
+    "Conversation at meals",
+    "Meal rituals",
+    "Food memories",
+    "Thanks after meals"
+   ],
+   "helping": [
+    "Acts of kindness",
+    "Volunteering",
+    "Expressing gratitude"
+   ]
+  },
+  "Prevention": {
+   "alcohol": [
+    "Alcohol-free swaps",
+    "Alcohol intake"
+   ],
+   "smoking": [
+    "Quitting with full support",
+    "Trying again to quit",
+    "Stopping vaping",
+    "Smoke-free home"
+   ],
+   "checkups": [
+    "Routine check-ups"
+   ],
+   "vaccines": [
+    "Vaccination record"
+   ],
+   "supplements": [
+    "Supplement check"
+   ],
+   "sun": [
+    "Daily sunscreen",
+    "Avoiding sunburn"
+   ],
+   "hearing": [
+    "Safe listening",
+    "Hearing protection",
+    "Hearing check"
+   ],
+   "air": [
+    "Air quality",
+    "Indoor air"
+   ],
+   "learning": [
+    "Learning new skills"
+   ]
+  }
+ },
+ "labels": {
+  "protein": "Getting enough protein",
+  "plants": "Eating more plants and fibre",
+  "processed": "Reducing highly processed foods",
+  "sugar": "Reducing sugar",
+  "heart": "Heart health: less salt and more nuts",
+  "planning": "Meal planning and home cooking",
+  "out": "Eating well when I'm out or travelling",
+  "timing": "When I eat, such as late-evening eating",
+  "mindful": "Eating more mindfully, with fewer distractions",
+  "fall_asleep": "Falling asleep more easily",
+  "stay_asleep": "Staying asleep through the night",
+  "more_sleep": "Getting more sleep",
+  "wake_time": "Waking at the time I want",
+  "rested": "Waking feeling rested",
+  "schedule": "Having a more consistent sleep schedule",
+  "evening": "Improving my evening routine",
+  "morning": "Improving my morning routine",
+  "fitness": "Build general fitness",
+  "strength": "Build strength",
+  "cardio": "Improve cardiovascular fitness",
+  "mobility": "Improve mobility and flexibility",
+  "balance": "Improve balance and coordination",
+  "everyday": "Increase everyday movement",
+  "consistency": "Become more consistent with exercise",
+  "performance": "Improve performance",
+  "stress": "Managing stress",
+  "switch_off": "Switching off and relaxing",
+  "focus": "Focus and concentration",
+  "emotions": "Managing difficult emotions",
+  "phone": "Spending less time on my phone or social media",
+  "me_time": "Making more time for myself",
+  "enjoyment": "Enjoyment and positive experiences",
+  "rest": "Rest and recovery",
+  "purpose": "A greater sense of purpose",
+  "routines": "Building routines that stick",
+  "meaningful": "More meaningful relationships",
+  "new_people": "Meeting new people",
+  "shared": "More shared activities",
+  "belonging": "A stronger sense of belonging",
+  "time": "More time with friends or family",
+  "far": "Staying in touch with people who live far away",
+  "meals": "Sharing meals with others",
+  "helping": "Helping others or contributing to my community",
+  "alcohol": "Drinking less alcohol",
+  "smoking": "Stopping smoking or vaping",
+  "checkups": "Keeping up with check-ups",
+  "vaccines": "Knowing which vaccines are due",
+  "supplements": "Taking only the supplements I need",
+  "sun": "Protecting my skin from the sun",
+  "hearing": "Protecting my hearing",
+  "air": "Breathing cleaner air at home and outdoors",
+  "learning": "Keeping my mind active by learning new things"
+ }
+}
