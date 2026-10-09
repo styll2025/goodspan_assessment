@@ -1315,13 +1315,13 @@ async function afterPlan(P) {
 function renderWelcome() {
   const resume = member && Object.keys(A).length;
   document.getElementById('view').innerHTML = `<div class="wrap"><div class="intro welcome">
-    <p class="kicker">Find your Good Span</p><h1>Welcome.</h1>
-    <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
+    <h1>Welcome.</h1>
+    <p class="lead">This 15-minute assessment explores six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention.</p>
+    <p class="lead">Your answers will help us create a personalised Good Span, with practices tailored to you and clear explanations of why each one is recommended.</p>
     ${resume ? `<p>You have an assessment in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
       <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new assessment</button></div>`
     : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
       <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
-      <p class="hint">Optional. We use it to make your Good Span yours.</p>
       <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
       <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label>
       <p class="hint">Optional. Only used so the team can follow up on your test, and kept private.</p></form>
