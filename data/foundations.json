@@ -1,0 +1,68 @@
+[
+ {
+  "f": "Evening light",
+  "p": "Sleep",
+  "t": "Dim the lights in the evening: use lamps instead of ceiling lights from about 3 hours before bed.",
+  "ref": "Cajochen, C., Stefani, O., Schöllhorn, I., Lang, D., & Chellappa, S. L. (2022). Influence of evening light exposure on polysomnographically assessed night-time sleep: A systematic review with meta-analysis. Lighting Research & Technology, 54(6), 609–624. https://doi.org/10.1177/14771535221078765 | Phillips, A. J. K., Vidafar, P., Burns, A. C., McGlashan, E. M., Anderson, C., Rajaratnam, S. M. W., Lockley, S. W., & Cain, S. W. (2019). High sensitivity and interindividual variability in the response of the human circadian system to evening light. Proceedings of the National Academy of Sciences, 116(24), 12019–12024. https://doi.org/10.1073/pnas.1901824116 | Brown, T. M., Brainard, G. C., Cajochen, C., Czeisler, C. A., Hanifin, J. P., Lockley, S. W., Lucas, R. J., Münch, M., O'Hagan, J. B., Peirson, S. N., Price, L. L. A., Roenneberg, T., Schlangen, L. J. M., Skene, D. J., Spitschan, M., Vetter, C., Zee, P. C., & Wright, K. P. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. PLOS Biology, 20(3), e3001571. https://doi.org/10.1371/journal.pbio.3001571"
+ },
+ {
+  "f": "Caffeine timing",
+  "p": "Sleep",
+  "t": "Have your last caffeine at least 6 hours before bed; for a standard coffee, about 9 hours.",
+  "ref": "Gardiner, C., Weakley, J., Burke, L. M., Roach, G. D., Sargent, C., Maniar, N., Townshend, A., & Halson, S. L. (2023). The effect of caffeine on subsequent sleep: A systematic review and meta-analysis. Sleep Medicine Reviews, 69, 101764. https://doi.org/10.1016/j.smrv.2023.101764 | Drake, C., Roehrs, T., Shambroom, J., & Roth, T. (2013). Caffeine effects on sleep taken 0, 3, or 6 hours before going to bed. Journal of Clinical Sleep Medicine, 9(11), 1195–1200. https://doi.org/10.5664/jcsm.3170"
+ },
+ {
+  "f": "Napping",
+  "p": "Sleep",
+  "t": "If you nap, keep it short (about 10–20 minutes) and in the afternoon.",
+  "ref": "Faraut, B., Andrillon, T., Vecchierini, M. F., & Leger, D. (2017). Napping: A public health issue. From epidemiological to laboratory studies. Sleep Medicine Reviews, 35, 85–100. https://doi.org/10.1016/j.smrv.2016.09.002 | Brooks, A., & Lack, L. (2006). A brief afternoon nap following nocturnal sleep restriction: Which nap duration is most recuperative? Sleep, 29(6), 831–840. https://doi.org/10.1093/sleep/29.6.831"
+ },
+ {
+  "f": "Cool bedroom",
+  "p": "Sleep",
+  "t": "Keep your bedroom comfortably cool: adjust the heating, open a window or use a fan, and change bedding with the seasons.",
+  "ref": "Okamoto-Mizuno, K., & Mizuno, K. (2012). Effects of thermal environment on sleep and circadian rhythm. Journal of Physiological Anthropology, 31(1), 14. https://doi.org/10.1186/1880-6805-31-14 | Chevance, G., Minor, K., Vielma, C., Campi, E., O'Callaghan-Gordo, C., Basagaña, X., Ballester, J., & Bernard, P. (2024). A systematic review of ambient heat and sleep in a warming climate. Sleep Medicine Reviews, 75, 101915. https://doi.org/10.1016/j.smrv.2024.101915"
+ },
+ {
+  "f": "Dark bedroom",
+  "p": "Sleep",
+  "t": "Make your bedroom dark: close the curtains or blinds, cover standby lights, and try an eye mask if light still gets in.",
+  "ref": "Brown, T. M., Brainard, G. C., Cajochen, C., Czeisler, C. A., Hanifin, J. P., Lockley, S. W., Lucas, R. J., Münch, M., O'Hagan, J. B., Peirson, S. N., Price, L. L. A., Roenneberg, T., Schlangen, L. J. M., Skene, D. J., Spitschan, M., Vetter, C., Zee, P. C., & Wright, K. P. (2022). Recommendations for daytime, evening, and nighttime indoor light exposure to best support physiology, sleep, and wakefulness in healthy adults. PLOS Biology, 20(3), e3001571. https://doi.org/10.1371/journal.pbio.3001571 | Tähkämö, L., Partonen, T., & Pesonen, A.-K. (2019). Systematic review of light exposure impact on human circadian rhythm. Chronobiology International, 36(2), 151–170. https://doi.org/10.1080/07420528.2018.1527773"
+ },
+ {
+  "f": "Bedroom noise",
+  "p": "Sleep",
+  "t": "Cut bedroom noise: close windows on the noisy side, move away from noise sources, or try foam earplugs.",
+  "ref": "Basner, M., & McGuire, S. (2018). WHO Environmental Noise Guidelines for the European Region: A systematic review on environmental noise and effects on sleep. International Journal of Environmental Research and Public Health, 15(3), 519. https://doi.org/10.3390/ijerph15030519"
+ },
+ {
+  "f": "Warm-up",
+  "p": "Movement",
+  "t": "Warm up before exercise with light activity, then movements like the ones you're about to do.",
+  "ref": "Fradkin, A. J., Zazryn, T. R., & Smoliga, J. M. (2010). Effects of warming-up on physical performance: a systematic review with meta-analysis. Journal of Strength and Conditioning Research, 24(1), 140–148. https://doi.org/10.1519/JSC.0b013e3181c643a0 | Fradkin, A. J., Gabbe, B. J., & Cameron, P. A. (2006). Does warming up prevent injury in sport? The evidence from randomised controlled trials? Journal of Science and Medicine in Sport, 9(3), 214–220. https://doi.org/10.1016/j.jsams.2006.03.026"
+ },
+ {
+  "f": "Recovery",
+  "p": "Movement",
+  "t": "Build in lighter days between harder sessions, and increase training gradually (keep weekly increases under about 30%).",
+  "ref": "Nielsen, R. Ø., Parner, E. T., Nohr, E. A., Sørensen, H., Lind, M., & Rasmussen, S. (2014). Excessive progression in weekly running distance and risk of running-related injuries: an association which varies according to type of injury. Journal of Orthopaedic & Sports Physical Therapy, 44(10), 739–747. https://doi.org/10.2519/jospt.2014.5164"
+ },
+ {
+  "f": "Step tracking",
+  "p": "Movement",
+  "t": "Turn on step counting on your phone and check your daily average.",
+  "ref": "Bravata, D. M., Smith-Spangler, C., Sundaram, V., Gienger, A. L., Lin, N., Lewis, R., Stave, C. D., Olkin, I., & Sirard, J. R. (2007). Using pedometers to increase physical activity and improve health: a systematic review. JAMA, 298(19), 2296–2304. https://doi.org/10.1001/jama.298.19.2296"
+ },
+ {
+  "f": "Music and enjoyment in exercise",
+  "p": "Movement",
+  "t": "Use music you enjoy during workouts; save faster tracks for harder efforts.",
+  "ref": "Terry, P. C., Karageorghis, C. I., Curran, M. L., Martin, O. V., & Parsons-Smith, R. L. (2020). Effects of music in exercise and sport: A meta-analytic review. Psychological Bulletin, 146(2), 91–117. https://doi.org/10.1037/bul0000216"
+ },
+ {
+  "f": "Notifications",
+  "p": "Mind",
+  "t": "Turn off non-essential notifications, and use Do Not Disturb while you focus.",
+  "ref": "Kushlev, K., Proulx, J. D. E., & Dunn, E. W. (2016). \"Silence Your Phones\": Smartphone Notifications Increase Inattention and Hyperactivity Symptoms. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1011–1020). ACM. https://doi.org/10.1145/2858036.2858359"
+ }
+]

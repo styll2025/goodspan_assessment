@@ -12,8 +12,8 @@
  *
  * The first row becomes headers. New payload keys add new columns automatically.
  * Multi-selects and grids arrive as readable text (already labelled by the assessment).
- * A later post with the same memberName (and email, if present) updates that row
- * instead of adding a duplicate — used to fill in planLink.
+ * A later post with the same memberRef (October 2026 version) — or, for older posts, the same
+ * memberName (and email, if present) — updates that row instead of adding a duplicate; used to fill in planLink.
  */
 function doPost(e) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
@@ -58,6 +58,16 @@ function doPost(e) {
 }
 
 function findRow_(sheet, headers, incoming) {
+  // October 2026 version: each member has a unique reference (memberRef). Match on it first.
+  const refIdx = headers.indexOf("memberRef");
+  const ref = String(incoming.memberRef || "").trim();
+  if (refIdx >= 0 && ref && sheet.getLastRow() >= 2) {
+    const refs = sheet.getRange(2, refIdx + 1, sheet.getLastRow() - 1, 1).getValues();
+    for (let i = refs.length - 1; i >= 0; i--) {
+      if (String(refs[i][0]).trim() === ref) return { row: i + 2, values: sheet.getRange(i + 2, 1, 1, headers.length).getValues()[0] };
+    }
+    return null;
+  }
   const nameIdx = headers.indexOf("memberName");
   const emailIdx = headers.indexOf("email");
   if (nameIdx < 0) return null;
