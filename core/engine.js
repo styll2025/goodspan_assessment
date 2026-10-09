@@ -441,11 +441,23 @@ function makeEngine(DATA) {
       }
       longLT = false;
     }
-    // Rule 4b: five practices in month 1 (3 priority + lighter touches). If the member's answers don't give enough lighter touches,
+    // Rule 4b: six practices in month 1 (3 priority + 3 lighter touches; if there are fewer priorities, more lighter touches). If the member's answers don't give enough lighter touches,
     // add one from their answers or goals in any pillar (one per pillar), then a small, well-established practice (Foundation or Targeted,
     // or something they enjoy), never "more of" something they already do. Lighter touches stay at 15 minutes or less.
-    const TARGET_PRACTICES = 5, ltN = () => chosen.filter(x => x.role === 'Lighter touch').length;
-    for (let g = 0; g < 6 && chosen.length < TARGET_PRACTICES && ltN() < 3; g++) {
+    // Free time for a sixth practice: start the practice that adds the most time one level lower (never below what they already do,
+    // never an Explore level they didn't ask for, never the first priority or one that answers a High signal while another can change).
+    const freeTime = () => {
+      const keyF = new Set([chosen[0] && chosen[0].fam, ...AREAS.flatMap(ar => S[ar].filter(q => q[0] === 'H').map(q => q[2]))]);
+      const cand = chosen.filter(x => extraMinutes(p, x.row) > 15 && LEVELS.indexOf(x.row.l) > 0).sort((u, v) => (keyF.has(u.fam) - keyF.has(v.fam)) || (extraMinutes(p, v.row) - extraMinutes(p, u.row)));
+      for (const x of cand) {
+        const lv = famOf(x.area, x.fam), li = LEVELS.indexOf(x.row.l), b0 = baseline(p, x.fam), bI = (b0 && cap(x.area) > 0) ? LEVELS.indexOf(b0) : 0;
+        const down = LEVELS.slice(bI, li).reverse().find(l => lv[l] && !excluded(lv[l], c, p).length && !optedOut(x.fam, l, optout) && (lv[l].ev !== 'Explore' || goalsOf(x.area).includes(x.fam)) && extraMinutes(p, lv[l]) < extraMinutes(p, x.row));
+        if (down) { x.row = lv[down]; x.note = 'started a level lower to make room for your other practices'; log.push([x.area, x.fam, down, 'started lower to fit six practices']); return true; }
+      }
+      return false;
+    };
+    const TARGET_PRACTICES = 6, ltN = () => chosen.filter(x => x.role === 'Lighter touch').length;
+    for (let g = 0; g < 12 && chosen.length < TARGET_PRACTICES; g++) {
       const usedA = new Set(chosen.filter(x => x.role === 'Lighter touch').map(x => x.area));
       let z = null;
       for (const a of order) { if (usedA.has(a)) continue; const tr = []; for (let k = 0; k < 30 && !z; k++) { const y = pick(a, 'Lighter touch', chosen, tr); if (!y) break; if (total(chosen) + extraMinutes(p, y.row) <= budget) z = y; else tr.push(y.fam); } if (z) break; }
@@ -465,8 +477,9 @@ function makeEngine(DATA) {
         ltFill = false;
         if (z) z.fill = true;
       }
-      if (!z) break;
-      chosen.push(z); log.push([z.area, z.fam, z.row.l, z.fill ? 'lighter touch added to reach five practices (starting set)' : 'lighter touch added to reach five practices']);
+      if (!z && !freeTime()) break;   // no room left: try to free time by starting the biggest practice a level lower, then try again
+      if (!z) continue;
+      chosen.push(z); log.push([z.area, z.fam, z.row.l, z.fill ? 'lighter touch added to reach six practices (starting set)' : 'lighter touch added to reach six practices']);
     }
     chosen.forEach(x => { x.change = 'START'; x.why = why(p, S, x, wish); });
     const months = [chosen.map(x => Object.assign({}, x))];
@@ -519,9 +532,17 @@ function makeEngine(DATA) {
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
     const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
     const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
+    const THEMES_N = 6;   // Rule 11: six themes for months 4–6
     const used = new Set(), themes = [];
     for (const a of [...(pri.length === 1 ? [pri[0], pri[0]] : pri), ...light, ...order.filter(x => !pri.includes(x) && !light.includes(x))]) {
-      if (themes.length >= 4) break;
+      if (themes.length >= THEMES_N) break;
+      for (const f of ranked(a, 'Priority')) {
+        const t = CAT.get(a + '|' + f), lv = famOf(a, f);
+        if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, pri.includes(a) ? 'pri' : chosen.some(x => x.role === 'Lighter touch' && x.area === a) ? 'light' : (opp[a] >= 1 || (p.goals[a] || []).length) ? 'room' : 'next']); used.add(t); break; }
+      }
+    }
+    for (const a of [...pri, ...chosen.filter(x => x.role === 'Lighter touch').map(x => x.area), ...order]) {
+      if (themes.length >= THEMES_N) break;
       for (const f of ranked(a, 'Priority')) {
         const t = CAT.get(a + '|' + f), lv = famOf(a, f);
         if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, pri.includes(a) ? 'pri' : chosen.some(x => x.role === 'Lighter touch' && x.area === a) ? 'light' : (opp[a] >= 1 || (p.goals[a] || []).length) ? 'room' : 'next']); used.add(t); break; }
