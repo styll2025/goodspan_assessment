@@ -11,8 +11,8 @@ the member says what they'd like to improve; the assessment shows where the grea
 ## Plan structure
 
 - **Starting Position → Your Good Span (6 months) → New Position → Your next Good Span.**
-- **Months 1–3:** 5 practices in month 1 (3 priority practices and 2 lighter touches; Rule 4), foundations in the background. Month 1 is set; months 2–3 are provisional (CONTINUE / LEVEL UP / SWAP), decided at each monthly check-in by the member, with their Pilot where they have one.
-- **Months 4–6:** 4 themes; practices within each theme are chosen at the mid-Span check-in.
+- **Months 1–3:** 6 practices in month 1 (3 priority practices and 3 lighter touches; Rule 4), foundations in the background. Month 1 is set; months 2–3 are provisional (CONTINUE / LEVEL UP / SWAP), decided at each monthly check-in by the member, with their Pilot where they have one.
+- **Months 4–6:** 6 themes (Rule 11); practices within each theme are chosen at the mid-Span check-in.
 - Each practice shows the practice, how often and for how long, the details, its level, its evidence level, the new minutes it adds and its target time, and **“Why this is in your Good Span”**.
 - The plan is the same for every membership tier. Pilot notes are never shown to members.
 - The system is **rule-based and deterministic**: the same answers always give the same plan. Ties are broken by the order in the library and goal lists, never at random.
@@ -33,7 +33,7 @@ each area's combined score = opportunity score + 2 if the member chose it in que
 
 ### Rule 4. Lighter touches
 
-up to 3, so that month 1 has 5 practices in all (3 priority practices + 2 lighter touches, or 3 when there are fewer priority practices). Each lighter touch adds no more than 15 minutes a week (stop-smoking and stop-vaping support is exempt), comes from a different pillar, and is chosen in this order: (a) one that answers the member's own answers or goals in another pillar with a combined score of 1 or more; (b) one that answers their own answers or goals in any pillar; (c) a small, well-established practice (Foundation or Targeted, or Explore only if it matches something they enjoy) that fits their time, choosing what they enjoy first, then Foundation evidence, then the shortest. A starting practice is never "more of" something they already do most days. If nothing fits the time, there are fewer.
+enough to make 6 practices in month 1 (3 priority practices + 3 lighter touches; when there are fewer priority practices, more lighter touches). If there isn't time for a sixth, the practice that adds the most time (never the first priority, never one that answers a High signal while another can change) starts one level lower, never below what the member already does. Each lighter touch adds no more than 15 minutes a week (stop-smoking and stop-vaping support is exempt), comes from a different pillar, and is chosen in this order: (a) one that answers the member's own answers or goals in another pillar with a combined score of 1 or more; (b) one that answers their own answers or goals in any pillar; (c) a small, well-established practice (Foundation or Targeted, or Explore only if it matches something they enjoy) that fits their time, choosing what they enjoy first, then Foundation evidence, then the shortest. A starting practice is never "more of" something they already do most days. If nothing fits the time, there are fewer.
 
 ### Rule 5. Evidence level
 
@@ -65,7 +65,7 @@ Months 2-3 are provisional and set at each monthly check-in, with the Pilot's ju
 
 ### Rule 11. Themes for months 4-6
 
-4 themes, one per priority area (two if there is one), then the lighter-touch areas. At mid-Span, use the theme where the member's practices went best.
+6 themes, each different. First one per pillar: the priority areas (two if there is only one), then the lighter-touch areas, then the other areas in order of the member's scores. If that gives fewer than six, a further theme from the priority areas, then the lighter-touch areas, until there are six. At mid-Span, use the theme where the member's practices went best.
 
 ### Rule 12. Pilot notes
 

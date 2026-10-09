@@ -48,9 +48,10 @@ function check(f, o) {
   o.months.forEach((m, i) => { if (o.minutes[i] > o.budget + 1e-9) issues.push(`Month ${i + 1} new time ${o.minutes[i]} over limit ${o.budget}`); });
   const m1 = o.months[0];
   if (m1.filter(x => x.role === 'Priority').length > 3) issues.push('More than 3 priority practices');
-  if (m1.filter(x => x.role === 'Lighter touch').length > 3) issues.push('More than 3 lighter touches');
   if (m1.length > 6) issues.push('More than 6 practices in month 1');
-  if (m1.length < 5 && o.minutes[0] < o.budget - 15) issues.push('Fewer than 5 practices in month 1 with time to spare: ' + m1.length);
+  if (m1.length > 6) issues.push('More than 6 practices in month 1');
+  if (m1.length < 6 && o.minutes[0] < o.budget - 15) issues.push('Fewer than 6 practices in month 1 with time to spare: ' + m1.length);
+  if (o.themes.length !== 6) issues.push('Themes for months 4–6: ' + o.themes.length);
   for (const x of all) {
     for (const op of f.optout) for (const t of (OPT[op] || [])) if (t === x.fam || t === x.fam + '.' + x.row.l) issues.push(`Opted-out practice offered: ${x.fam} (${x.row.l})`);
     const ex = x.row.x.filter(t => cond.has(t)); if (ex.length) issues.push(`Excluded practice offered: ${x.fam} (${ex.join(', ')})`);

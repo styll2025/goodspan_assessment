@@ -14,7 +14,7 @@
 | Responses to the team's Google Sheet; saved plan copy link | Built (`scripts/Code.gs`, `worker.js`). |
 | Pilot view: answers, plan, `plan.pilot` notes, change requests; Pilot can confirm changes | To build. The engine already returns everything it needs. |
 | Monthly check-ins: turn months 2–3 into real CONTINUE / LEVEL UP / SWAP decisions, with Pilot sign-off where the member has a Pilot | To build. |
-| Mid-Span: choose practices within the four themes for months 4–6 | To build. |
+| Mid-Span: choose practices within the six themes for months 4–6 | To build. |
 | Journal for a private personal habit | To build. |
 | End of Span: New Position reassessment and Your next Good Span | To build. |
 | Accounts and storage per member; audit log of Pilot changes | To build. |
