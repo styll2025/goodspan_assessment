@@ -1216,8 +1216,11 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '
 // Prototype storage: this browser only (localStorage). Replace with your backend in the real product.
 const newMember = () => ({ id: 'GS-' + Math.random().toString(36).slice(2, 6).toUpperCase() + '-' + Date.now().toString(36).slice(-4).toUpperCase(), name: '', created: new Date().toISOString() });
 let A = {}, sec = 0, mode = 'welcome', member = null, tried = false;   // tried = they pressed 'See my Good Span' with questions still open
-try { const s = JSON.parse(localStorage.getItem('gs-member') || 'null'); if (s && s.member) { A = s.A || {}; sec = s.sec || 0; mode = s.mode || 'welcome'; member = s.member; REQ = s.REQ || {}; } } catch (e) {}
+const stored = () => { try { return JSON.parse(localStorage.getItem('gs-member') || 'null'); } catch (e) { return null; } };
+const emailKey = s => String(s || '').trim().toLowerCase();
+// Opening this address always shows the start. A saved assessment opens only when the same email is entered.
 const save = () => { try { localStorage.setItem('gs-member', JSON.stringify({ A, sec, mode, member, REQ })); } catch (e) {} };
+const showStart = () => { if (member && mode !== 'welcome') save(); OPEN = null; CUR = null; tried = false; A = {}; sec = 0; member = null; REQ = {}; mode = 'welcome'; render(); scrollTo(0, 0); };
 const visible = q => !q.show || q.show(A);
 const answered = q => { const v = A[q.id]; if (q.type === 'grid') return v && Object.keys(v).length >= q.rows.length; if (q.type === 'habit') return !!(v && (v.text || v.choice)); return Array.isArray(v) ? v.length > 0 : !!v; };
 
@@ -1265,7 +1268,7 @@ function renderAssess() {
   const f = document.getElementById('qform');
   f.addEventListener('submit', e => e.preventDefault());
   f.addEventListener('input', onInput); f.addEventListener('change', onInput);
-  document.getElementById('back').onclick = () => { if (sec === 0) { mode = 'welcome'; save(); render(); } else { sec--; save(); renderAssess(); } scrollTo(0, 0); };   // from the first section, back to the welcome screen
+  document.getElementById('back').onclick = () => { if (sec === 0) showStart(); else { sec--; save(); renderAssess(); scrollTo(0, 0); } };   // from the first section, back to the welcome screen
   const stop = () => { tried = true; const first = secMissing(sec)[0]; save(); renderAssess(); const el = document.querySelector(`[data-q="${first.id}"]`); if (el) el.scrollIntoView({ block: 'center' }); };
   const nx = document.getElementById('next'); if (nx) nx.onclick = () => { if (secMissing(sec).length) return stop(); tried = false; sec++; save(); renderAssess(); scrollTo(0, 0); };
   const fin = document.getElementById('finish'); if (fin) fin.onclick = () => {
@@ -1522,34 +1525,37 @@ async function afterPlan(P) {
   if (link) { member.planLink = link; save(); await sendToSheet({ memberName: member.name || '', email: member.email || '', memberRef: member.id, planLink: link }); if (mode === 'plan') { const y = scrollY; render(); scrollTo(0, y); } }
 }
 function renderWelcome() {
-  const resume = !!member;   // an assessment has been started on this device (even with no answers yet)
   document.getElementById('view').innerHTML = `<div class="wrap"><div class="intro welcome">
     <p class="kicker">Find your Good Span</p><h1>Welcome.</h1>
     <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
-    ${resume ? `<p>You have an assessment in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
-      <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new assessment</button></div>`
-    : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
-      <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
+    <form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
+      <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name"></label>
       <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
       <label class="nm"><span>Mobile</span><input id="mo" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" placeholder="Your mobile number"></label></form>
-      <div class="nav" style="border:0"><span></span><button class="btn primary" type="button" id="go">Start</button></div>`}
+      <div class="nav" style="border:0"><span></span><button class="btn primary" type="button" id="go">Start</button></div>
   </div></div>`;
   const go = document.getElementById('go');
-  if (go) { const start = () => { member = newMember(); member.name = document.getElementById('nm').value.trim(); member.email = document.getElementById('em').value.trim(); member.mobile = document.getElementById('mo').value.trim(); A = {}; REQ = {}; sec = 0; mode = 'assess'; save(); render(); scrollTo(0, 0); };
-    go.onclick = start; document.getElementById('wform').addEventListener('submit', e => { e.preventDefault(); start(); }); }
-  const c = document.getElementById('cont'); if (c) c.onclick = () => { mode = member.done ? 'plan' : 'assess'; save(); render(); };
-  const fr = document.getElementById('fresh'); if (fr) fr.onclick = () => { member = null; A = {}; REQ = {}; sec = 0; mode = 'welcome'; save(); render(); };
+  const start = () => {
+    const name = document.getElementById('nm').value.trim(), email = document.getElementById('em').value.trim(), mobile = document.getElementById('mo').value.trim();
+    const prev = stored();
+    // The same email as a saved assessment opens that plan, or the section they left.
+    if (email && prev && prev.member && emailKey(prev.member.email) === emailKey(email) && (prev.mode === 'plan' || prev.mode === 'assess')) {
+      member = prev.member; if (name) member.name = name; if (mobile) member.mobile = mobile;
+      A = prev.A || {}; sec = prev.sec || 0; REQ = prev.REQ || {}; tried = false; OPEN = null; CUR = null;
+      mode = (member.done || prev.mode === 'plan') ? 'plan' : 'assess';
+      save(); render(); scrollTo(0, 0); return;
+    }
+    member = newMember(); member.name = name; member.email = email; member.mobile = mobile;
+    A = {}; REQ = {}; sec = 0; tried = false; OPEN = null; CUR = null; mode = 'assess'; save(); render(); scrollTo(0, 0);
+  };
+  if (go) { go.onclick = start; document.getElementById('wform').addEventListener('submit', e => { e.preventDefault(); start(); }); }
 }
 function render() {
   if (mode === 'plan' && member) { if (!member.planned) { member.planned = new Date().toISOString(); } member.done = true; save(); }
   if (mode === 'plan') renderPlan(); else if (mode === 'assess') renderAssess(); else renderWelcome();
 }
-// The logo starts again: from the welcome screen it does nothing; anywhere else it asks first, then clears this device's answers
-document.getElementById('home').onclick = () => {
-  if (mode === 'welcome') return;
-  if (!confirm('Start a new assessment? Your current answers on this device will be cleared.')) return;
-  REQ = {}; OPEN = null; CUR = null; A = {}; sec = 0; member = null; mode = 'welcome'; tried = false; save(); render(); scrollTo(0, 0);
-};
+// The logo shows the start again. The saved assessment stays on this device until the same email is entered.
+document.getElementById('home').onclick = () => { if (mode === 'welcome') return; showStart(); };
 if (!member) mode = 'welcome';
 render();
 </script>
