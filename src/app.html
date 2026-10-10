@@ -113,10 +113,7 @@ const newMember = () => ({ id: 'GS-' + Math.random().toString(36).slice(2, 6).to
 let A = {}, sec = 0, mode = 'welcome', member = null, tried = false;   // tried = they pressed 'See my Good Span' with questions still open
 const stored = () => { try { return JSON.parse(localStorage.getItem('gs-member') || 'null'); } catch (e) { return null; } };
 const emailKey = s => String(s || '').trim().toLowerCase();
-// A refresh shows the start again. Opening this same address (a new visit, not a refresh) returns the saved plan, or the section they left.
-const reloaded = (() => { const n = performance.getEntriesByType && performance.getEntriesByType('navigation')[0]; if (n && n.type) return n.type === 'reload'; return !!(performance.navigation && performance.navigation.type === 1); })();
-const saved = stored();
-if (!reloaded && saved && saved.member && (saved.mode === 'plan' || saved.mode === 'assess')) { A = saved.A || {}; sec = saved.sec || 0; mode = saved.mode; member = saved.member; REQ = saved.REQ || {}; }
+// Opening this address always shows the start. A saved assessment opens only when the same email is entered.
 const save = () => { try { localStorage.setItem('gs-member', JSON.stringify({ A, sec, mode, member, REQ })); } catch (e) {} };
 const showStart = () => { if (member && mode !== 'welcome') save(); OPEN = null; CUR = null; tried = false; A = {}; sec = 0; member = null; REQ = {}; mode = 'welcome'; render(); scrollTo(0, 0); };
 const visible = q => !q.show || q.show(A);
@@ -452,7 +449,7 @@ function render() {
   if (mode === 'plan' && member) { if (!member.planned) { member.planned = new Date().toISOString(); } member.done = true; save(); }
   if (mode === 'plan') renderPlan(); else if (mode === 'assess') renderAssess(); else renderWelcome();
 }
-// The logo shows the start again. The saved assessment stays on this device, so the same address can open it later.
+// The logo shows the start again. The saved assessment stays on this device until the same email is entered.
 document.getElementById('home').onclick = () => { if (mode === 'welcome') return; showStart(); };
 if (!member) mode = 'welcome';
 render();
