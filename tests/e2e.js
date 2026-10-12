@@ -5,7 +5,7 @@ for (const w of [1280,390]) {
 const ctx=await b.newContext({viewport:{width:w,height:900},acceptDownloads:true}); const p=await ctx.newPage();
 const errs=[];p.on('pageerror',e=>errs.push(e.message));p.on('console',m=>{if(m.type()==='error'&&!/fonts/.test(m.text()))errs.push(m.text())});
 p.on('dialog',d=>d.accept());
-await p.goto('file://'+path.join(__dirname,'../index.html')); await p.waitForTimeout(300);
+await p.goto('file://'+path.join(__dirname,'../assessment.html')); await p.waitForTimeout(300);
 const t0=await p.evaluate(()=>document.body.innerText); const navOk=!/Try an example/.test(t0);
 const noHints=!/Optional\./.test(t0)&&!(await p.$('#reset'));
 await p.fill('#nm','Maria'); await p.click('#go'); await p.waitForTimeout(150);

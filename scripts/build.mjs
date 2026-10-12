@@ -1,10 +1,14 @@
-// Builds index.html (the member prototype served at the site root) as one self-contained page
-// from src/app.html, src/base.css and core/*. Fonts and the logo load from design/assets/.
+// Builds the pages the site serves.
+// index.html is the conversational assessment at the site root, from templates/conversation.tpl.html.
+// assessment.html is the section-by-section form, from src/app.html, src/base.css and core/*.
 // Usage: npm run build   (or: node scripts/build.mjs)
 import { readFileSync, writeFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const require = createRequire(import.meta.url);
+const { conversationPage } = require('./lib.js');
 const r = p => readFileSync(join(root, p), 'utf8');
 const body = r('src/app.html')
   .replace('__BASECSS__', () => r('src/base.css'))
@@ -17,12 +21,14 @@ const html = `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Good Span: find your Good Span</title>
-<!-- Built by scripts/build.mjs from src/ and core/. Edit those files, not this one. -->
+<!-- Built by scripts/build.mjs from src/ and core/. Edit those files, not this one. Served at /assessment.html. -->
 </head>
 <body>
 ${body}
 </body>
 </html>
 `;
-writeFileSync(join(root, 'index.html'), html);
-console.log('Built index.html (' + Math.round(html.length / 1024) + ' KB)');
+writeFileSync(join(root, 'assessment.html'), html);
+const conversation = conversationPage();
+writeFileSync(join(root, 'index.html'), conversation);
+console.log('Built index.html (' + Math.round(conversation.length / 1024) + ' KB), assessment.html (' + Math.round(html.length / 1024) + ' KB)');
