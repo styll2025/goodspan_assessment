@@ -24,6 +24,35 @@
   const clone = o => JSON.parse(JSON.stringify(o));
   const sentences = t => (t || '').match(/[^.!?]+[.!?]+(\s|$)/g)?.map(s => s.trim()) || (t ? [t] : []);
   const NUMW = ['no', 'one', 'two', 'three'];
+  // the opening question ("what would you most like to feel different?"): themes it can recognise, and the areas each points to
+  const THEMES = {
+    energy: { label: 'more energy', areas: ['Sleep', 'Movement'], re: /energ|tired|exhaust|fatigu|drained|sluggish/ },
+    sleep: { label: 'better sleep', areas: ['Sleep'], re: /sleep|insomnia|waking|wake up|rested|bed ?time|night/ },
+    stress: { label: 'less stress', areas: ['Mind'], re: /stress|overwhelm|pressure|burn ?out|busy|switch off|relax/ },
+    mood: { label: 'feeling calmer and happier', areas: ['Mind'], re: /calm|anxi|worr|mood|low|happ|emotion|mental|down\b|peace/ },
+    fitness: { label: 'feeling fitter and stronger', areas: ['Movement'], re: /fit|strong|strength|active|exercis|stamina|breath/ },
+    ease: { label: 'moving more easily', areas: ['Movement'], re: /stiff|mobil|flexib|move more easily|moving more easily|balance/ },
+    food: { label: 'eating better', areas: ['Nutrition'], re: /eat|food|diet|nutrition|cook|sugar|snack|veg|protein|weight/ },
+    connection: { label: 'feeling more connected', areas: ['Connection'], re: /lonel|connect|friend|people|family|social|belong|isolat/ },
+    health: { label: 'looking after your long-term health', areas: ['Prevention'], re: /health|check|long[- ]term|drink|alcohol|smok|vap|prevent|age well|ageing|aging|memory|sharp/ },
+  };
+  const themesOf = t => Object.keys(THEMES).filter(k => THEMES[k].re.test((t || '').toLowerCase()));
+  // their own words are echoed back only when short and plain: nothing about health conditions, symptoms, medicines or self-harm
+  const UNSAFE = /pain|ache|hurt|cancer|diabet|heart|chest|blood|pressure|cholesterol|pregnan|medic|pill|doctor|diagnos|depress|anxiety disorder|suicid|kill|die\b|death|self[- ]harm|eating disorder|anorex|bulimi|weight|fat\b|obes|alcoholi|addict|drug|sex|fuck|shit|damn|\d/i;
+  function ownWords(t) {
+    if (!t) return '';
+    let w = String(t).trim().replace(/\s+/g, ' ').replace(/[.!]+$/, '');
+    w = w.replace(/^(i'?d|i would|i want|i'd really|i really want|i would really) (like|love|want)? ?(to )?/i, '').replace(/^(to )/i, '');
+    w = w.replace(/\bmy\b/gi, 'your').replace(/\bI'm\b/g, "you're").replace(/\bI am\b/g, 'you are').replace(/\bI\b/g, 'you').replace(/\bme\b/gi, 'you').replace(/\bmyself\b/gi, 'yourself');
+    if (w.length < 4 || w.length > 80 || UNSAFE.test(w) || /[<>{}"“”]/.test(w)) return '';
+    return w.charAt(0).toLowerCase() + w.slice(1);
+  }
+  const OO_TXT = { tracking_food: 'tracking what you eat', apps: 'tracking apps', fasting: 'eating windows or fasting', meditation: 'meditation', journalling: 'journalling', early: 'early-morning activities', touch: 'practices involving touch' };
+  const OO_AREA = { tracking_food: ['Nutrition'], fasting: ['Nutrition'], meditation: ['Mind', 'Sleep'], journalling: ['Mind', 'Sleep'], early: ['Sleep', 'Movement'], touch: ['Connection'], apps: AREAS };
+  const SMALL = { Nutrition: 'a small change to how you eat', Sleep: 'a little more attention to your sleep', Movement: 'a little more movement', Mind: 'a little more room for your mental wellbeing', Connection: 'a little more time with others', Prevention: 'one of your long-term health habits' };
+  // goals in a member's own voice: “You picked ‘managing stress’ as a goal” becomes “You told us managing stress matters to you”
+  const voice = t => (t || '').replace(/^You picked “([^”]+)” as a goal, and this is a practical way to work on it\./, 'You told us $1 matters to you, and this is a practical way to work on it.')
+    .replace(/^You picked “([^”]+)” and “([^”]+)” as goals\./, 'You told us $1 and $2 matter to you.').replace(/^You picked “([^”]+)” as a goal\./, 'You told us $1 matters to you.');
 
   function buildResult(name, A, env) {
     const { E, DATA, toFeatures, profile } = env;
@@ -51,11 +80,11 @@
 
     // the reason must come from what they told us
     function ownWhy(x) {
-      const same = o.months[0].find(y => y.fam === x.fam); if (same && same.why !== x.row.why) return same.why;
-      if (p.wish.includes(x.area)) return x.why;
+      const same = o.months[0].find(y => y.fam === x.fam); if (same && same.why !== x.row.why) return voice(same.why);
+      if (p.wish.includes(x.area)) return voice(x.why);
       let w = (x.why || '').replace(/^You told us you want to work on [^,]+, and (.)/, (m, c) => c.toUpperCase());
       if (/^You said you'd like to work on/.test(w)) w = x.row.why;
-      return w || x.row.why;
+      return voice(w) || x.row.why;
     }
     // traced = the reason names something from their answers, not only the library's general reason (a 'you can do it at home' ending doesn't count)
     const traced = x => { const w = ownWhy(x); return p.wish.includes(x.area) || !(w.startsWith(x.row.why) || /^A small, well-established habit/.test(w)); };
@@ -82,7 +111,8 @@
       const all = fromArea(a).filter(allowed), pri = all.filter(x => x.role === 'Priority'); if (pri.length) { pools[a] = pri; focus.push(a); }
     }
     const wishF = focus.filter(a => p.wish.includes(a));
-    const startAreas = wishF.length ? wishF : focus, moved = focus.filter(a => !startAreas.includes(a));
+    const q0 = A.q0 || {}, firstAreas = q0.first && THEMES[q0.first] ? THEMES[q0.first].areas : [];
+    const startAreas = (wishF.length ? wishF : focus).slice().sort((x, y) => (firstAreas.includes(y) ? 1 : 0) - (firstAreas.includes(x) ? 1 : 0)), moved = focus.filter(a => !startAreas.includes(a));
     let pr = [];
     if (startAreas.length > 1) pr = [...pools[startAreas[0]].slice(0, 2), ...pools[startAreas[1]].slice(0, 1)];
     else pr = pools[startAreas[0]].slice(0, wishF.length ? 2 : 3);
@@ -149,6 +179,67 @@
       intro1 = [`${wishBlocked.length ? `You told us you'd like to work on ${list(wishBlocked.map(a => AREA_TXT[a]))}. With what you've told us about your health, the changes we'd usually suggest there need a health professional's input first. ` : ''}${wishWell.length ? `You told us you'd like to work on ${list(wishWell.map(a => AREA_TXT[a]))}, and your answers show ${wishWell.length > 1 ? "they're" : "it's"} already in a good place. ` : groupsWell(groups) ? 'You have already built some good habits across your everyday life. ' : ''}${list(focus)} ${focus.length > 1 ? 'are the areas' : 'is the area'} where a small change could make the biggest difference to your next steps.`];
     }
 
+    // something worth discussing: anxious or low on more than half the days
+    const ph = ['anx1', 'anx2', 'dep1', 'dep2'].map(k => g('q32', k));
+    const worst = ph.includes('Nearly every day') ? 'nearly every day' : ph.includes('More than half the days') ? 'on more than half the days' : '';
+    const notice = worst ? { title: 'Something worth discussing', text: `You told us you've felt anxious or low ${worst} over the last two weeks. The practices in your Good Span can support you day to day, but they aren't a treatment. When feelings like these last, it's worth talking to your GP or another health professional, alongside your Good Span.` } : null;
+    // ---- the opening of Your Good Span: the conclusion first, in one of five situations; the reasoning follows in the Starting Position
+    const hi = t => name ? `${name}, ${t}` : cap(t);
+    const wellAreas = AREAS.filter(a => groups[a] === 'well'), wellTxt = list(wellAreas.slice(0, 3).map(low));
+    const own = ownWords(q0.text);
+    const likeOwn = own ? `you'd like ${/^(more|less|fewer|better|a|an|the|some|to)\b/.test(own) ? '' : 'to '}“${own}”` : '';
+    const relOO = (p.optout || []).filter(k => OO_TXT[k] && (OO_AREA[k] || []).some(a => startAreas.includes(a)));
+    const ooLine = relOO.length ? `You also told us ${list(relOO.map(k => OO_TXT[k]))} ${relOO.length > 1 ? "aren't" : "isn't"} for you, so your starting practices don't rely on ${relOO.length === 2 ? 'either' : relOO.length > 2 ? 'any of them' : 'it'}.` : '';
+    const laterLine = moved.map(a => { const n = monthOf(a); return `${MORE[a]} can follow ${n < 4 ? `from month ${n}` : 'later on'}${a === 'Movement' && p.mvpa >= 100 && p.mvpa < 150 ? ", since you're already close to the guideline" : ''}.`; }).join(' ');
+    const wishWell = p.wish.filter(a => groups[a] === 'well' && !blocked.includes(a)), wishBlocked = p.wish.filter(a => blocked.includes(a));
+    const mindGoals = goalsOf('Mind').map(g => g.replace(/^(managing|handling|dealing with|coping with) /, '')).filter(g => /stress|emotion|worr|anx|mood|low/.test(g));
+    let situation, lead, paras;
+    if (held) {
+      situation = 'safety';
+      const mg = goalsOf('Movement')[0];
+      lead = hi(p.wish.includes('Movement') ? `you told us you want to ${mg ? mg.replace('cardiovascular ', '').replace(/^(\w+) (general )?(fitness|strength|mobility|balance|performance)/, '$1 your $3') : 'move more'}. One thing comes first.` : 'one thing comes first.');
+      paras = [`Because you mentioned ${sympt}${p.symptoms_active ? ' during exercise' : ''}, we'd hold off on increasing your activity until you've discussed it with a doctor.`,
+        "That doesn't mean your Good Span has to wait.", `Your answers point to ${list(focus.map(low))} as useful places to start now.`];
+    } else if (notice) {
+      situation = 'sensitive';
+      if (startAreas.includes('Mind') && p.wish.includes('Mind')) {
+        lead = hi('your Good Span starts with what matters most to you: feeling better day to day.');
+        paras = [`${wellAreas.length ? `You already have strong foundations in ${wellTxt}. But you` : 'You'} told us ${own && (q0.areas || []).includes('Mind') ? `${likeOwn}` : `that ${mindGoals.length ? `${list(mindGoals.slice(0, 2))} ${mindGoals.length > 1 || /s$/.test(mindGoals[0]) && !/stress$/.test(mindGoals[0]) ? 'have' : 'has'} been taking up more space recently` : "you've been feeling anxious or low more often recently"}`}.`];
+      } else {
+        lead = hi('thank you for being open with us.');
+        paras = [`You told us you've been feeling anxious or low more often recently, so your Good Span starts gently, with ${list(startAreas.map(low))}.`];
+      }
+      if (ooLine) paras.push(ooLine);
+      if (laterLine) paras.push(laterLine);
+    } else if (!wishF.length && (wishWell.length || wishBlocked.length)) {
+      situation = 'unexpected';
+      lead = hi('your answers point somewhere slightly different from where you might expect.');
+      paras = [[wishWell.length ? `You told us you'd like to work on ${list(wishWell.map(a => AREA_TXT[a]))}, and you already have strong foundations there.` : '',
+        wishBlocked.length ? `You told us you'd like to work on ${list(wishBlocked.map(a => AREA_TXT[a]))}. With what you've told us about your health, the changes we'd usually suggest there need a health professional's input first.` : ''].filter(Boolean).join(' '),
+        `The clearest opportunity we see is ${list(focus.map(low))}. A relatively small change could make a useful difference.`];
+    } else if (wishF.length) {
+      situation = 'priority';
+      const ownFits = own && (q0.areas || []).includes(startAreas[0]);
+      lead = hi(`you told us ${ownFits ? likeOwn : `${list(wishF.map(a => AREA_TXT[a]))} ${wishF.length > 1 ? 'matter' : 'matters'} to you`}, so that's where we're starting.`);
+      paras = [wellAreas.length ? `You already have strong foundations in ${wellTxt}, and we'll build on what already works.` : "We'll build on what already works, one small step at a time."];
+      if (wishWell.length) paras.unshift(`${cap(list(wishWell.map(a => AREA_TXT[a])))} already ${wishWell.length > 1 ? 'have' : 'has'} strong foundations, so we're starting with ${AREA_TXT[startAreas[0]]}.`);
+      if (ooLine) paras.push(ooLine);
+      if (laterLine) paras.push(laterLine);
+    } else if (wellAreas.length >= 3) {
+      situation = 'doing-well';
+      const small = pr[0] && CURRENT.slice(0, 2).includes(pr[0].fam) ? 'a little more aerobic movement' : SMALL[focus[0]];
+      lead = hi("you're already doing a lot right.");
+      paras = [`Your answers show strong foundations across much of your everyday life. Rather than giving you more things to do, we think the best place to start is surprisingly small: ${small}.`];
+    } else {
+      situation = 'start';
+      lead = hi("here's where we'd start.");
+      paras = [`The clearest opportunity we see is ${list(focus.map(low))}. A relatively small change could make a useful difference, and we'll build on what already works.`];
+    }
+    const nPr = pr.length, mTxt = mins1 >= 5 ? `about ${mins1} minutes a week` : mins1 > 0 ? 'a few minutes a week' : 'no extra time set aside';
+    const opening = { situation, lead, paras, own,
+      starts: [`${cap(NUMW[nPr])} practice${nPr === 1 ? '' : 's'}`, moved.length ? `${startAreas[0]} first` : list(startAreas), mTxt],
+      after: "We'll build from there as you discover what works." };
+
     // Starting Position: a label and one short observation per pillar
     const firstOf = (a, n) => sentences(prof.pillars[a]).slice(0, n || 1).join(' ');
     const spc = {};
@@ -165,7 +256,7 @@
     const foc = {};
     for (const a of focus) {
       // one wording for how often they've felt anxious or low, so it never contradicts the notice above
-      let rs = (o.reasons[a] || []).map(t => t.replace(/^You've been feeling anxious or low on [^.]+\./, "Over the last two weeks, you've often felt anxious or low."));
+      let rs = (o.reasons[a] || []).map(voice).map(t => t.replace(/^You've been feeling anxious or low on [^.]+\./, "Over the last two weeks, you've often felt anxious or low."));
       if (!rs.length) { const q = clone(p); q.wish = [a]; rs = (E.plan(q).reasons[a] || []).slice(); }
       const gl = goalsOf(a);
       if (p.wish.includes(a) && gl.length) rs = [`You'd like support with ${glist(gl)}.`, ...rs.filter(r => !r.startsWith('You picked'))];
@@ -184,10 +275,6 @@
       return { t: NAME[x.fam] || x.fam, a: `${x.row.w} ${x.row.d}.`, min: x.ex, time, make: [x.row.t], why: ownWhy(x) };
     });
 
-    // something worth discussing: anxious or low on more than half the days
-    const ph = ['anx1', 'anx2', 'dep1', 'dep2'].map(k => g('q32', k));
-    const worst = ph.includes('Nearly every day') ? 'nearly every day' : ph.includes('More than half the days') ? 'on more than half the days' : '';
-    const notice = worst ? { title: 'Something worth discussing', text: `You told us you've felt anxious or low ${worst} over the last two weeks. The practices in your Good Span can support you day to day, but they aren't a treatment. When feelings like these last, it's worth talking to your GP or another health professional, alongside your Good Span.` } : null;
     const safety = held ? { title: 'One thing to check first', text: `You mentioned ${sympt}${p.symptoms_active ? ' during exercise' : ''}. Before we suggest increasing your activity, we'd like you to discuss this with a doctor. Your Good Span can still begin with ${list(focus.map(low))}${AREAS.some(a => groups[a] === 'well') ? ' and build on what already goes well' : ''}.` } : null;
 
     const found = o.foundations.filter(h => h.because).slice(0, 3).map(h => ({ area: h.p, text: h.t, why: h.because }));
@@ -195,7 +282,7 @@
     const strip = x => { const y = Object.assign({}, x); delete y.row; return y; };
     const date = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
     return {
-      gen: true, name: name || 'You', date, prof, focus, groups, wish: p.wish, change: p.change, safety, notice, found, themes,
+      gen: true, opening, name: name || 'You', date, prof, focus, groups, wish: p.wish, change: p.change, safety, notice, found, themes,
       intro1, spc, foc, prc,
       practices: pr.map(x => ({ area: x.area, fam: x.fam, action: x.row.w, freq: x.row.d, start: x.row.t, why: ownWhy(x), refs: refsOf(x.row), min: x.ex })),
       lineup: Object.fromEntries(Object.entries(lineup).map(([a, v]) => [a, v.map(strip)])), later: [],
@@ -250,6 +337,8 @@
     return W;
   }
 
+  // shared with the conversation, so the opening question and the plan read answers the same way
+  buildResult.THEMES = THEMES; buildResult.themesOf = themesOf; buildResult.ownWords = ownWords;
   if (typeof module !== 'undefined') module.exports = { buildResult };
   else root.buildResult = buildResult;
 })(this);

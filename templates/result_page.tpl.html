@@ -479,6 +479,16 @@ details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15
 .road.vroad p.jt{max-width:none;white-space:nowrap}
 @media (max-width:760px){.road.vroad p.jt{white-space:normal}}
 .who[hidden]{display:none}
+/* opening: the conclusion first */
+.hero .hlead{font-size:clamp(24px,3.2vw,32px);line-height:1.2;font-weight:300;max-width:24ch;margin-top:6px}
+.hstart{display:grid;gap:8px;margin-top:6px;padding-top:16px;border-top:1px solid rgba(77,40,49,.35)}
+.hstart .kicker{color:var(--plum);margin:0}
+.hst{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;font-size:clamp(19px,2.2vw,22px);font-weight:400;color:var(--plum)}
+.hst i{font-style:normal;opacity:.5}
+.hst span{white-space:nowrap}
+.close .belong{font-size:clamp(20px,2.4vw,24px);font-weight:300;line-height:1.3}
+.pcta2{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:20px}
+.tier .tfoot:empty{display:none}
 </style>
 
 <div class="shell">
@@ -524,7 +534,15 @@ function circle(area, g) {
 }
 // open line arcs from the identity's graphic language: solid, dashed and dotted, no more than three styles
 const ARC = (cfg) => `<div class="arcs" aria-hidden="true">${cfg.map(([x, y, r, col, style, w]) => `<svg style="left:${x};top:${y};width:${r * 2}px;height:${r * 2}px;transform:translate(-50%,-50%)" viewBox="0 0 ${r * 2} ${r * 2}"><circle cx="${r}" cy="${r}" r="${r - 2}" fill="none" stroke="${col}" stroke-width="${w || 1.5}" ${style === 'dash' ? 'stroke-dasharray="10 8"' : style === 'dot' ? 'stroke-dasharray="1 7" stroke-linecap="round"' : ''}/></svg>`).join('')}</div>`;
-// opening portrait: personal, short. Priorities and any safety limit are said separately.
+// the opening: within ten seconds the member should feel understood, see that it's manageable, and know where it starts.
+// The reasoning (time, pace, method) comes later, in the Starting Position and "Designed to fit your life".
+const OPEN = {
+  'Inês': { lead: "Inês, you're already doing a lot right.", paras: ['Your answers show strong foundations across much of your everyday life. Rather than giving you more things to do, we think the best place to start is surprisingly small: a little more aerobic movement.'], starts: ['One practice', 'Movement', 'about 30 minutes a week'] },
+  'Marta': { lead: 'Marta, your Good Span starts with what matters most to you: feeling better day to day.', paras: ['You already have strong foundations in sleep, nutrition and connection. But you told us that stress and difficult emotions have been taking up more space recently.', "You also told us meditation and journalling aren't for you, so your starting practices don't rely on either."], starts: ['Two practices', 'Mind first', 'about 15 minutes a week'] },
+  'Hugo': { lead: 'Hugo, you told us you want to improve your fitness. One thing comes first.', paras: ["Because you mentioned chest discomfort during exercise, we'd hold off on increasing your activity until you've discussed it with a doctor.", "That doesn't mean your Good Span has to wait.", 'Your answers point to sleep and nutrition as useful places to start now.'], starts: ['Two practices', 'Sleep and Nutrition', 'no extra time set aside'] }
+};
+const openingOf = r => r.opening || OPEN[r.name] || { lead: r.name + ', here’s where we’d start.', paras: [], starts: [] };
+// (earlier opening portrait, kept for reference; no longer shown)
 const INTRO1 = {
   'Inês': 'You have already built some good habits across your everyday life. Movement is the area where a little more consistency could make the biggest difference to your next steps.',
   'Marta': "You told us you'd like support with your mental wellbeing, especially managing stress and difficult emotions. That's where your Good Span starts. A little more movement can follow from month 3, since you're already close to the guideline.",
@@ -674,18 +692,19 @@ if (GEN) Object.keys(NXT).forEach(k => delete NXT[k]);
 const ORDER = r => [...(r.gen ? r.focus : []).filter(a => r.groups[a] === 'focus'), ...AREAS.filter(a => r.groups[a] === 'focus' && !(r.gen && r.focus.includes(a))), ...AREAS.filter(a => r.groups[a] === 'improve'), ...AREAS.filter(a => r.groups[a] === 'well')];
 const S = [
   // opening: their Good Span, a short portrait, and the Starting Position as one strip of six
-  r => `<div class="hero"><div class="htext">
-    <div class="ht"><h1>Your Good Span</h1><p class="kicker hk">${esc(r.name)} · ${esc(r.date || '12 October 2026')}</p><p class="hsub">A starting point that fits you</p></div>
-    <div class="hls">${intro(r).map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>
+  r => { const op = openingOf(r); return `<div class="hero"><div class="htext">
+    <div class="ht"><h1>Your Good Span</h1><p class="kicker hk">${esc(r.name)} · ${esc(r.date || '12 October 2026')}</p><p class="hsub hlead">${esc(op.lead)}</p></div>
+    <div class="hls">${op.paras.map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>
+    ${op.starts.length ? `<div class="hstart"><p class="kicker">Your Good Span starts with</p><p class="hst">${op.starts.map(t => `<span>${esc(t)}</span>`).join('<i aria-hidden="true">·</i>')}</p><p class="hl">${esc(op.after || "We'll build from there as you discover what works.")}</p></div>` : ''}
     </div>${(() => { const k = PHOTO[r.name] || r.focus[0]; return IMG[k] ? `<figure class="hfig"><img src="${IMG[k]}" alt="${esc(ALT[k])}"><figcaption><span class="chip p-${r.focus[0]}">${esc(r.focus[0])}</span></figcaption></figure>` : ''; })()}
   </div>
     ${NOTICE[r.name] ? `<div class="check check-top notice"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="#CB863A"/><circle cx="24" cy="24" r="20" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(NOTICE[r.name].title)}</h3><p style="margin-top:6px">${esc(NOTICE[r.name].text)}</p></div></div>` : ''}
-    ${r.safety ? `<div class="check check-top"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2"/><circle cx="28" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(r.safety.title)}</h3><p style="margin-top:6px">${esc(r.safety.text)}</p></div></div>` : ''}`,
+    ${r.safety ? `<div class="check check-top"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2"/><circle cx="28" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(r.safety.title)}</h3><p style="margin-top:6px">${esc(r.safety.text)}</p></div></div>` : ''}`; },
 
   // Your Starting Position: one label and a short reading per pillar, in the order of the strip
   r => `<h1>Your Starting Position</h1>
     <p class="secsub">Your personal longevity map</p>
-    <p class="lead">Your answers reveal what is already supporting your wellbeing and where a small change could help you move forward.</p>
+    <p class="lead">Here is what is already supporting your wellbeing, and where a small change could help you move forward.</p>
     <figure class="map" aria-label="Your Starting Position across the six pillars">
       ${mapSvg(r)}
       <ul class="sr-only">${AREAS.map(a => `<li>${a}: ${GL[r.groups[a]]}</li>`).join('')}</ul>
@@ -701,7 +720,7 @@ const S = [
 
   // section 4: first practices, each with what to do, how to make it work and why
   r => `<h1>${r.practices.length === 1 ? 'Your first practice' : `Your first ${NUMW[r.practices.length]} practices`}</h1>
-    <p class="lead">These are your first steps for the month ahead. Each practice has been selected using your answers, your priorities and the time you have available.</p>
+    <p class="lead">These are your first steps for the month ahead, chosen around what matters to you and the time you have.</p>
     <div class="prs">${r.practices.map((x, i) => { const c = (PRC[r.name] || [])[i] || { t: x.fam, a: x.action + ' ' + x.freq + '.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area}"><div class="hd">${ARC([['100%', '100%', 120, 'currentColor', i % 2 ? 'dot' : 'dash', 1.5]])}<span class="chip">${esc(x.area)}</span><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
       <p class="act">${esc(c.a)}</p></div><div class="bd">
       <dl>${c.time ? `<dt>Time</dt><dd><p>${esc(c.time)}</p></dd>` : ''}<dt>Make it work for you</dt><dd>${c.make.map(t => `<p>${esc(t)}</p>`).join('')}</dd>${c.why ? `<dt>Why this practice</dt><dd><p>${esc(c.why)}</p></dd>` : ''}</dl>
@@ -726,43 +745,37 @@ const S = [
     </ol>
     <div class="later"><p class="kicker">${t === 1 ? 'One possible next direction' : NUMW[t].charAt(0).toUpperCase() + NUMW[t].slice(1) + ' possible next directions'}</p>${r.themes.map(x => `<p>${esc(DIR[x[1]] || x[1] + '. ' + x[2])}</p>`).join('')}<p>Or you can keep going with what's working. Maintaining a habit that supports your wellbeing is progress too.</p></div></div>`; },
 
-  // section 8: the invitation and what every membership includes
+  // section 8: belonging, then the next step: meet your Pilot (before any choice of support)
   r => `<div class="close">${ARC([['102%', '0%', 160, '#D1E6E9', 'solid', 2], ['104%', '86%', 110, '#4D2831', 'dash', 1.5], ['88%', '108%', 64, '#F5A4C2', 'dot', 2]])}
     <h2>Ready to make your Good Span part of everyday life?</h2>
-    <p>Your plan gives you a place to start. The next six months are about turning that starting point into habits that last.</p>
-    <p>You can follow your Good Span independently, with regular guidance from a Pilot, or with more personalised support and access to specialist expertise.</p>
-    <p>Every membership includes your personalised longevity plan, practical tools to support your habits and opportunities to learn and connect with others. The difference is how much individual support you want along the way.</p></div>
-    <div class="incl"><h3>What's included in every membership</h3>
-      <ul>${[['Your personal longevity map', 'your Starting Position and personalised priorities.'], ['Practices chosen for you', `${NUMW[r.practices.length]} personalised practice${r.practices.length === 1 ? '' : 's'} to start, based on your assessment.`], ['A six-month plan', 'reviewed and adapted as you progress.'], ['A Pilot welcome conversation', 'review your Starting Position and refine your plan.'], ['Member App and Practice Journal', 'follow your practices and reflect on your progress.'], ['Monthly Longevity Live', 'join the session live or watch the replay.'], ['Member connections and gatherings', 'opportunities to learn and connect with others.'], ['Preferred member rates', 'access curated specialists, products and services at member rates.'], ['Your six-month review', 'repeat the assessment and review your New Position with your Pilot.']].map(([b, t]) => `<li><b>${esc(b)}:</b> ${esc(t)}</li>`).join('')}</ul></div>`,
+    <p class="belong">Longevity is personal. It shouldn't be lonely.</p>
+    <p>This is your starting Good Span. It is personal to you, but the journey doesn't have to be solitary. Over the next six months, a Pilot works alongside you, and you'll be part of a community of members on the same journey.</p></div>
+    <div class="pilot">${ARC([['102%', '-6%', 170, '#4D2831', 'solid', 1.5], ['104%', '70%', 110, '#FFFFFF', 'dash', 2]])}
+    <div class="pmain"><h2 class="sh">Your next step: meet your Pilot</h2>
+    <p>Book a short conversation to talk through your Starting Position and first practices, make sure they feel right for your life, and decide how much support you would like over the next six months.</p>
+    <div class="pcta"><button class="btn pbtn" type="button">Book my Good Span Review</button><p class="pmeta">20 minutes · online · no preparation needed</p></div></div>
+    <div class="pafter"><p class="kicker">In your Good Span Review</p><h3>Your Pilot will</h3>
+      <ul><li><b>Review your Starting Position</b><span>and your first practices with you.</span></li><li><b>Refine anything that doesn't fit</b><span>so the plan feels realistic for your life.</span></li><li><b>Answer your questions</b><span>about your Good Span and how it works.</span></li><li><b>Help you choose your support</b><span>Self, Core or Concierge, explained below.</span></li></ul></div>
+  </div>`,
 
-  // section 9: the three memberships
-  r => `<h1>Choose the support that suits you</h1>
+  // section 9: the support options, explained so they can be discussed with the Pilot (chosen after the Review, not here)
+  r => `<h1>Ways to continue after your Review</h1>
+    <p class="lead">Your Pilot will help you decide which level of support suits you. Every membership includes the same foundations; the difference is how much individual support you want along the way.</p>
+    <div class="incl"><h3>What's included in every membership</h3>
+      <ul>${[['Your personal longevity map', 'your Starting Position and personalised priorities.'], ['Practices chosen for you', `${NUMW[r.practices.length]} personalised practice${r.practices.length === 1 ? '' : 's'} to start, based on your assessment.`], ['A six-month plan', 'reviewed and adapted as you progress.'], ['A Pilot welcome conversation', 'review your Starting Position and refine your plan.'], ['Member App and Practice Journal', 'follow your practices and reflect on your progress.'], ['Monthly Longevity Live', 'join the session live or watch the replay.'], ['Member connections and gatherings', 'opportunities to learn and connect with others.'], ['Preferred member rates', 'access curated specialists, products and services at member rates.'], ['Your six-month review', 'repeat the assessment and review your New Position with your Pilot.']].map(([b, t]) => `<li><b>${esc(b)}:</b> ${esc(t)}</li>`).join('')}</ul></div>
     <div class="tiers">
       <div class="tier t-Self" data-t="Self"><span class="ui">Self</span><span class="price">€19<small>/month</small></span><span class="pterm">Six-month commitment</span><p class="tl">Your plan, on your terms.</p>
         <p>Follow your Good Span independently, with a Pilot welcome conversation to review your Starting Position and refine your plan.</p>
         <p>Over your six months, use the Member App and Practice Journal to follow your practices and reflect on your progress.</p>
-        <div class="tfoot"><button class="btn" type="button">Choose Self</button><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></div></div>
+        <div class="tfoot"><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></div></div>
       <div class="tier t-Core" data-t="Core"><span class="ui">Core</span><span class="price">€129<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">Personal guidance to keep you moving forward.</p>
         <p>Take the lead day to day, with a Pilot who follows your progress, helps you work through challenges and adapts your Good Span with you.</p>
-        <p>Your membership includes regular Pilot reviews, WhatsApp support between reviews and a quarterly €50 Refuel.</p>
-        <div class="tfoot"><button class="btn primary" type="button">Choose Core</button></div></div>
+        <p>Your membership includes regular Pilot reviews, WhatsApp support between reviews and a quarterly €50 Refuel.</p></div>
       <div class="tier t-Concierge" data-t="Concierge"><span class="ui">Concierge</span><span class="price">€249<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">More individual attention, coordinated around you.</p>
         <p>Work closely with a Pilot who understands your goals, helps you adapt your Good Span and coordinates additional expertise when you need it.</p>
-        <p>Your membership includes extended Pilot reviews, direct WhatsApp support, a quarterly specialist consultation and a €100 quarterly Refuel.</p>
-        <div class="tfoot"><button class="btn" type="button">Choose Concierge</button></div></div>
-    </div>`,
-
-
-  // next step: book a Good Span Review with a Pilot, then choose how to continue
-  r => `<div class="pilot">${ARC([['102%', '-6%', 170, '#4D2831', 'solid', 1.5], ['104%', '70%', 110, '#FFFFFF', 'dash', 2]])}
-    <div class="pmain"><h2 class="sh">Your next step: meet your Pilot</h2>
-    <p>Your Good Span is designed around your answers, but the best place to begin is a conversation.</p>
-    <p>In a short Good Span Review, your Pilot will:</p>
-    <ul><li>review your Starting Position and first practices,</li><li>make sure the plan feels realistic for your life,</li><li>answer any questions,</li><li>and help you decide which level of support suits you best for the next six months.</li></ul>
-    <div class="pcta"><button class="btn pbtn" type="button">Book my Good Span Review</button><p class="pmeta">20 minutes · online · no preparation needed</p></div></div>
-    <div class="pafter"><p class="kicker">After the call, the next step becomes</p><h3>Choose how you want to continue</h3>
-      <ul><li><b>Self</b><span>Follow your Good Span independently</span></li><li><b>Core</b><span>Add regular Pilot guidance</span></li><li><b>Concierge</b><span>Add deeper support and specialist coordination</span></li></ul></div>
-  </div>`,
+        <p>Your membership includes extended Pilot reviews, direct WhatsApp support, a quarterly specialist consultation and a €100 quarterly Refuel.</p></div>
+    </div>
+    <div class="pcta pcta2"><button class="btn pbtn" type="button">Book my Good Span Review</button><p class="pmeta">Decide with your Pilot · 20 minutes · online</p></div>`,
 
   // references: every source behind every practice on this page (first practices and the next steps), alphabetical
   r => { const st = r.steps || { m2: [], m3: [], later: [] }; const all = [...new Set([...r.practices, ...st.m2, ...st.m3, ...st.later].flatMap(x => x.refs || []))].sort((a, b) => a.localeCompare(b));
