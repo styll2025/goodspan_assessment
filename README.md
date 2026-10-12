@@ -107,6 +107,35 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
 7. **Ways to continue after your Review**: what's included, then Self, Core and Concierge, explained but with no "Choose" buttons. The tier is decided with the Pilot.
 8. The science behind your plan
 
+## Voice and AI matching
+
+**How an answer is understood**, in order:
+1. **Voice capture (browser).**
+   - Listening continues until a 1.5-second pause, up to 20 seconds, so answers aren't cut off mid-sentence.
+   - The browser's top three guesses are kept.
+   - The language is set with `window.GS_SPEECH_LANG` (default `en-GB`; `pt-PT` for Portuguese).
+2. **Rules (in the page).** Each guess is tried against the options. "No idea" and "not sure" pick a matching option ("I don't track my steps") or ask again, and are never read as zero.
+3. **AI matching (optional).** It runs only when the rules fail. The page sends the question, its options and what was said to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
+   - The server and the page both reject anything that isn't on the list.
+   - The member still confirms with "Is that right?".
+   - The model can also read Portuguese answers.
+4. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
+
+Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only and are blocked from the AI endpoint on both sides. Contact details are never sent.
+
+**Turn AI matching on**
+- Locally: `ANTHROPIC_API_KEY=sk-... node server/dev-server.js`, then open http://localhost:8787. Each match is logged in the terminal with its timing. Without a key, the page runs on rules only.
+- In your app:
+  1. Call `handleInterpret(body)` from `server/ai-interpret.js` in your own API route (Next.js, Express, Vercel or Netlify function).
+  2. Set `window.GS_AI_URL` to that route before the conversation script loads.
+- Keep the key on the server only.
+- Model: set `GS_AI_MODEL` (default `claude-haiku-4-5`).
+- `node test/ai-interpret.test.js` checks the guard rails without a key.
+
+**Not done yet**
+- **Consent:** to be added once the prototype is agreed (answers pass through the AI provider when matching is on).
+- **A dedicated transcription service:** consider one if the browser's speech recognition is still too weak after these changes. Several accept the question's options as hints.
+
 ## Before launch
 
 - Safety rules and notice wording need professional review.
