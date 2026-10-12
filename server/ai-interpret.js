@@ -5,7 +5,14 @@
 // Needs ANTHROPIC_API_KEY on the server (never in the page). Optional: GS_AI_MODEL (default below).
 // Use handleInterpret(body) from any server or serverless function (Vercel, Netlify, Express…); see dev-server.js.
 
-const MODEL = process.env.GS_AI_MODEL || 'claude-haiku-4-5';
+const DEFAULT_MODEL = 'claude-haiku-4-5';
+// Workers have no process.env. Read it only where Node provides it, and let the caller pass the key.
+function fromProcess(name) {
+  try {
+    if (typeof process === 'undefined' || !process.env) return '';
+    return process.env[name] || '';
+  } catch (e) { return ''; }
+}
 // health, symptoms, pregnancy, movement limits and mood are tap-only and never sent here (also blocked in the page)
 const BLOCKED = new Set(['q4', 'q5', 'q5a', 'q5b', 'q6', 'q29', 'q32']);
 const MAX_TEXT = 500, MAX_OPTIONS = 40;
@@ -20,11 +27,11 @@ Rules:
 - If the answer is ambiguous, off-topic, a question, or could fit two single-choice options equally, set unclear to true and choose nothing.
 - Do not give advice and do not comment. Only call the tool.`;
 
-function buildRequest({ question, type, max, options, answer, alternatives }) {
+function buildRequest({ question, type, max, options, answer, alternatives, model }) {
   const list = options.map((o, i) => `${i + 1}. ${o}`).join('\n');
   const alt = (alternatives || []).filter(Boolean);
   return {
-    model: MODEL, max_tokens: 200, temperature: 0, system: SYSTEM,
+    model: model || fromProcess('GS_AI_MODEL') || DEFAULT_MODEL, max_tokens: 200, temperature: 0, system: SYSTEM,
     tools: [{ name: 'record_answer', description: 'Record which listed options the answer matches.',
       input_schema: { type: 'object', properties: {
         options: { type: 'array', items: { type: 'integer', minimum: 1, maximum: options.length }, description: 'Numbers of the matching options' },
@@ -35,14 +42,14 @@ function buildRequest({ question, type, max, options, answer, alternatives }) {
   };
 }
 
-async function handleInterpret(body, { fetchImpl = fetch, apiKey = process.env.ANTHROPIC_API_KEY } = {}) {
+async function handleInterpret(body, { fetchImpl = fetch, apiKey = fromProcess('ANTHROPIC_API_KEY'), model = '' } = {}) {
   const b = body || {};
   if (!apiKey) return { status: 503, json: { error: 'not_configured' } };
   if (BLOCKED.has(b.questionId)) return { status: 400, json: { error: 'question_not_allowed' } };
   if (typeof b.answer !== 'string' || !b.answer.trim() || !Array.isArray(b.options) || !b.options.length || b.options.length > MAX_OPTIONS || typeof b.question !== 'string')
     return { status: 400, json: { error: 'bad_request' } };
   const req = buildRequest({ question: b.question.slice(0, 400), type: b.type === 'multi' ? 'multi' : 'single', max: Number(b.max) || null,
-    options: b.options.map(o => String(o).slice(0, 300)), answer: b.answer.slice(0, MAX_TEXT), alternatives: (b.alternatives || []).slice(0, 2).map(a => String(a).slice(0, MAX_TEXT)) });
+    options: b.options.map(o => String(o).slice(0, 300)), answer: b.answer.slice(0, MAX_TEXT), alternatives: (b.alternatives || []).slice(0, 2).map(a => String(a).slice(0, MAX_TEXT)), model });
   let res;
   try {
     res = await fetchImpl('https://api.anthropic.com/v1/messages', { method: 'POST',

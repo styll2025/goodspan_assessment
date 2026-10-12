@@ -124,7 +124,8 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
 Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only and are blocked from the AI endpoint on both sides. Contact details are never sent.
 
 **Turn AI matching on**
-- Locally: `ANTHROPIC_API_KEY=sk-... node server/dev-server.js`, then open http://localhost:8787. Each match is logged in the terminal with its timing. Without a key, the page runs on rules only.
+- On the published assessment (https://thegoodspan-assessment.pages.dev/): the page already calls `/api/interpret`. Add the key in Cloudflare, not in GitHub and not in the page. Dashboard → Workers & Pages → **thegoodspan-assessment** → Settings → Variables and Secrets → Add. Name: `ANTHROPIC_API_KEY`. Type: Secret. Environment: Production (and Preview, if you use preview links). Save, then retry the latest deployment so the secret is picked up. Do not commit the key.
+- Locally, only if the project is on that computer: `ANTHROPIC_API_KEY=sk-... node server/dev-server.js`, then open http://localhost:8787. Each match is logged in the terminal with its timing. Without a key, the page runs on rules only.
 - In your app:
   1. Call `handleInterpret(body)` from `server/ai-interpret.js` in your own API route (Next.js, Express, Vercel or Netlify function).
   2. Set `window.GS_AI_URL` to that route before the conversation script loads.

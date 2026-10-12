@@ -29,6 +29,10 @@ ${body}
 </html>
 `;
 writeFileSync(join(root, 'assessment.html'), html);
-const conversation = conversationPage();
+// The public page calls /api/interpret. The key stays in the Pages secret ANTHROPIC_API_KEY.
+const conversation = conversationPage().replace(
+  '<body>',
+  '<body><script>window.GS_AI_URL="/api/interpret";window.GS_SPEECH_LANG="en-GB";</script>'
+);
 writeFileSync(join(root, 'index.html'), conversation);
 console.log('Built index.html (' + Math.round(conversation.length / 1024) + ' KB), assessment.html (' + Math.round(html.length / 1024) + ' KB)');
