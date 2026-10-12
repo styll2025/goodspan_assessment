@@ -155,9 +155,12 @@ const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
 // talk or type: chosen at the start, switchable at any point with the microphone button
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
-// settings: the language the browser listens for, and the optional AI matching endpoint (empty = rules only)
+let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false;
+// settings: the language the browser listens for, optional AI matching, and Whisper for a spoken answer the rules could not place
 const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
 const AI_URL = window.GS_AI_URL || '';
+const TRANSCRIBE_URL = window.GS_TRANSCRIBE_URL || '';
+let transcribeOn = !!TRANSCRIBE_URL;
 const SILENCE_MS = 1500, MAX_LISTEN_MS = 20000;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const $ = id => document.getElementById(id), T = $('thread');
@@ -302,20 +305,47 @@ function interpret(q, raw) {
 }
 
 async function typed() {
-  const raw = $('txt').value.trim(); if (!raw || !ready) return;
+  const raw = $('txt').value.trim();
+  const clip = voiceClip; voiceClip = null;
+  const spoke = viaVoice || !!clip; viaVoice = false;
+  if ((!raw && !clip) || !ready) return;
   stopListen();
-  if (stage === 'contact') return typedContact(raw);
-  if (stage === 'open') return typedOpen(raw);
+  if (stage === 'contact') { if (raw) return typedContact(raw); return; }
+  if (stage === 'open') return typedOpen(raw, clip, spoke);
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
-  $('txt').value = ''; me(raw);
-  const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
-  if (q.type === 'habit') { A[q.id] = { text: raw }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
-  const heard = src === 'spoken' ? [raw, ...alts.filter(a => a && a !== raw)] : [raw]; alts = [];
+  $('txt').value = '';
+  if (raw) me(raw);
+  const src = spoke ? 'spoken' : 'typed';
+  if (q.type === 'habit') {
+    let text = raw;
+    if (!text && spoke && needsWhisper(q, false)) text = await whisperText(q, clip);
+    if (!text) {
+      if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
+      bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen(); return;
+    }
+    if (!raw) me(text);
+    A[q.id] = { text }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return;
+  }
+  const heard = src === 'spoken' ? [raw, ...alts.filter(a => a && a !== raw)].filter(Boolean) : [raw].filter(Boolean); alts = [];
   let v = null; for (const t of heard) { v = interpret(q, t); if (v) break; }
-  await typing(450);
-  if (!v && AI_URL) { const w = bot('<span class="thinking">One moment…</span>'); v = await aiInterpret(q, raw, heard.slice(1)); w.remove(); }
+  if (!v && (needsWhisper(q, false) && clip || AI_URL && raw)) {
+    const w = bot('<span class="thinking">One moment…</span>');
+    let heardByWhisper = '';
+    if (needsWhisper(q, false) && clip) {
+      const text = await whisperText(q, clip, true);
+      if (text) {
+        heardByWhisper = text;
+        if (!raw) me(text);
+        v = interpret(q, text);
+        if (!v) v = await aiInterpret(q, text, heard.slice(0, 2));
+      }
+    }
+    if (!v && raw && raw !== heardByWhisper) v = await aiInterpret(q, raw, heard.slice(1));
+    w.remove();
+  }
+  if (v) await typing(250);
   if (!v) {
     if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
     bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen(); return;
@@ -435,7 +465,7 @@ async function askMode() {
   const box = document.createElement('div'); box.className = 'chips';
   box.innerHTML = '<button type="button" class="chip" data-m="talk">Talk</button><button type="button" class="chip" data-m="type">Type</button>';
   box.onclick = async e => { const b = e.target.closest('[data-m]'); if (!b) return; box.remove(); me(b.textContent); mode = b.dataset.m; await typing(350);
-    if (mode === 'talk' && !SR) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
+    if (mode === 'talk' && !canTalk()) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
     else bot(mode === 'talk' ? 'Talk it is. Tap the microphone any time to switch to typing.' : 'Typing it is. Tap the microphone any time if you would rather talk.');
     askOpen(); };
   T.append(box); composer(false, ''); scrollEnd();
@@ -457,16 +487,34 @@ async function askOpen() {
   T.append(box); composer(true, 'Tap, type or talk.'); ready = true; if (mode === 'talk') listen(); scrollEnd();
 }
 const cap1 = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
-async function typedOpen(raw) {
-  $('txt').value = ''; clearChips(); me(raw);
-  const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
-  let ks = buildResult.themesOf([raw, ...alts].join(' ')); alts = [];
-  if (!ks.length && AI_URL) {
-    const TH = buildResult.THEMES, keys = Object.keys(TH);
-    const v = await aiInterpret({ id: 'q0', type: 'multi', max: 3, text: 'If the next six months went really well, what would you most like to feel different?', options: keys.map(k => TH[k].label) }, raw, []);
-    if (v) ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean);
+async function typedOpen(raw, clip, spoke) {
+  if (!raw && !(spoke && clip)) return;
+  $('txt').value = '';
+  if (raw) { clearChips(); me(raw); }
+  let said = raw;
+  const TH = buildResult.THEMES, keys = Object.keys(TH);
+  const openQ = { id: 'q0', type: 'multi', max: 3, text: 'If the next six months went really well, what would you most like to feel different?', options: keys.map(k => TH[k].label) };
+  let ks = said ? buildResult.themesOf([said, ...alts].join(' ')) : [];
+  const browserAlts = alts; alts = [];
+  if (!ks.length && (needsWhisper(openQ, false) && clip || AI_URL && said)) {
+    const w = bot('<span class="thinking">One moment…</span>');
+    let heardByWhisper = '';
+    if (needsWhisper(openQ, false) && clip) {
+      const text = await whisperText(openQ, clip, true);
+      if (text) { heardByWhisper = text; said = text; if (!raw) { clearChips(); me(text); } ks = buildResult.themesOf(text); }
+    }
+    if (!ks.length && AI_URL && said) {
+      const v = await aiInterpret(openQ, said, browserAlts.slice(0, 2));
+      if (v) ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean);
+    }
+    if (!ks.length && AI_URL && heardByWhisper && raw && raw !== heardByWhisper) {
+      const v = await aiInterpret(openQ, raw, browserAlts.slice(0, 2));
+      if (v) { ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean); said = raw; }
+    }
+    w.remove();
   }
-  openAnswered(raw, ks, false, src);
+  if (!said) { bot("I didn't quite catch that. Could you say it another way?"); scrollEnd(); if (mode === 'talk') listen(); return; }
+  openAnswered(said, ks, false, spoke ? 'spoken' : 'typed');
 }
 async function openAnswered(text, ks, tapped, src) {
   ready = false; composer(false, '');
@@ -490,34 +538,123 @@ async function startQuestions() {
   ask();
 }
 
-// ---- voice: the browser's own speech recognition; what it hears goes through the same matching and confirmation as typing
-function listen() {
-  if (!SR || listening || $('txt').disabled) return;
-  rec = new SR(); rec.lang = SPEECH_LANG; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 3;
-  let finals = [], silence = null, cap = null, done = false;
-  const finish = () => {
-    if (done) return; done = true; clearTimeout(silence); clearTimeout(cap);
-    const text = $('txt').value.trim(); stopListen();
-    if (!text) return;
-    // other versions of what was said: each final segment's second and third guesses
-    alts = [1, 2].map(k => finals.map(r => (r[k] || r[0]).transcript).join(' ').trim()).filter(Boolean);
-    viaVoice = true; typed();
-  };
-  rec.onresult = e => {
-    finals = [...e.results].filter(r => r.isFinal);
-    $('txt').value = [...e.results].map(r => r[0].transcript).join(' ').replace(/\s+/g, ' ').trim();
-    clearTimeout(silence); silence = setTimeout(finish, SILENCE_MS);   // wait for a pause before sending
-  };
-  rec.onerror = e => { if (/not-allowed|service-not-allowed|audio-capture/.test(e.error)) { done = true; stopListen(); mode = 'type'; $('hint').textContent = "We can't use the microphone here, so let's type for now."; } };
-  rec.onend = () => { if (!done && $('txt').value.trim()) finish(); else { listening = false; $('mic').classList.remove('on'); } };
-  try { rec.start(); listening = true; cap = setTimeout(finish, MAX_LISTEN_MS); $('mic').classList.add('on'); $('mic').setAttribute('aria-pressed', 'true'); $('hint').textContent = 'Listening. Take your time; we send it after a short pause. Tap the microphone to type instead.'; } catch (err) { listening = false; }
+// ---- voice. Order: browser transcript, then the rules. Whisper is called only when this was spoken,
+// the rules could not place it, and the question is not tap-only. Same rule as shouldTranscribe in server/transcribe.js.
+function canRecord() { return !!(transcribeOn && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
+function canTalk() { return !!(SR || canRecord()); }
+function needsWhisper(q, matched) { return !!(transcribeOn && !matched && q && !FIXED.has(q.id)); }
+function clearVoiceTimers() { clearTimeout(capTimer); capTimer = null; clearTimeout(silenceTimer); silenceTimer = null; }
+function micOff() { $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
+function armRecorder(id) {
+  if (!canRecord()) { recorderTask = Promise.resolve(null); return; }
+  recorderTask = navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+    if (id !== session) { stream.getTracks().forEach(t => t.stop()); return null; }
+    const prefer = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+    let recd;
+    try { recd = prefer ? new MediaRecorder(stream, { mimeType: prefer }) : new MediaRecorder(stream); }
+    catch (e) { stream.getTracks().forEach(t => t.stop()); return null; }
+    const chunks = [];
+    recd.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    try { recd.start(250); } catch (e) { stream.getTracks().forEach(t => t.stop()); return null; }
+    return { recd, stream, chunks, mime: (recd.mimeType || prefer || 'audio/webm').split(';')[0] };
+  }).catch(() => null);
 }
-function stopListen() { if (rec) { const r = rec; rec = null; r.onend = null; r.onresult = null; try { r.abort(); } catch (err) {} } listening = false; $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
+function dropRecorder() {
+  const task = recorderTask; recorderTask = Promise.resolve(null);
+  Promise.resolve(task).then(m => { if (!m) return; try { if (m.recd.state !== 'inactive') m.recd.stop(); } catch (e) {} m.stream.getTracks().forEach(t => t.stop()); });
+}
+function collectRecorder(id) {
+  const task = recorderTask; recorderTask = Promise.resolve(null);
+  return Promise.resolve(task).then(m => new Promise(resolve => {
+    if (!m || id !== session) { if (m) { try { m.recd.stop(); } catch (e) {} m.stream.getTracks().forEach(t => t.stop()); } return resolve(null); }
+    const finish = () => {
+      m.stream.getTracks().forEach(t => t.stop());
+      const blob = m.chunks.length ? new Blob(m.chunks, { type: m.mime }) : null;
+      resolve(blob && blob.size > 200 ? blob : null);
+    };
+    if (m.recd.state === 'inactive') return finish();
+    m.recd.onstop = finish;
+    try { m.recd.stop(); } catch (e) { finish(); }
+  }));
+}
+function stopListen() {
+  session++; clearVoiceTimers();
+  if (rec) { const r = rec; rec = null; r.onend = null; r.onresult = null; r.onerror = null; try { r.abort(); } catch (e) {} }
+  dropRecorder(); listening = false; clipOnly = false; micOff();
+}
+async function finishListen(id) {
+  if (id !== session || !listening) return;
+  listening = false; clearVoiceTimers();
+  const text = $('txt').value.trim();
+  if (rec) { const r = rec; rec = null; r.onend = null; r.onresult = null; r.onerror = null; try { r.stop(); } catch (e) { try { r.abort(); } catch (e2) {} } }
+  const blob = await collectRecorder(id);
+  micOff();
+  if (id !== session) return;
+  clipOnly = false;
+  if (!text && !blob) return;
+  voiceClip = blob; viaVoice = true; typed();
+}
+function listen() {
+  if (listening || $('txt').disabled || !canTalk()) return;
+  const id = ++session;
+  listening = true; clipOnly = !SR; voiceClip = null; alts = [];
+  armRecorder(id); $('mic').classList.add('on'); $('mic').setAttribute('aria-pressed', 'true');
+  if (!SR) { capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Tap the microphone when you have finished.'; return; }
+  rec = new SR(); rec.lang = SPEECH_LANG; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 3;
+  rec.onresult = e => {
+    if (id !== session) return;
+    const finals = [...e.results].filter(r => r.isFinal);
+    $('txt').value = [...e.results].map(r => r[0].transcript).join(' ').replace(/\s+/g, ' ').trim();
+    alts = [1, 2].map(k => finals.map(row => (row[k] || row[0]).transcript).join(' ').trim()).filter(Boolean);
+    clearTimeout(silenceTimer); silenceTimer = setTimeout(() => finishListen(id), SILENCE_MS);
+  };
+  rec.onerror = e => {
+    if (id !== session) return;
+    if (/not-allowed|service-not-allowed/.test(e.error)) { stopListen(); mode = 'type'; $('hint').textContent = "We can't use the microphone here, so let's type for now."; return; }
+    if (canRecord()) { clipOnly = true; try { rec && rec.abort(); } catch (err) {} rec = null; if (!capTimer) capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Tap the microphone when you have finished.'; }
+  };
+  rec.onend = () => { if (id === session && listening && $('txt').value.trim()) finishListen(id); };
+  try { rec.start(); capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Take your time; we send it after a short pause. Tap the microphone to type instead.'; }
+  catch (err) {
+    rec = null;
+    if (canRecord()) { clipOnly = true; capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Tap the microphone when you have finished.'; }
+    else stopListen();
+  }
+}
+function transcribePrompt(q) {
+  const opts = (q.options || []).map(label).filter(Boolean).slice(0, 16);
+  const head = String(q.text || '').replace(/\s+/g, ' ').trim().slice(0, 200);
+  return [head, opts.join(', ')].filter(Boolean).join(', ').slice(0, 700);
+}
+function blobToBase64(blob) {
+  return new Promise(resolve => { const r = new FileReader(); r.onload = () => resolve(String(r.result).split(',')[1] || ''); r.onerror = () => resolve(''); r.readAsDataURL(blob); });
+}
+async function transcribeAudio(q, blob) {
+  if (!TRANSCRIBE_URL || !needsWhisper(q, false) || !blob) return '';
+  try {
+    const audio = await blobToBase64(blob); if (!audio) return '';
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
+    const res = await fetch(TRANSCRIBE_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
+      body: JSON.stringify({ questionId: q.id, language: SPEECH_LANG, mime: (blob.type || 'audio/webm').split(';')[0], prompt: transcribePrompt(q), audio }) });
+    clearTimeout(t);
+    if (res.status === 503) { transcribeOn = false; return ''; }
+    if (!res.ok) return '';
+    const out = await res.json();
+    return String(out.text || '').trim().slice(0, 500);
+  } catch (err) { return ''; }
+}
+async function whisperText(q, clip, quiet) {
+  if (!clip || !needsWhisper(q, false)) return '';
+  const w = quiet ? null : bot('<span class="thinking">One moment…</span>');
+  const text = await transcribeAudio(q, clip);
+  if (w) w.remove();
+  return text;
+}
 
 // ---- optional AI matching: only when the rules can't place an answer. It may only return options from the list;
 // the member always confirms. Health and safety questions are never sent (they are tap-only).
 async function aiInterpret(q, raw, others) {
-  if (!AI_URL || FIXED.has(q.id)) return null;
+  if (!AI_URL || !raw || FIXED.has(q.id)) return null;
   try {
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
     const res = await fetch(AI_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
@@ -531,11 +668,13 @@ async function aiInterpret(q, raw, others) {
   } catch (err) { return null; }
 }
 $('mic').onclick = () => {
-  if (listening) { stopListen(); mode = 'type'; $('hint').textContent = 'Typing. Tap the microphone any time to talk again.'; $('txt').focus(); return; }
-  if (!SR) { $('hint').textContent = "Voice isn't available in this browser, so please type for now."; return; }
+  if (listening) {
+    if (clipOnly || !SR) { finishListen(session); return; }
+    stopListen(); mode = 'type'; $('hint').textContent = 'Typing. Tap the microphone any time to talk again.'; $('txt').focus(); return;
+  }
+  if (!canTalk()) { $('hint').textContent = "Voice isn't available in this browser, so please type for now."; return; }
   mode = 'talk'; listen();
 };
-$('txt').addEventListener('keydown', () => { if (listening) { stopListen(); mode = 'type'; } });
 
 function begin() {
   stage = 'contact'; ci = 0; contact = {}; name = ''; stopListen();
@@ -543,7 +682,10 @@ function begin() {
   askContact(true);
 }
 function restart() { begin(); window.scrollTo(0, 0); }
-$('send').onclick = typed;
-$('txt').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); typed(); } });
+$('send').onclick = () => { if (listening) { finishListen(session); return; } typed(); };
+$('txt').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); if (listening) finishListen(session); else typed(); return; }
+  if (listening) { stopListen(); mode = 'type'; }
+});
 begin();
 </script>
