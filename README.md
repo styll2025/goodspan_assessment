@@ -1,73 +1,67 @@
-# The Good Span: assessment and Good Span prototype
+# Good Span plan generator
 
-A member answers the assessment and gets a personalised six-month **Good Span**, built by a rule-based, deterministic engine from their own answers. This repository holds the live prototype, the engine, the assessment, the practice library and the complete rules.
-
-**October 2026 update.** This version replaces the earlier Longevity Map prototype (48 questions, Python engine).
-
-Start with [`docs/RULES.md`](docs/RULES.md) (how a plan is made) and [`docs/PROTOTYPE_BRIEF.md`](docs/PROTOTYPE_BRIEF.md) (what to build next).
-
-## What's here
-
-| Path | What it is |
-|---|---|
-| `index.html` | **The live member prototype.** Built from `src/` and `core/` by `npm run build`; don't edit it by hand. |
-| `src/app.html`, `src/base.css` | The prototype's source: app shell and screens, design-system styles. |
-| `core/engine.js` | The plan engine. `makeEngine(DATA).plan(features)` returns a member's Good Span. Runs in the browser and in Node. |
-| `core/questions.js` | The assessment: `SECTIONS`, `QUESTIONS` (52 questions: ids, options, when each is shown) and `toFeatures(answers)`. |
-| `core/data.json` | Data the engine reads: `lib` (298 practices, generated from the library workbook), `hyg` (foundations), `goals`, `goalLabels`. |
-| `docs/RULES.md` | **The complete rules**: principle, plan structure, Rules 1–18, thresholds, signals and goals → practices, Pilot notes, "Not right for me", engine constants. |
-| `docs/PROTOTYPE_BRIEF.md`, `docs/OPEN_ITEMS.md` | What to build next; open items before launch. |
-| `source/GoodSpan_Longevity_Map_Assessment.docx` | The assessment (52 questions) with the internal rules, tables and revision notes. |
-| `source/Practice_library_and_mapping.xlsx` | The practice library (Practices, Hygiene checklist, Themes, Pilot notes, Change Log). **Source of truth for practices.** |
-| `source/Assessment_option_map.xlsx` | Every question and option: what it records, which rule uses it, what it does to the plan, how it personalises it. |
-| `source/Simulations_50.xlsx`, `source/Mind_review.xlsx` | Latest simulation findings; the Mind review (batch 2 awaiting approval). |
-| `data/` | JSON exports: `library.json` (every library column), `questions.json`, `goals.json`, `foundations.json`. |
-| `tests/` | 20 + 30 + 50 simulated members, "Not right for me" checks, 3,000 random members, browser test. |
-| `scripts/` | `build.mjs` (builds `index.html`), `library_to_json.py` (workbook → engine data), `Code.gs` (Google Sheet webhook). |
-| `design/` | Brand tokens, fonts, logos, guidelines, contrast matrix. |
-| `worker.js`, `wrangler.jsonc` | Cloudflare Worker: serves the site and saves plan copies (`POST /api/plans` → `/plans/<id>.html`). |
-| `.cursor/rules/goodspan.mdc` | Ground rules for Cursor in this repo. |
-
-## Run it
-
-```bash
-npm run build          # rebuild index.html after editing src/ or core/
-npx serve .            # or: python3 -m http.server   → open http://localhost:3000 (or :8000)
-npm test               # 100 simulated members + 360 "Not right for me" checks: must report 0 issues
-npm run test:fuzz      # 3,000 random members through every rule (about 2 minutes)
-npm run library        # after editing source/Practice_library_and_mapping.xlsx (needs: pip install openpyxl)
-npm i -D playwright && npx playwright install chromium && npm run test:e2e   # full browser run, desktop and phone
-```
-
-Deploy as before with Wrangler (`wrangler deploy`): the Worker serves `index.html` at the site root.
+Turns a member's assessment answers into their Good Span result page. Everything runs on fixed rules in plain JavaScript: **no API key, no AI service and no server needed**. The same answers always give the same plan.
 
 ## How it fits together
 
 ```
-answers (A) ──► toFeatures(A) ──► features (p) ──► engine.plan(p) ──► plan (P) ──► screens (src/app.html)
-             core/questions.js                    core/engine.js
+answers (A)  ──►  toFeatures(A)  ──►  engine.plan()  ──►  buildResult()  ──►  result page template
+ the chat or      core/questions.js    core/engine.js      core/result.js       templates/result_page.tpl.html
+ the form                              + data/library.json + core/profile.js
 ```
 
-- **Answers** `A` are keyed by question id (`q1`…`q58`; gaps are questions removed over time). Single = string, multi = array, grid = `{rowKey: answer}`, personal habit = `{text, choice}`.
-- **Plan** `P` = `engine.plan(p)`: `status` (Starting Position), `pri` (priority pillars), `months[0..2]` (practices with role, level, text, `why`, change), `minutes`, `budget`, `themes`, `foundations`, **`pilot` (internal Pilot notes, never shown to members)**, `notRight(month, index, reason)` (Rule 13), `log`.
+| File | What it does |
+|---|---|
+| `core/questions.js` | The 52 questions, their conditions (`show(A)`) and `toFeatures(A)`, which turns answers into the features the engine reads. |
+| `core/engine.js` | Chooses practices, applies the safety rules, opt-outs and time budget, and writes the reasons. Same output as the current repo engine (checked on 100 profiles); it also has a `__perPillar` mode that lists the next practices in every pillar. |
+| `data/library.json` | The practice library: levels, minutes, safety exclusions, reasons and references. |
+| `core/profile.js` | One short, factual paragraph per pillar from the member's own answers (used for the Starting Position). |
+| `core/result.js` | **New.** `buildResult(name, answers, env)` applies the agreed plan structure and writes the page copy. |
+| `templates/result_page.tpl.html` | The result page. Placeholders: `__DATA__` (array of records from `buildResult`), `__IMG__` (pillar photos), fonts and logo. It still contains the hand-written copy for Inês, Marta and Hugo; any record with `gen: true` uses its own generated copy instead. |
+| `templates/conversation.tpl.html` | The conversational assessment. At the end, **See my Good Span** calls `buildResult` and shows the page in a full-screen frame. |
+| `reference/` | The current built prototype and the hand-reviewed page for Inês, Marta and Hugo, for comparison. |
 
-## Testing with members (what the prototype does)
+## Use
 
-- Welcome screen: optional first name, email and mobile. Each member gets a unique reference (for example `GS-8HW2-EM7B`) and their own plan. No example personas.
-- The plan is built only when every shown question is answered (the personal habit question is optional).
-- When the plan is built, the prototype:
-  1. sends the answers, the plan summary and the Pilot notes to the team's **Google Sheet** (`scripts/Code.gs`; one row per member, columns named `v7 <section>: <question>`);
-  2. saves a static copy of the plan through the Worker and shows "Open saved copy"; the link is added to the member's row.
-- "Download my Good Span (JSON)" gives the answers and plan (no Pilot notes) for testing.
-- Answers stay in that browser only (`localStorage`); clicking the logo starts again and clears them (after asking).
+```js
+const DATA = require('./data/library.json');
+const { makeEngine } = require('./core/engine.js');
+const { toFeatures } = require('./core/questions.js');
+const { profile } = require('./core/profile.js');
+const { buildResult } = require('./core/result.js');
 
-**Update the Apps Script:** paste the new `scripts/Code.gs` into the sheet's Apps Script and deploy a new version, so rows are matched by member reference rather than by name.
+const record = buildResult('Marta', answers, { E: makeEngine(DATA), DATA, toFeatures, profile });
+```
 
-**Data protection:** answers include health information (special category data under GDPR). Keep the sheet restricted to the team and Pilots, and get explicit consent before testing with members.
+In the browser the same files load as plain scripts (`makeEngine` and `buildResult` become globals; wrap `profile.js` as the conversation build does, because it declares top-level helpers).
+
+`answers` uses the question ids as keys: single choice → string, multi → array, grids → `{ rowKey: option }`, q54 → `{ text, choice }`. See `examples/answers.json`.
+
+## Scripts (Node 18+)
+
+- `node scripts/generate.js`: builds plans for `examples/answers.json` and writes `out/plans.json`, `out/result_page.html` and `out/conversation.html`.
+- `node test/check.js`: runs 100 test profiles and checks the rules below. It exits with an error if any fail. Run it after any change to the rules or the library.
+
+## The plan rules in `result.js`
+
+1. **Focus areas.** These are the engine's priorities. Movement is left out while a symptom hasn't been checked by a doctor. An area only counts if there is something safe to offer there.
+2. **Month 1.** At most three practices, and each must trace back to an answer. Lighter-touch fillers are dropped. Month 1 must fit the lower end of the member's time; if a practice doesn't fit, it starts at an easier level of the same practice.
+3. **The member's own choice comes first.** If they chose an area that is in focus, month 1 starts there (up to two practices per area). Other focus areas join from month 3.
+4. **Months 2 and 3.**
+   - Month 2 adds up to two practices. It adds only one if the member wants small steps or another focus area is waiting, and never more than month 1 started with.
+   - Month 3 adds one.
+   - Both months stay within the member's time. Anything else moves to months 4–5.
+5. **Only when the answers point to it:**
+   - eating windows, if they already keep one some of the time;
+   - screen-free evenings, if screens affect their sleep or they use social media heavily.
+6. **Notices:**
+   - "One thing to check first", when a symptom hasn't been checked by a doctor;
+   - "Something worth discussing", when they've felt anxious or low on more than half the days;
+   - an area they asked for that needs a health professional's input first. The page never names a condition.
 
 ## Before launch
 
-- Safety rules (exclusions, holds, Pilot notes) reviewed by a qualified professional.
-- BST Bazaine licence (trial fonts in `design/assets/`).
-- Mind batch 2 (5 practice groups in `source/Mind_review.xlsx`) awaiting approval; not in the library yet.
-- Accessibility test with a screen reader.
+- Safety rules and notice wording need professional review.
+- Fonts in `assets/` are the BST Bazaine **trial** files; swap in the licensed versions.
+- Practice cards use library names (e.g. "Reframing") and library minute values; the hand-written titles and timings in the reviewed pages are not in the library yet.
+- If you later add AI for free-text understanding or voice transcription, keep any API key on a server, and review privacy first: health answers currently go only to the Google Sheet.

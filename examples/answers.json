@@ -1,0 +1,557 @@
+{
+ "Inês": {
+  "q2": "30-39",
+  "q3": "Mostly regular daytime hours",
+  "q4": [
+   "None of these"
+  ],
+  "q5": [
+   "None of these"
+  ],
+  "q6": "Neither",
+  "q7": {
+   "veg": "3-4 portions",
+   "protein": "Two",
+   "cooked": "3–5",
+   "grains": "3–5 days a week",
+   "beans": "1–2 days a week",
+   "sugary": "1–2 days a week",
+   "processed": "1–2 days a week",
+   "nuts": "1–2 days a week",
+   "salt": "1–2 days a week"
+  },
+  "q8": {
+   "screen": "Sometimes",
+   "attention": "Sometimes",
+   "slow": "Sometimes",
+   "variety": "Sometimes",
+   "out": "Sometimes",
+   "window": "Rarely"
+  },
+  "q9": [
+   "Nothing in particular"
+  ],
+  "q11": [
+   "Nothing in particular"
+  ],
+  "q12": "7-8",
+  "q13": [
+   "None of these"
+  ],
+  "q14": "No",
+  "q15": "12-3pm",
+  "q16": "2-3 hours",
+  "q17": {
+   "daylight": "I do this now",
+   "dim": "I haven't tried it",
+   "regular": "I do this now",
+   "alcohol": "I haven't tried it",
+   "winddown": "I haven't tried it",
+   "tasks": "I haven't tried it",
+   "cool": "I do this now",
+   "dark": "I do this now",
+   "quiet": "I do this now",
+   "screens": "I haven't tried it",
+   "phone": "I haven't tried it",
+   "work": "I do this now",
+   "naps": "I do this now",
+   "pro": "I haven't tried it",
+   "share": "I haven't tried it"
+  },
+  "q18": [
+   "Nothing in particular"
+  ],
+  "q19": [
+   "Nothing in particular"
+  ],
+  "q20": "3",
+  "q21": "40",
+  "q22": "2",
+  "q23": "6-8",
+  "q24": "8,000-9,999",
+  "q25": [
+   "Warm up before exercise"
+  ],
+  "q26": [
+   "Outdoors",
+   "At home"
+  ],
+  "q27": [
+   "Nothing in particular"
+  ],
+  "q29": [
+   "Nothing in particular"
+  ],
+  "q30": "2 to 3 hours",
+  "q31": "30-60 minutes",
+  "q32": {
+   "anx1": "Not at all",
+   "anx2": "Not at all",
+   "dep1": "Not at all",
+   "dep2": "Not at all"
+  },
+  "q33": [
+   "Nothing in particular"
+  ],
+  "q34": [
+   "Time for hobbies or enjoyable activities",
+   "Time away from work"
+  ],
+  "q36": {
+   "phone": "Weekly or more",
+   "meet": "Weekly or more",
+   "group": "2-3 times",
+   "volunteer": "Never"
+  },
+  "q37": [
+   "Share meals with others",
+   "Ask follow-up questions and really listen"
+  ],
+  "q38": [
+   "Nothing in particular"
+  ],
+  "q40": {
+   "tobacco": "Never",
+   "vape": "Never"
+  },
+  "q43": "2-4 times a month",
+  "q44": "1-2",
+  "q45": "Never",
+  "q46": "In the past 12 months",
+  "q48": [
+   "None of these"
+  ],
+  "q51": "About once a week",
+  "q52": [
+   "Nothing in particular"
+  ],
+  "q55": "2-4 hours",
+  "q56": "Something in between",
+  "q57": [
+   "None of these"
+  ],
+  "q58": [
+   "None of these"
+  ],
+  "q1": [
+   "I’m not sure yet"
+  ]
+ },
+ "Marta": {
+  "q2": "18-29",
+  "q3": "Mostly regular daytime hours",
+  "q4": [
+   "None of these"
+  ],
+  "q5": [
+   "None of these"
+  ],
+  "q6": "Neither",
+  "q7": {
+   "veg": "3-4 portions",
+   "protein": "Two",
+   "cooked": "3–5",
+   "grains": "3–5 days a week",
+   "beans": "1–2 days a week",
+   "sugary": "1–2 days a week",
+   "processed": "1–2 days a week",
+   "nuts": "1–2 days a week",
+   "salt": "1–2 days a week"
+  },
+  "q8": {
+   "screen": "Sometimes",
+   "attention": "Sometimes",
+   "slow": "Sometimes",
+   "variety": "Sometimes",
+   "out": "Sometimes",
+   "window": "Rarely"
+  },
+  "q9": [
+   "Nothing in particular"
+  ],
+  "q11": [
+   "Nothing in particular"
+  ],
+  "q12": "7-8",
+  "q13": [
+   "None of these"
+  ],
+  "q14": "No",
+  "q15": "12-3pm",
+  "q16": "2-3 hours",
+  "q17": {
+   "daylight": "I do this now",
+   "dim": "I haven't tried it",
+   "regular": "I do this now",
+   "alcohol": "I haven't tried it",
+   "winddown": "I haven't tried it",
+   "tasks": "I haven't tried it",
+   "cool": "I do this now",
+   "dark": "I do this now",
+   "quiet": "I do this now",
+   "screens": "I haven't tried it",
+   "phone": "I haven't tried it",
+   "work": "I do this now",
+   "naps": "I do this now",
+   "pro": "I haven't tried it",
+   "share": "I haven't tried it"
+  },
+  "q18": [
+   "Nothing in particular"
+  ],
+  "q19": [
+   "Nothing in particular"
+  ],
+  "q20": "3",
+  "q21": "40",
+  "q22": "2",
+  "q23": "6-8",
+  "q24": "8,000-9,999",
+  "q25": [
+   "Warm up before exercise"
+  ],
+  "q26": [
+   "Outdoors",
+   "At home"
+  ],
+  "q27": [
+   "Nothing in particular"
+  ],
+  "q29": [
+   "Nothing in particular"
+  ],
+  "q30": "2 to 3 hours",
+  "q31": "More than 2 hours",
+  "q32": {
+   "anx1": "Nearly every day",
+   "anx2": "More than half the days",
+   "dep1": "Several days",
+   "dep2": "Several days"
+  },
+  "q33": [
+   "Managing stress",
+   "Managing difficult emotions"
+  ],
+  "q34": [
+   "Time for hobbies or enjoyable activities",
+   "Time away from work"
+  ],
+  "q36": {
+   "phone": "Weekly or more",
+   "meet": "Weekly or more",
+   "group": "2-3 times",
+   "volunteer": "Never"
+  },
+  "q37": [
+   "Share meals with others",
+   "Ask follow-up questions and really listen"
+  ],
+  "q38": [
+   "Nothing in particular"
+  ],
+  "q40": {
+   "tobacco": "Never",
+   "vape": "Never"
+  },
+  "q43": "2-4 times a month",
+  "q44": "1-2",
+  "q45": "Never",
+  "q46": "In the past 12 months",
+  "q48": [
+   "None of these"
+  ],
+  "q51": "About once a week",
+  "q52": [
+   "Nothing in particular"
+  ],
+  "q55": "1-2 hours",
+  "q56": "Something in between",
+  "q57": [
+   "Meditation",
+   "Journalling or writing"
+  ],
+  "q58": [
+   "Quiet time on my own",
+   "Listening to music"
+  ],
+  "q1": [
+   "Mind - your mental and emotional wellbeing"
+  ]
+ },
+ "Hugo": {
+  "q2": "50-59",
+  "q3": "Mostly regular daytime hours",
+  "q4": [
+   "None of these"
+  ],
+  "q5": [
+   "Pain, tightness or pressure in your chest"
+  ],
+  "q6": "Neither",
+  "q7": {
+   "veg": "1-2 portions",
+   "protein": "Two",
+   "cooked": "3–5",
+   "grains": "3–5 days a week",
+   "beans": "1–2 days a week",
+   "sugary": "1–2 days a week",
+   "processed": "1–2 days a week",
+   "nuts": "1–2 days a week",
+   "salt": "1–2 days a week"
+  },
+  "q8": {
+   "screen": "Sometimes",
+   "attention": "Sometimes",
+   "slow": "Sometimes",
+   "variety": "Sometimes",
+   "out": "Sometimes",
+   "window": "Rarely"
+  },
+  "q9": [
+   "Nothing in particular"
+  ],
+  "q11": [
+   "Nothing in particular"
+  ],
+  "q12": "6-7",
+  "q13": [
+   "It takes me a long time to fall asleep"
+  ],
+  "q14": "No",
+  "q15": "12-3pm",
+  "q16": "2-3 hours",
+  "q17": {
+   "daylight": "I do this now",
+   "dim": "I haven't tried it",
+   "regular": "I do this now",
+   "alcohol": "I haven't tried it",
+   "winddown": "I haven't tried it",
+   "tasks": "I haven't tried it",
+   "cool": "I do this now",
+   "dark": "I do this now",
+   "quiet": "I do this now",
+   "screens": "I haven't tried it",
+   "phone": "I haven't tried it",
+   "work": "I do this now",
+   "naps": "I do this now",
+   "pro": "I haven't tried it",
+   "share": "I haven't tried it"
+  },
+  "q18": [
+   "Nothing in particular"
+  ],
+  "q19": [
+   "Nothing in particular"
+  ],
+  "q20": "1",
+  "q21": "20",
+  "q22": "2",
+  "q23": "6-8",
+  "q24": "8,000-9,999",
+  "q25": [
+   "Warm up before exercise"
+  ],
+  "q26": [
+   "Outdoors",
+   "At home"
+  ],
+  "q27": [
+   "Improve cardiovascular fitness"
+  ],
+  "q29": [
+   "Nothing in particular"
+  ],
+  "q30": "2 to 3 hours",
+  "q31": "30-60 minutes",
+  "q32": {
+   "anx1": "Not at all",
+   "anx2": "Not at all",
+   "dep1": "Not at all",
+   "dep2": "Not at all"
+  },
+  "q33": [
+   "Nothing in particular"
+  ],
+  "q34": [
+   "Time for hobbies or enjoyable activities",
+   "Time away from work"
+  ],
+  "q36": {
+   "phone": "Weekly or more",
+   "meet": "Weekly or more",
+   "group": "2-3 times",
+   "volunteer": "Never"
+  },
+  "q37": [
+   "Share meals with others",
+   "Ask follow-up questions and really listen"
+  ],
+  "q38": [
+   "Nothing in particular"
+  ],
+  "q40": {
+   "tobacco": "Never",
+   "vape": "Never"
+  },
+  "q43": "2-4 times a month",
+  "q44": "1-2",
+  "q45": "Never",
+  "q46": "In the past 12 months",
+  "q48": [
+   "None of these"
+  ],
+  "q51": "About once a week",
+  "q52": [
+   "Nothing in particular"
+  ],
+  "q55": "1-2 hours",
+  "q56": "I'm ready for a bigger challenge",
+  "q57": [
+   "None of these"
+  ],
+  "q58": [
+   "Being outdoors",
+   "Cooking"
+  ],
+  "q1": [
+   "Movement - your physical activity and movement"
+  ],
+  "q5a": "Yes",
+  "q5b": "No, not yet"
+ },
+ "Sara (chat run)": {
+  "q1": [
+   "Nutrition - how you eat and your everyday food habits"
+  ],
+  "q2": "18-29",
+  "q3": "Mostly regular daytime hours",
+  "q4": [
+   "A heart condition"
+  ],
+  "q5": [
+   "None of these"
+  ],
+  "q6": "Pregnant",
+  "q7": {
+   "veg": "1-2 portions",
+   "protein": "None",
+   "cooked": "Fewer than 3",
+   "grains": "Rarely or never",
+   "beans": "Rarely or never",
+   "sugary": "Rarely or never",
+   "processed": "Rarely or never",
+   "nuts": "Rarely or never",
+   "salt": "Rarely or never"
+  },
+  "q8": {
+   "screen": "Rarely",
+   "attention": "Rarely",
+   "slow": "Rarely",
+   "variety": "Rarely",
+   "out": "Rarely",
+   "window": "Rarely"
+  },
+  "q9": [
+   "Getting enough protein"
+  ],
+  "q11": [
+   "Nut allergy"
+  ],
+  "q12": "7-8",
+  "q13": [
+   "It takes me a long time to fall asleep"
+  ],
+  "q14": "Yes",
+  "q15": "I don't have caffeine",
+  "q16": "Less than 1 hour",
+  "q17": {
+   "daylight": "I do this now",
+   "dim": "I do this now",
+   "regular": "I do this now",
+   "alcohol": "I do this now",
+   "winddown": "I do this now",
+   "tasks": "I do this now",
+   "cool": "I do this now",
+   "dark": "I do this now",
+   "quiet": "I do this now",
+   "screens": "I do this now",
+   "phone": "I do this now",
+   "work": "I do this now",
+   "naps": "I do this now",
+   "pro": "I do this now",
+   "share": "I do this now"
+  },
+  "q18": [
+   "Falling asleep more easily"
+  ],
+  "q19": [
+   "Stress or feeling under pressure"
+  ],
+  "q20": "5",
+  "q21": "40",
+  "q22": "2",
+  "q23": "Less than 6",
+  "q24": "8,000-9,999",
+  "q25": [
+   "Warm up before exercise"
+  ],
+  "q26": [
+   "Outdoors",
+   "At home"
+  ],
+  "q27": [
+   "Build general fitness"
+  ],
+  "q29": [
+   "Ongoing pain"
+  ],
+  "q30": "Less than 30 minutes",
+  "q31": "Less than 30 minutes",
+  "q33": [
+   "Managing stress"
+  ],
+  "q34": [
+   "Meditation or mindfulness"
+  ],
+  "q36": {
+   "phone": "Never",
+   "meet": "Never",
+   "group": "Never",
+   "volunteer": "Never"
+  },
+  "q37": [
+   "Do small acts of kindness for others"
+  ],
+  "q38": [
+   "More meaningful relationships"
+  ],
+  "q40": {
+   "tobacco": "Never",
+   "vape": "Never"
+  },
+  "q43": "2-3 times a week",
+  "q44": "1-2",
+  "q45": "Never",
+  "q46": "In the past 12 months",
+  "q48": [
+   "I've been sunburnt, or used a sunbed, in the past 12 months"
+  ],
+  "q51": "Rarely or never",
+  "q52": [
+   "Drinking less alcohol"
+  ],
+  "q54": {
+   "text": "read more books",
+   "choice": "Keep this private in my Journal"
+  },
+  "q58": [
+   "Quiet time on my own",
+   "Listening to music"
+  ],
+  "q55": "1-2 hours",
+  "q56": "Something in between",
+  "q57": [
+   "Tracking or counting what I eat"
+  ]
+ }
+}

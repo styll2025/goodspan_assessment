@@ -1,0 +1,796 @@
+<title>Good Span Result Page</title>
+<style>
+/* Layout: one calm column, one screen at a time, seven steps from Starting Position to choosing support. Brand tokens from The Good Span visual identity (Oct 2026). */
+@font-face{font-family:"BST Bazaine";src:url(__F_THIN__) format("opentype");font-weight:200;font-display:swap}
+@font-face{font-family:"BST Bazaine";src:url(__F_LIGHT__) format("opentype");font-weight:300;font-display:swap}
+@font-face{font-family:"BST Bazaine";src:url(__F_REG__) format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"Archivo";src:url(__F_UI__) format("truetype");font-weight:400;font-display:swap}
+:root{
+  --plum:#4D2831;--cream:#FFF2EA;--orange:#FE600C;--blue:#D1E6E9;--pink:#F5A4C2;--ochre:#CB863A;--black:#000;--white:#FFF;
+  --ink:var(--plum);--muted:#7A5A5F;--line:rgba(77,40,49,.22);--bg:var(--cream);--card:var(--white);
+  --display:"BST Bazaine","Helvetica Neue",Arial,sans-serif;--ui:"Archivo","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;padding-inline:16px}
+.shell{max-width:880px;margin:0 auto;padding-block:20px 48px;display:grid;gap:28px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:16px;border-bottom:1px solid var(--plum)}
+.top img{height:18px;width:auto;display:block}
+.who{display:flex;gap:6px;flex-wrap:wrap}
+.ui,.who button,.btn,.kicker,.chip,.dots span{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.who button{background:transparent;color:var(--ink);border:1px solid var(--plum);border-radius:999px;padding:6px 12px;cursor:pointer}
+.who button[aria-pressed="true"]{background:var(--plum);color:var(--cream)}
+.progress{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.dots{display:flex;gap:6px;flex-wrap:wrap}
+.dots button{width:28px;height:28px;border-radius:50%;border:1px solid var(--plum);background:transparent;color:var(--ink);font-family:var(--ui);font-size:11px;cursor:pointer;padding:0}
+.dots button[aria-current="step"]{background:var(--plum);color:var(--cream)}
+.dots button.done{border-style:dashed}
+.kicker{color:var(--muted);margin:0}
+h1,h2,h3{font-weight:200;margin:0;text-wrap:balance}
+h1{font-size:clamp(32px,5vw,46px);line-height:1.08;letter-spacing:-.01em}
+h2{font-size:clamp(24px,3.4vw,30px);line-height:1.15;font-weight:300}
+h3{font-size:20px;line-height:1.25;font-weight:400}
+p{margin:0;max-width:62ch}
+.lead{font-size:19px;line-height:1.5}
+.screen{display:grid;gap:24px;min-width:0}
+.jump{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;gap:6px;overflow-x:auto;padding-block:10px;border-bottom:1px solid var(--line);scrollbar-width:none}
+.jump a{flex:none;font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.jump a[aria-current]{background:var(--plum);color:var(--cream);border-color:var(--plum)}
+.jump a:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+#screens{display:grid;gap:64px}
+.screen{scroll-margin-top:64px}
+.screen+.screen{padding-top:8px}
+h2.sh{font-size:clamp(26px,3.6vw,34px);line-height:1.12;font-weight:200}
+
+.screen[hidden]{display:none!important}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:20px;border-top:1px solid var(--line)}
+.btn{border-radius:999px;padding:12px 22px;border:1px solid var(--plum);background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--plum);color:var(--cream)}
+.btn:disabled{opacity:.35;cursor:default}
+button:focus-visible,.btn:focus-visible{outline:2px solid var(--plum);outline-offset:3px}
+/* map */
+.pos{display:grid;border-top:1px solid var(--plum)}
+.prow{display:grid;grid-template-columns:170px minmax(0,1fr);gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.pl{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pcs{display:flex;flex-wrap:wrap;gap:8px}
+.pc{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:6px 12px;border:1px solid var(--plum)}
+.g-improve .pc{border-style:dashed}
+.g-focus .pc{border-color:transparent}
+.pc sup{font-size:9px;margin-left:2px}
+@media (max-width:520px){.prow{grid-template-columns:minmax(0,1fr);gap:8px}}
+.node{display:grid;justify-items:center;gap:8px;text-align:center;min-width:0}
+.node svg{width:min(118px,100%);height:auto;display:block}
+.node .nm{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.node .st{font-size:14px;color:var(--muted);line-height:1.3}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.note{font-size:14px;color:var(--muted)}
+/* cards */
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{border-radius:24px;padding:22px;display:grid;gap:10px;align-content:start;min-width:0}
+.hero{background:var(--plum);color:var(--cream);border-radius:24px;padding:clamp(24px,5vw,44px);display:grid;gap:18px}
+.hero h1{color:var(--cream)}
+.hk{color:var(--blue)}
+.hl{color:var(--blue);font-size:18px;line-height:1.55;max-width:60ch}
+.sp{display:grid;gap:12px;margin-top:10px;padding-top:20px;border-top:1px solid rgba(209,230,233,.35)}
+.sph{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 18px;align-items:baseline}
+.spl{display:flex;flex-wrap:wrap;align-items:center;gap:6px 6px;font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.k{display:inline-block;width:12px;height:12px;border-radius:50%;margin-left:10px}.k:first-child{margin-left:0}
+.k-focus{background:var(--cream)}.k-improve{border:1px dashed var(--cream)}.k-well{border:1px solid var(--cream)}
+.strip{list-style:none;margin:0;padding:4px;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.seg{border-radius:16px;padding:12px 12px 14px;display:grid;gap:4px;min-width:0}
+.seg .sn{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;overflow-wrap:anywhere}
+.seg .ss{font-size:14px;line-height:1.25}
+/* every tile in its pillar colour; focus tiles carry a cream ring, worth-improving a dashed one */
+.seg.s-focus{outline:2px solid var(--cream);outline-offset:2px}
+.seg.s-improve{outline:1.5px dashed var(--cream);outline-offset:2px}
+.hn{font-size:13px;color:var(--blue)}
+.brief{display:grid;border-top:1px solid var(--plum)}
+.bp{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding:20px 22px;border-bottom:1px solid var(--line)}
+.bh{display:grid;gap:8px;align-content:start;justify-items:start}
+.bh h3{font-size:22px;font-weight:300}
+.bp p{font-size:17px;line-height:1.6}
+.tag{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:4px 10px;border:1px solid var(--plum)}
+.t-improve{border-style:dashed}.t-focus{border-color:transparent}
+.suits{font-size:17px;color:var(--muted)}
+@media (max-width:860px){.strip{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.strip{grid-template-columns:repeat(2,minmax(0,1fr))}.bp{grid-template-columns:minmax(0,1fr);gap:10px}.bh{display:flex;gap:10px;align-items:center}}
+
+.bl{display:grid;grid-template-columns:200px minmax(0,1fr);gap:18px;align-items:baseline;padding:18px 22px;border-radius:20px;background:var(--white)}
+.bl dt{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bl dd{margin:0;font-size:19px;line-height:1.45}
+.b-int{background:var(--pink)}.b-well{background:var(--blue)}.b-impr{background:transparent;border:1px dashed var(--plum)}
+.c-well{background:var(--blue)}.c-impr{background:var(--white);border:1px dashed var(--plum)}.c-int{background:var(--pink)}
+.focus{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.focus.one{grid-template-columns:minmax(0,1fr)}
+.fcard{background:var(--white);border-radius:24px;padding:24px;display:grid;gap:12px;min-width:0}
+.fcard ul{margin:0;padding-left:18px;display:grid;gap:8px}
+.chip{display:inline-block;border-radius:999px;padding:4px 10px;justify-self:start}
+.p-Nutrition{background:var(--orange);color:var(--black)}.p-Sleep{background:var(--cream);color:var(--black);box-shadow:inset 0 0 0 1px var(--plum)}.p-Movement{background:var(--pink);color:var(--black)}
+.p-Mind{background:var(--ochre);color:var(--black)}.p-Connection{background:var(--plum);color:var(--cream)}.p-Prevention{background:var(--black);color:var(--cream)}
+.next{display:grid;gap:16px;padding:24px;border-radius:24px;border:1px solid var(--plum)}
+.nh{display:grid;gap:6px}
+.ng{display:grid;gap:10px}
+.ng ol{margin:0;padding-left:20px;display:grid;gap:10px}
+.ng li span{display:block;font-size:15px;color:var(--muted)}
+.ng li b{font-weight:400}
+.later{display:grid;gap:10px;padding:20px 22px;border-radius:24px;border:1px dashed var(--plum)}
+.later ul{margin:0;padding-left:18px;display:grid;gap:6px}
+/* practices */
+.prs{display:grid;gap:14px}
+.pr{background:var(--white);border-radius:24px;padding:24px;display:grid;gap:14px;min-width:0}
+.pr .act{font-size:22px;line-height:1.3;font-weight:300}
+.pr .act b{font-weight:400}
+.pr dl{margin:0;display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px 18px}
+.pr dt{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.pr dd{margin:0}
+details{border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+details p{margin-top:8px;font-size:15px;color:var(--muted)}
+.check{background:var(--blue);border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:start}
+.check svg{width:44px;height:44px}
+/* fit */
+.fit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.stat{background:var(--white);border-radius:24px;padding:22px;display:grid;gap:6px;align-content:start}
+.stat .n{font-size:44px;font-weight:200;line-height:1;font-variant-numeric:tabular-nums}
+.fitlist{margin:0;padding-left:18px;display:grid;gap:8px}
+/* roadmap */
+.road{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;position:relative}
+.road li{display:grid;gap:8px;padding:0 10px 0 0;position:relative;min-width:0;align-content:start}
+.road li::before{content:"";height:1px;border-top:1px solid var(--plum);position:absolute;left:22px;right:0;top:11px}
+.road li:last-child::before{display:none}
+.road .pt{width:22px;height:22px;border-radius:50%;border:1px solid var(--plum);background:var(--bg);position:relative;z-index:1}
+.road li.now .pt{background:var(--plum);border-color:var(--plum)}
+.road li.end .pt{background:var(--plum)}
+.road .when{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.road .what{font-size:18px;font-weight:400}
+.road p{font-size:14px;line-height:1.35}
+/* offer */
+.close{background:var(--plum);color:var(--cream);border-radius:24px;padding:32px 28px;display:grid;gap:10px}
+.close h2{font-weight:200}
+.close p{color:var(--blue)}
+.incl{display:grid;gap:10px}
+.incl ul{margin:0;padding-left:18px;columns:2;column-gap:32px}
+.incl li{break-inside:avoid;margin-bottom:6px}
+.tiers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:start}
+.tier{background:var(--white);border-radius:24px;padding:24px;display:grid;gap:12px;min-width:0;border:1px solid transparent}
+.tier.sel{border-color:var(--plum)}
+.tier .price{font-size:34px;font-weight:200;line-height:1}
+.tier .price small{font-size:15px;font-weight:300}
+.tier ul{margin:0;padding-left:18px;display:grid;gap:6px;font-size:15px}
+.tier p{font-size:15px;line-height:1.45}
+.tier .tag{font-size:15px;font-weight:400}
+.trial{font-size:14px;color:var(--muted)}
+@media (max-width:760px){
+  .grid3,.focus,.fit,.tiers{grid-template-columns:minmax(0,1fr)}
+  .road{grid-template-columns:minmax(0,1fr);gap:18px}
+  .road li{grid-template-columns:22px minmax(0,1fr);column-gap:14px;padding:0}
+  .road li>*:not(.pt){grid-column:2}
+  .road li .pt{grid-row:1/span 3}
+  .road li::before{left:11px;top:22px;bottom:-18px;right:auto;width:0;height:auto;border-top:0;border-left:1px solid var(--plum)}
+  .pr dl{grid-template-columns:minmax(0,1fr);gap:4px}
+  .bl{grid-template-columns:minmax(0,1fr);gap:6px}
+  .pr dd{margin-bottom:8px}
+  .incl ul{columns:1}
+}
+
+/* ---- colour pass: colour-on-colour blocks and open arcs, per the identity guidelines ---- */
+/* pillar colours as on the website: Nutrition orange, Sleep cream, Movement pink, Mind ochre, Connection plum, Prevention black */
+.a-Nutrition{--pc:var(--orange);--pt:#000}.a-Sleep{--pc:var(--cream);--pt:#000}.a-Movement{--pc:var(--pink);--pt:#000}
+.a-Mind{--pc:var(--ochre);--pt:#000}.a-Connection{--pc:var(--plum);--pt:var(--cream)}.a-Prevention{--pc:var(--black);--pt:var(--cream)}
+.bp.g-focus.a-Sleep,.fcard.a-Sleep,.pr.a-Sleep{border:1px solid var(--plum)}
+.pr.a-Sleep .hd{border-bottom:1px solid var(--plum)}
+.seg.p-Connection{box-shadow:inset 0 0 0 1px var(--cream)}
+.seg.p-Sleep{box-shadow:none}
+.arcs{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:inherit}
+.arcs svg{position:absolute;display:block}
+.hero,.close,.roadwrap,.fcard,.pr .hd,.stat,.nextwrap{position:relative;isolation:isolate}
+.hero>*:not(.arcs),.close>*:not(.arcs),.roadwrap>*:not(.arcs),.fcard>*:not(.arcs),.pr .hd>*:not(.arcs),.stat>*:not(.arcs),.nextwrap>*:not(.arcs){position:relative;z-index:1}
+.hero .hl{color:var(--cream);max-width:50ch}
+.hero h1{max-width:14ch}
+.fcard{align-content:start}
+.stat .note{max-width:88%}
+.close p{max-width:44ch}
+.nextwrap .nh{max-width:80%}
+.ng{align-content:start;justify-items:start}
+.ng ol{justify-self:stretch}
+@media (max-width:520px){.arcs svg{transform:translate(-30%,-62%) scale(.5)!important}.hero .arcs svg:nth-child(2){display:none}.nextwrap .nh{max-width:none}}
+.seg .dot{width:10px;height:10px;border-radius:50%;background:var(--pc);display:inline-block;margin-right:6px;vertical-align:1px}
+.s-focus .dot{display:none}
+/* brief */
+.bh h3{display:flex;align-items:center;gap:10px}
+.bh h3::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--pc);box-shadow:inset 0 0 0 1px rgba(77,40,49,.35);flex:none}
+.bp.g-focus{background:var(--pc);color:var(--pt);border-radius:24px;padding:22px 22px;border-bottom:0;margin:10px 0}
+.bp.g-focus .bh h3::before{background:transparent;box-shadow:inset 0 0 0 1.5px currentColor}
+.bp.g-focus .tag{border-color:currentColor;background:transparent;color:inherit}
+.bp.g-focus+.bp:not(.g-focus){border-top:0}
+/* focus cards */
+.fcard{background:var(--pc);color:var(--pt);padding:28px;overflow:hidden;min-height:220px}
+.fcard .chip{background:transparent;color:inherit;box-shadow:inset 0 0 0 1px currentColor}
+.fcard .fh{font-size:clamp(28px,3.6vw,36px);font-weight:200;line-height:1.05}
+.later{background:var(--blue);border:0}
+.later.dashed{background:transparent;border:1px dashed var(--plum)}
+/* practices */
+.pr{padding:0;overflow:hidden;gap:0}
+.pr .hd{background:var(--pc);color:var(--pt);padding:24px 24px 26px;display:grid;gap:12px;overflow:hidden}
+.pr .hd .chip{background:transparent;color:inherit;box-shadow:inset 0 0 0 1px currentColor}
+.pr .act{font-size:24px;max-width:30ch}
+.pr .bd{padding:22px 24px 24px;display:grid;gap:14px}
+.pr .num{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.nextwrap{background:var(--plum);color:var(--cream);border-radius:24px;padding:28px;display:grid;gap:20px;overflow:hidden}
+.nextwrap .note{color:var(--blue)}
+.nextwrap .ng li span{color:var(--blue)}
+.nextwrap .chip.p-Connection{box-shadow:inset 0 0 0 1px var(--cream)}
+.nextwrap .chip.lt{background:transparent;color:var(--cream);box-shadow:inset 0 0 0 1px var(--cream)}
+.nextwrap .ngs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px 28px}
+/* fit */
+.stat{overflow:hidden;min-height:190px}
+.st-1{background:var(--plum);color:var(--cream)}.st-2{background:var(--blue);color:var(--plum)}.st-3{background:var(--white);color:var(--plum)}
+.stat .note{color:inherit;opacity:.85}
+.stat .n{font-size:56px}
+/* roadmap */
+.roadwrap{background:var(--plum);color:var(--cream);border-radius:24px;padding:clamp(24px,4vw,40px);display:grid;gap:28px;overflow:hidden}
+.roadwrap .road li::before{border-color:var(--cream);border-top-style:dashed}
+.roadwrap .road .pt{background:var(--plum);border-color:var(--cream)}
+.roadwrap .road li.now .pt{background:var(--cream);border-color:var(--cream)}
+.roadwrap .road li.mid .pt{background:var(--blue);border-color:var(--blue)}
+.roadwrap .road li.end .pt{background:var(--blue);border-color:var(--blue)}
+.roadwrap .road .when{color:var(--blue)}
+.roadwrap .later{background:rgba(255,242,234,.08);border:1px dotted rgba(255,242,234,.6);color:var(--cream)}
+.roadwrap .later .kicker{color:var(--blue)}
+/* close and tiers */
+.close{background:var(--blue);color:var(--plum);overflow:hidden;padding:clamp(28px,5vw,48px)}
+.close p{color:var(--plum)}
+.close h2{font-size:clamp(30px,4.4vw,44px)}
+.tier{border:1px solid var(--plum)}
+.tier.t-Core{background:var(--orange);color:#000;border-color:var(--orange)}
+.tier.t-Core .note,.tier.t-Core .ui{color:#000}
+.tier.t-Core .tag{border-color:#000}
+.tier.t-Core .btn.primary{background:var(--plum);color:var(--cream);border-color:var(--plum)}
+.tier.t-Concierge{background:var(--plum);color:var(--cream);border-color:var(--plum)}
+.tier.t-Concierge .ui{color:var(--blue)}
+.tier.t-Concierge .btn{background:var(--blue);color:var(--plum);border-color:var(--blue)}
+.tier.t-Self{background:var(--white);border-color:var(--white)}
+.tier.sel{outline:2px solid var(--plum);outline-offset:3px}
+.incl{background:var(--white);border-radius:24px;padding:24px}
+@media (max-width:760px){.roadwrap .road li::before{border-top:0;border-left:1px dashed var(--cream)}}
+
+/* equal sizes: focus cards share one height in every layout; membership tiers share one height, buttons on one line */
+.focus{grid-auto-rows:1fr;align-items:stretch}
+.tiers{align-items:stretch}
+.tier{display:flex;flex-direction:column;gap:12px}
+.tier .tag{align-self:flex-start}
+.tier .btn{margin-top:auto}
+.tier .trial{margin-top:auto;padding-top:4px}
+.tier .trial+.btn{margin-top:0}
+@media (max-width:760px){.tiers{align-items:start}.tier .btn{margin-top:8px}}
+.ht{display:grid;gap:6px}
+.hsub{font-size:clamp(20px,2.6vw,26px);font-weight:200;line-height:1.2;color:var(--blue);margin:0}
+.hls{display:grid;gap:12px}
+.ht .kicker{margin-top:4px}
+/* opening block on light blue */
+.hero{background:var(--blue);color:var(--plum)}
+.hero h1,.hero .hl,.hero .hk,.hero .hn,.hero .hsub,.hero .ss{color:var(--plum)}
+.hero .p-Connection .ss,.hero .p-Prevention .ss{color:var(--cream)}
+.hero .sp{border-top-color:rgba(77,40,49,.3)}
+.hero .seg.s-focus{outline-color:var(--plum)}
+.hero .seg.s-improve{outline-color:var(--plum)}
+.hero .seg.p-Connection{box-shadow:none}
+.secsub{font-size:clamp(20px,2.6vw,24px);font-weight:200;line-height:1.2;margin:-14px 0 0}
+/* opening with photo */
+.hero{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:clamp(24px,4vw,44px);align-items:center}
+.htext{display:grid;gap:18px;min-width:0}
+.hfig{margin:0;position:relative;min-width:0}
+.hfig img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:24px}
+.hfig figcaption{position:absolute;left:14px;bottom:14px}
+@media (max-width:760px){.hero{grid-template-columns:minmax(0,1fr)}.hfig{order:-1}.hfig img{aspect-ratio:4/3}}
+/* section 3: one wide card per focus area */
+.fstack{display:grid;gap:16px}
+.fcard.fwide{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:28px;align-items:start;min-height:0;padding:clamp(24px,4vw,36px)}
+.fmain{display:grid;gap:12px;justify-items:start}
+.fmain p{font-size:17px;line-height:1.55}
+.fwell{background:rgba(255,255,255,.55);border-radius:20px;padding:20px 22px;display:grid;gap:10px;margin:56px 0 24px;color:var(--plum)}
+.a-Connection .fwell,.a-Prevention .fwell{background:rgba(255,242,234,.12);color:var(--cream)}
+.fwell h3{font-size:18px;font-weight:400}
+.fwell ul{margin:0;padding-left:18px;display:grid;gap:8px;font-size:16px}
+@media (max-width:760px){.fcard.fwide{grid-template-columns:minmax(0,1fr)}.fwell{margin-top:0}}
+.refs{display:grid;gap:12px;border-top:1px solid var(--plum);padding-top:28px;scroll-margin-top:24px}
+.refs ol{margin:0;padding-left:20px;display:grid;gap:8px;font-size:15px;line-height:1.5}
+details a{color:inherit}
+/* section 4 cards */
+.pr .pnum{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.pr .act{font-size:26px;max-width:32ch}
+.pr .pintro{font-size:18px;line-height:1.55}
+.pr dl{grid-template-columns:190px minmax(0,1fr)}
+.pr dd{display:grid;gap:8px}
+/* section 5 */
+.nextwrap h2.sh{color:var(--cream)}
+.nextwrap .nh{display:grid;gap:10px}
+.nextwrap .nh p{color:var(--cream);max-width:60ch}
+.nxl{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.nx{border:1px solid rgba(255,242,234,.4);border-radius:20px;padding:20px;display:grid;gap:8px;align-content:start;justify-items:start}
+.nx h3{font-size:20px;font-weight:300}
+.nx p{font-size:15px;color:var(--blue)}
+.nfoot{color:var(--cream)}
+/* section 6 */
+.paceb{display:grid;gap:6px}
+.paceb .pn{font-size:clamp(30px,4.4vw,44px);font-weight:200;line-height:1.1}
+.stat h3{font-size:20px;font-weight:400}
+.stat p{font-size:15px;line-height:1.5;max-width:92%}
+/* section 7: vertical journey */
+.road.vroad{grid-template-columns:minmax(0,1fr);gap:22px}
+.road.vroad li{grid-template-columns:22px minmax(0,1fr);column-gap:16px;padding:0}
+.road.vroad li>*:not(.pt){grid-column:2}
+.road.vroad li .pt{grid-row:1/span 2}
+.road.vroad li::before{left:11px;top:22px;bottom:-22px;right:auto;width:0;height:auto;border-top:0!important;border-left:1px dashed var(--cream)}
+.road.vroad .what{font-size:20px;font-weight:400}
+.road.vroad p{font-size:16px;line-height:1.5;max-width:62ch}
+.roadwrap .later p{font-size:16px;max-width:66ch}
+@media (max-width:760px){.pr dl{grid-template-columns:minmax(0,1fr)}}
+/* sections 8 and 9 */
+.close{gap:14px}
+.close p{max-width:62ch}
+.incl h3{font-size:22px;font-weight:300}
+.incl ul{columns:1;display:grid;gap:8px}
+.incl li b{font-weight:400}
+.tier .tl{font-size:21px;font-weight:300;line-height:1.25}
+.tier .tfoot{margin-top:auto;display:grid;gap:10px;min-height:140px;align-content:start;padding-top:8px}
+.tier .tfoot .btn{margin-top:0}
+.tier .tfoot .trial{margin:0;padding:0}
+@media (max-width:760px){.tier .tfoot{min-height:0}}
+.refs ol{overflow-wrap:anywhere;padding-left:30px}
+.refs a{color:inherit}
+details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15px;color:var(--muted)}
+.refd{border-top:0;padding-top:0}
+.refd ol{margin-top:14px}
+.refd[open]>summary{display:none}
+.refd .refl{margin-top:10px}
+.refd[open] summary{margin-bottom:4px}
+.refl{list-style:none;margin:14px 0 0;padding:0;display:grid;gap:10px;font-size:15px;line-height:1.5;overflow-wrap:anywhere}
+.reft{justify-self:start;background:none;border:0;padding:4px 0;color:var(--ink);cursor:pointer;font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;text-decoration:underline;text-underline-offset:3px}
+.refmore{margin-top:0}
+.check-top{margin-top:2px;background:var(--white)}
+.nxh{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.nxw{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.tbr{list-style:none;margin:10px 0 0;padding:0;display:grid;gap:6px;max-width:520px}
+.tbr li{display:flex;justify-content:space-between;gap:16px;border-bottom:1px dotted var(--line);padding-bottom:6px;font-size:16px}
+.tbr b{font-weight:400;white-space:nowrap}
+.road.vroad p b{font-weight:400}
+.paceb .pk{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.pgrow{margin-top:10px;max-width:62ch}
+/* Sleep practice cards: white header, cream body */
+.pr.a-Sleep{background:var(--cream)}
+.pr.a-Sleep .hd{background:var(--white)}
+/* Sleep focus card: white, with a cream "doing well" panel */
+.fcard.a-Sleep{background:var(--white)}
+.fcard.a-Sleep .fwell{background:var(--cream)}
+/* Sleep dot in Your Starting Position: white */
+.bp.a-Sleep:not(.g-focus) .bh h3::before{background:var(--white)}
+/* book a Pilot review */
+.pilot{position:relative;isolation:isolate;overflow:hidden;background:var(--plum);color:var(--cream);border-radius:24px;padding:clamp(28px,5vw,48px);display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(24px,4vw,44px);align-items:start}
+.pilot>*:not(.arcs){position:relative;z-index:1}
+.pilot h2.sh{color:var(--cream);font-size:clamp(28px,4vw,40px)}
+.pmain{display:grid;gap:14px}
+.pmain p{max-width:56ch}
+.pmain ul{margin:0;padding-left:20px;display:grid;gap:6px}
+.pcta{display:grid;gap:10px;justify-items:start;margin-top:8px}
+.pbtn{background:var(--blue);color:var(--plum);border-color:var(--blue);padding:14px 26px}
+.pmeta{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--blue)}
+.pafter{background:rgba(255,242,234,.08);border:1px dotted rgba(255,242,234,.6);border-radius:20px;padding:22px;display:grid;gap:10px}
+.pafter .kicker{color:var(--blue)}
+.pafter h3{font-size:22px;font-weight:300}
+.pafter ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pafter li{display:grid;gap:2px;padding-top:10px;border-top:1px solid rgba(255,242,234,.25)}
+.pafter li b{font-weight:400;font-size:18px}
+.pafter li span{font-size:15px;color:var(--blue)}
+@media (max-width:760px){.pilot{grid-template-columns:minmax(0,1fr)}}
+/* light-blue versions of the three big blocks (next step, journey, Pilot), for readability */
+.nextwrap,.roadwrap,.pilot{background:var(--blue);color:var(--plum)}
+.nextwrap h2.sh,.nextwrap .nh p,.nextwrap .nfoot,.pilot h2.sh{color:var(--plum)}
+.nx{border-color:rgba(77,40,49,.3);background:rgba(255,255,255,.45)}
+.nx p{color:var(--plum)}
+.nxw{color:var(--muted)}
+.nextwrap .chip.p-Connection{box-shadow:none}
+.roadwrap .road .what,.roadwrap .road p{color:var(--plum)}
+.roadwrap .road li::before{border-color:var(--plum)!important}
+.roadwrap .road .pt{background:var(--blue);border-color:var(--plum)}
+.roadwrap .road li.now .pt{background:var(--plum);border-color:var(--plum)}
+.roadwrap .road li.mid .pt{background:var(--white);border-color:var(--plum)}
+.roadwrap .road li.end .pt{background:var(--plum);border-color:var(--plum)}
+.roadwrap .later{background:rgba(255,255,255,.45);border:1px dotted rgba(77,40,49,.5);color:var(--plum)}
+.roadwrap .later .kicker{color:var(--muted)}
+.pbtn{background:var(--plum);color:var(--cream);border-color:var(--plum)}
+.pmeta{color:var(--muted)}
+.pafter{background:rgba(255,255,255,.45);border:1px dotted rgba(77,40,49,.5)}
+.pafter .kicker,.pafter li span{color:var(--muted)}
+.pafter li{border-top-color:rgba(77,40,49,.2)}
+/* invitation block in white */
+.close{background:var(--white);color:var(--plum)}
+.close h2,.close p{color:var(--plum)}
+/* Starting Position map: six linked rings */
+.map{margin:4px 0 8px;display:grid;gap:14px;justify-items:center}
+.rings{list-style:none;margin:0;padding:0;display:flex;justify-content:center}
+.ring{display:grid;justify-items:center;gap:4px;width:132px;margin-left:-22px;text-align:center}
+.ring:first-child{margin-left:0}
+.ring svg{width:132px;height:132px;display:block}
+.ring .rn{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-top:6px}
+.ring .rs{font-size:14px;color:var(--muted)}
+.r-focus .rs{color:var(--ink)}
+.mlegend{display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center;font-size:14px;color:var(--muted)}
+.mlegend span{display:inline-flex;align-items:center;gap:8px}
+.mlegend svg.mini{width:16px;height:16px}
+@media (max-width:760px){.rings{flex-wrap:wrap;row-gap:18px}.ring{width:104px;margin-left:-14px}.ring:nth-child(4){margin-left:0}.ring svg{width:104px;height:104px}}
+@media (max-width:420px){.ring{width:100px;margin-left:-8px}.ring svg{width:92px;height:92px}.ring .rn{font-size:10px;letter-spacing:.06em}.ring .rs{font-size:12px}}
+/* compact fit block */
+.fitb{background:var(--white);border-radius:24px;padding:24px;display:grid;gap:12px}
+.fitb h3{font-size:22px;font-weight:300}
+.fitline{font-size:clamp(20px,2.6vw,26px);font-weight:200;line-height:1.25}
+.fit3{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;font-size:15px}
+.fit3 b{font-weight:400;display:block}
+@media (max-width:760px){.fit3{grid-template-columns:minmax(0,1fr)}}
+/* journey steps */
+.jsl{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.js{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;row-gap:2px;align-items:baseline;background:rgba(255,255,255,.5);border-radius:16px;padding:12px 14px}
+.js .chip{grid-row:1/span 2;align-self:start}
+.js b{font-weight:400}
+.js span:last-child{font-size:15px}
+.jt{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.notice h3{color:var(--plum)}
+.fitb{min-width:0}
+.tbr li{flex-wrap:wrap}
+.tbr b{white-space:normal}
+.pterm{font-size:14px;margin-top:-6px}
+/* Starting Position map */
+.mapsvg{width:min(560px,100%);height:auto;display:block}
+.mapsvg .mt{font-family:var(--ui);font-size:14px;letter-spacing:.07em}
+.mapsvg .ms{font-family:var(--display);font-size:17px;font-weight:300}
+.mapsvg .mc{font-family:var(--display);font-size:19px;font-weight:400}
+.mn-focus .mt{font-size:15px}
+.mlegend svg.mini{width:34px;height:14px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:520px){.mapsvg .ms{display:none}.mapsvg .mt{font-size:19px;letter-spacing:.03em}.mapsvg .mc{font-size:24px}}
+.mapsvg .rl{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;fill:#7A5A5F}
+.mapsvg .mt{fill:#4D2831}.mapsvg .ms{fill:#7A5A5F}
+.mapsvg .ml-focus .mt{font-weight:700;fill:#000}.mapsvg .ml-focus .ms{fill:#4D2831}
+.mapsvg{width:min(620px,100%)}
+@media (max-width:520px){.mapsvg .ms{display:none}.mapsvg .mt{font-size:22px}}
+/* "What's included" card in black */
+.incl{background:var(--plum);color:var(--cream);padding:clamp(28px,5vw,44px);gap:16px}
+.incl h3{font-size:clamp(24px,3vw,30px)}
+.incl ul{gap:12px}
+.incl li{font-size:18px;line-height:1.5}
+.incl h3,.incl li,.incl li b{color:var(--cream)}
+.incl li::marker{color:var(--cream)}
+/* journey step cards: more room around the pillar tag and text */
+.jsl{gap:12px;margin-top:10px}
+.js{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:18px 20px 18px;border-radius:18px}
+.js .chip{grid-row:auto;justify-self:start;margin-bottom:6px}
+.road.vroad li.js{display:grid;grid-template-columns:minmax(0,1fr);column-gap:0;gap:6px;padding:18px 20px;margin:0}
+.road.vroad li.js>*{grid-column:auto!important}
+.road.vroad li.js::before{display:none}
+.road.vroad li.js b{font-size:18px}
+.road.vroad li.js span:last-child{font-size:15px;line-height:1.5}
+/* "Designed to fit your life" on light blue */
+.fitb{background:var(--blue)}
+.fitb .tbr li{border-bottom-color:rgba(77,40,49,.3)}
+/* weekly totals in the journey: small label */
+.road.vroad p.jt{font-size:11px;line-height:1.4;letter-spacing:.08em;margin-top:4px}
+.road.vroad p.jt{max-width:none;white-space:nowrap}
+@media (max-width:760px){.road.vroad p.jt{white-space:normal}}
+.who[hidden]{display:none}
+</style>
+
+<div class="shell">
+  <header class="top">
+    <img src="__LOGO__" alt="The Good Span">
+    <div class="who" role="group" aria-label="Member" id="who"></div>
+  </header>
+  <main id="screens"></main>
+</div>
+
+<script>
+const D = __DATA__;
+// generated from a member's own answers (the conversation): the hand-written copy below is not used
+const GEN = D.some(r => r.gen);
+// practices taken out of a member's line-up after review (no clear link to their answers)
+const DROP = { Hugo: ['Daily eating window'] };
+// month 1 is at most three practices, not a target; each must trace back to an answer. Later months stay within the time limit.
+const PLAN = {
+  'Inês': { keep: ['Weekly cardio'], m2: ['Walking after meals'], m3: ['Balance'], later: [] },
+  'Marta': { keep: ['Reframing', 'Savouring'], m2: ['Self-compassion'], m3: ['Weekly cardio'], later: ['Problem-solving steps', 'Walking after meals', 'Stretching'] },
+  'Hugo': { keep: ['Enough sleep', 'Balanced plate'], m2: ['Slow breathing to wind down', 'Beans and lentils'], m3: ['Bedtime to-do list'], later: [], refs: { 'Balanced plate': /Aune/ } }
+};
+// extra minutes a week each later practice adds (Balance counted at its 11-minute start)
+const STEPMIN = { 'Walking after meals': 50, 'Balance': 33, 'Self-compassion': 15, 'Weekly cardio': 30, 'Problem-solving steps': 10, 'Stretching': 30, 'Slow breathing to wind down': 25, 'Bedtime to-do list': 35, 'Beans and lentils': 0 };
+const STEPNAME = { 'Weekly cardio': 'Aerobic activity' };
+D.forEach(r => { if (r.gen) return; const d = DROP[r.name] || []; for (const a in r.lineup) r.lineup[a] = r.lineup[a].filter(x => !d.includes(x.fam)); r.later = r.later.filter(x => !d.includes(x.fam)); });
+D.forEach(r => { const pl = PLAN[r.name]; if (!pl || r.gen) return; const pool = [...r.practices, ...Object.values(r.lineup).flat(), ...r.later]; const get = f => ({ ...pool.find(x => x.fam === f) });
+  r.practices = pl.keep.map(get); r.practices.forEach(x => { const re = (pl.refs || {})[x.fam]; if (re) x.refs = (x.refs || []).filter(t => re.test(t)); });
+  r.steps = { m2: pl.m2.map(get), m3: pl.m3.map(get), later: pl.later.map(get) }; r.add2 = pl.m2; r.add3 = pl.m3; });
+const AREAS = ['Nutrition', 'Sleep', 'Movement', 'Mind', 'Connection', 'Prevention'];
+const STEPS = ['Your Starting Position', 'Your Starting Position', 'Where a small change could go a long way', 'Your first practices', 'Designed to fit your life', 'Your six-month Good Span', 'Ready to start'];
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
+const list = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+let who = 0, step = 0;
+
+// one circle per pillar: filled = focus now, dotted outline = worth improving, solid outline = going well
+function circle(area, g) {
+  const fill = { Nutrition: '#FE600C', Sleep: '#FFF2EA', Movement: '#F5A4C2', Mind: '#CB863A', Connection: '#4D2831', Prevention: '#000000' }[area];
+  if (g === 'focus') return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="${fill}" stroke="#4D2831" stroke-width="1.5"/><circle cx="60" cy="60" r="34" fill="none" stroke="#4D2831" stroke-width="1" stroke-dasharray="2 5"/></svg>`;
+  if (g === 'improve') return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" stroke="#4D2831" stroke-width="1.5" stroke-dasharray="1.5 6" stroke-linecap="round"/></svg>`;
+  return `<svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50" fill="none" stroke="#4D2831" stroke-width="1.5"/></svg>`;
+}
+// open line arcs from the identity's graphic language: solid, dashed and dotted, no more than three styles
+const ARC = (cfg) => `<div class="arcs" aria-hidden="true">${cfg.map(([x, y, r, col, style, w]) => `<svg style="left:${x};top:${y};width:${r * 2}px;height:${r * 2}px;transform:translate(-50%,-50%)" viewBox="0 0 ${r * 2} ${r * 2}"><circle cx="${r}" cy="${r}" r="${r - 2}" fill="none" stroke="${col}" stroke-width="${w || 1.5}" ${style === 'dash' ? 'stroke-dasharray="10 8"' : style === 'dot' ? 'stroke-dasharray="1 7" stroke-linecap="round"' : ''}/></svg>`).join('')}</div>`;
+// opening portrait: personal, short. Priorities and any safety limit are said separately.
+const INTRO1 = {
+  'Inês': 'You have already built some good habits across your everyday life. Movement is the area where a little more consistency could make the biggest difference to your next steps.',
+  'Marta': "You told us you'd like support with your mental wellbeing, especially managing stress and difficult emotions. That's where your Good Span starts. A little more movement can follow from month 3, since you're already close to the guideline.",
+  'Hugo': ["You told us you'd like to move more and build your fitness. Before we suggest any increase in activity, there's one important thing to discuss with a doctor first, explained just below.", 'In the meantime, your answers point to sleep and nutrition, where a small change could make a real difference while movement waits.']
+};
+function intro(r) {
+  const n = r.practices.length, num = ['', 'one practice', 'two practices', 'three practices'][n];
+  const p1 = [].concat(INTRO1[r.name] || `${list(r.focus)} ${r.focus.length > 1 ? 'are the areas' : 'is the area'} where a small change could make the biggest difference.`);
+  const pace = { 'Something in between': "you're looking for a pace that feels steady without being too gentle", 'Small, easy steps': "you'd like to start with small, easy steps", 'A bigger challenge': "you've asked for a bigger challenge" }[r.pace] || "you'd like a pace that suits you";
+  const p2 = `You have around ${r.timeTxt} a week to dedicate to your wellbeing, and ${pace}. We've used your answers to shape a plan around what you already do, where you could make progress, and what feels realistic for your life.`;
+  const p3 = `Your Good Span starts with ${num}. Small enough to begin, meaningful enough to build on.`;
+  return [...p1, p2, p3];
+}
+
+// Starting Position: one specific observation per dimension, from each member's own answers
+const SPC = {
+  'Inês': {
+    Movement: ['Your focus', "You're active three days a week, about 120 minutes in all, with strength training twice a week."],
+    Nutrition: ['Cooking at home', 'You cook 3 to 5 main meals a week at home and already eat 3–4 portions of vegetables and fruit a day.'],
+    Sleep: ['Well supported', 'You sleep 7–8 hours, keep a regular bedtime and wake time, and your bedroom is cool, dark and quiet.'],
+    Mind: ['Habits to protect', 'You spend 2–3 hours a week in nature and make time for things you enjoy, away from work.'],
+    Connection: ['Staying connected', 'You see friends or family every week and take part in a group or class 2–3 times a month.'],
+    Prevention: ['Positive foundations', "You don't smoke, keep alcohol to 1–2 drinks a few times a month and had your blood pressure checked in the past year."]
+  },
+  'Marta': {
+    Mind: ['Your focus', "You'd like support with managing stress and difficult emotions, and you already make time for hobbies and time in nature."],
+    Movement: ['Your focus', "You're active three days a week, about 120 minutes in all, with strength training twice a week."],
+    Nutrition: ['Eating well', 'You eat 3–4 portions of vegetables and fruit a day, with protein in two of your main meals.'],
+    Sleep: ['Well supported', 'You sleep 7–8 hours, get morning daylight and finish your caffeine by early afternoon.'],
+    Connection: ['Staying connected', 'You share meals with others most weeks and take time to really listen when you talk.'],
+    Prevention: ['Positive foundations', "You don't smoke, keep alcohol to a few drinks a month and had your blood pressure checked in the past year."]
+  },
+  'Hugo': {
+    Sleep: ['Your focus', 'You usually sleep 6–7 hours, and on several nights a week it takes you a long time to fall asleep.'],
+    Nutrition: ['Your focus', 'You cook most of your meals at home, but usually eat around 1–2 portions of vegetables and fruit a day.'],
+    Movement: ['On hold for now', "You'd like to improve your fitness. Because of the chest discomfort you mentioned, increasing your activity waits until you've spoken to a doctor."],
+    Mind: ['Habits to protect', 'You spend 2–3 hours a week in nature and keep social media to under an hour a day.'],
+    Connection: ['Staying connected', 'You see friends or family every week and take part in a group or class 2–3 times a month.'],
+    Prevention: ['Positive foundations', "You don't smoke, and your blood pressure was checked in the past year."]
+  }
+};
+
+// photo of the member's first focus area, from the website's pillar images
+const IMG = __IMG__;
+const NOTICE = { Marta: { title: 'Something worth discussing', text: "You told us you've felt anxious or low on most days over the last two weeks. The practices in your Good Span can support you day to day, but they aren't a treatment. When feelings like these last, it's worth talking to your GP or another health professional, alongside your Good Span." } };
+// photo chosen per member where it differs from the first focus area
+const PHOTO = { Hugo: 'Stretch' };
+const ALT = { Nutrition: 'Hands stirring a steaming pot of rice.', Sleep: 'A woman laughing as she reads on cushions by a sunny window.', Movement: 'A small group doing yoga together on the grass in a Lisbon park.', Mind: 'A textile artist smiling as she stitches red thread at her table.', Connection: 'Two women of different generations walking arm in arm at golden hour, smiling at each other.', Prevention: 'A hand brushing through herbs in a rooftop garden.', Stretch: 'A woman stretching forward on a green mat in warm morning light.' };
+// section 3: why each focus, explained once; what already goes well in it
+const MOVE = { p: ["You already move regularly and include strength training in your week. Your answers suggest that building up your aerobic activity is a practical next step.", "You're currently doing around 120 minutes of moderate activity a week. The general guideline is at least 150 minutes, so you're already close. A little more movement could help you build towards that benchmark over time."], well: ['Getting 8,000–10,000 steps on a typical day.', 'Making time for strength training twice a week.', 'Staying active outdoors and at home.'] };
+const FOC = {
+  'Inês': { Movement: MOVE },
+  'Marta': {
+    Mind: { p: ["You'd like support with managing stress and difficult emotions, and you already make time for things you enjoy.", "Over the last two weeks, you've often felt anxious or low. Your plan starts with two small, everyday practices that build on what you already enjoy, and support you day to day."], well: ['Making time for hobbies and activities you enjoy.', 'Taking time away from work.', 'Spending 2–3 hours a week in nature.'] },
+    Movement: { p: [MOVE.p[0], "You're currently doing around 120 minutes of moderate activity a week, close to the 150-minute guideline. Because your priority is your mental wellbeing, this joins your plan in month 3, once your first practices feel settled."], well: MOVE.well }
+  },
+  'Hugo': {
+    Sleep: { p: ['You already have a regular routine and a bedroom set up for sleep. What your answers point to is the time you give sleep, and how easily you fall asleep.', 'You usually sleep 6–7 hours a night, and on 3 or more nights a week it takes you a long time to fall asleep. The general guideline is 7 or more hours for adults.'], well: ['Getting daylight in the morning.', 'Keeping a regular bedtime and wake time.', 'Keeping your bedroom cool, dark and quiet.'] },
+    Nutrition: { p: ['You cook most of your meals at home and already include protein and whole grains. The gap is vegetables and fruit.', "You're currently eating around 1–2 portions a day. The general guideline is at least 5, so a little more each day could help you build towards that over time."], well: ['Cooking 3 to 5 main meals a week at home.', 'Including protein in two of your main meals.', 'Keeping sugary drinks, processed foods and added salt occasional.'] }
+  }
+};
+
+// sections 4–7: practice cards are action-first. 'min' is the extra time each one adds, and section 6 adds these up.
+const NUMW = ['no', 'one', 'two', 'three', 'four', 'five', 'six'];
+const AEROBIC = { t: 'Build your aerobic activity', a: 'Add about 30 minutes of moderate activity to your week.', min: 30, time: 'About 30 minutes a week, on top of the 120 you already do. That brings you to the 150-minute guideline.', make: ['For example, a 10-minute brisk walk on three days, or a few extra minutes in sessions you already do.', 'Use the talk test to gauge intensity: you should be breathing more heavily while still being able to talk.'], why: 'The World Health Organization recommends at least 150 minutes of moderate activity a week for adults, based on its links with heart health and long-term wellbeing.' };
+const PRC = {
+  'Inês': [AEROBIC],
+  'Marta': [
+    { t: 'Look at it another way', a: 'Once a week, look at an upsetting moment from a different angle.', min: 5, tl: '5 min a week (once a week)', time: 'About 5 minutes, once a week.', make: ["When something upsetting happens and you've settled a little, ask yourself what is within your control right now, and what other ways you could see it.", 'You can do this in your head, on a walk or while listening to music, whichever suits you.'], why: 'A large review of studies found that changing how you think about a situation helped people manage how they felt in the moment, more than trying to push feelings away.' },
+    { t: 'Savour the good moments', a: 'Once a day, pause to savour a pleasant moment as it happens.', min: 10, tl: 'about 10 min a week (1–2 min a day)', time: '1–2 minutes a day, about 10 minutes a week.', make: ['When something enjoyable happens, like a good cup of tea, a favourite song or sunshine on your face, slow down, notice the details and let yourself enjoy it a little longer.', 'It fits easily into the quiet time you already like to have on your own.'], why: 'A review of trials found that savouring exercises increased positive emotions and wellbeing. It builds on time you already make for things you enjoy.' }],
+  'Hugo': [
+    { t: 'Protect your sleep window', a: 'Allow 7 hours or more for sleep on at least 6 nights a week.', min: 0, time: 'No extra activity time. It may mean going to bed a little earlier.', make: ['Work back from the time you need to get up, and set a time to start winding down.', 'Keep a simple sleep diary, or use a wearable, and notice how rested you feel during the day.'], why: 'You usually sleep 6–7 hours. Sleep experts recommend 7 or more hours a night for adults, and you already keep a regular bedtime and wake time, so this adjusts a routine you have.' },
+    { t: 'More vegetables and fruit', a: 'Add vegetables or fruit to one more meal every day.', min: 0, time: 'No extra time: it changes what goes into meals you already cook.', make: ['Start with one extra portion. Once that feels normal, add another.', 'You enjoy cooking, so this can be a chance to try a new vegetable or recipe each week.'], why: 'You eat around 1–2 portions of vegetables and fruit a day, and 5 is the general guideline. Large reviews link eating more of them with a lower risk of heart disease.' }]
+};
+const pmins = r => (PRC[r.name] || []).reduce((t, c) => t + (c.min || 0), 0) || r.mins;
+// designed to fit your life: one compact block under the practices
+function fitBlock(r) {
+  const n = r.practices.length, cap = { 45: '45 minutes', 60: 'one hour', 120: 'two hours', 240: 'four hours' }[r.lower] || r.lower + ' minutes';
+  const pace = { 'Something in between': 'steady pace', 'Small, easy steps': 'small, easy steps', 'A bigger challenge': r.safety ? 'a bigger challenge, once it is safe' : 'a bigger challenge' }[r.pace] || 'your pace';
+  const m = pmins(r);
+  return `<div class="fitb"><h3>Designed to fit your life</h3>
+    <p class="fitline">${m ? `${m} additional minutes a week to start` : 'No extra activity time to start'} · ${esc(pace)} · ${NUMW[n]} initial practice${n === 1 ? '' : 's'}</p>
+    ${(PRC[r.name] || []).length > 1 ? `<ul class="tbr">${PRC[r.name].map(c => `<li><span>${esc(c.t)}</span><b>${c.tl || (c.min ? c.min + ' min a week' : 'no extra time')}</b></li>`).join('')}</ul>` : ''}
+    <ul class="fit3"><li><b>Your time, respected.</b> We plan for no more than ${cap} a week, the lower end of what you told us you have.</li><li><b>Built around what you already do.</b> Nothing asks you to do more of what is already going well.</li><li><b>Adapted as you progress.</b> New practices join one at a time, and we adjust or swap them to keep within your time.</li></ul></div>`;
+}
+// next steps: the same names and months in the journey
+const whenOf = (r, fam) => r.add2.includes(fam) ? 'Month 2' : r.add3.includes(fam) ? 'Month 3' : 'Months 4–5';
+
+const NXT = {
+  'Walking after meals': 'Add a 10-minute walk after one of your main meals, five days a week. A simple way to bring more movement into the day.',
+  'Balance': 'Introduce balance-challenging exercises three times a week, starting with about 11 minutes. Build this into your routine as you feel ready.',
+  'Weekly cardio': 'Add about 30 minutes of moderate activity a week, bringing you to the 150-minute guideline. You are already close.',
+  'Self-compassion': 'Take a short self-compassion break when something feels hard, for about 5 minutes on three days a week. A kind way to respond to difficult moments.',
+  'Problem-solving steps': "Pick one problem that's on your mind and think through at least three ways to tackle it, for about 10 minutes once a week. A practical way to turn worry into a next step.",
+  'Stretching': 'Add 10 minutes of mobility or stretching work, three times a week. A simple way to maintain mobility and range of motion.',
+  'Slow breathing to wind down': 'Practise slow breathing for 5 minutes as part of your wind-down, five nights a week. A simple way to help your body settle before sleep.',
+  'Bedtime to-do list': "Spend 5 minutes before bed writing a to-do list for the next few days, so tomorrow's tasks aren't on your mind.",
+  'Beans and lentils': 'Include beans, lentils or chickpeas in two meals a week. An easy way to add variety to the meals you already cook.',
+  'Daily eating window': 'Keep your eating within a 10-hour window on at least five days a week. Build this in once your first practices feel settled.'
+};
+const NAMEL = { 'Walking after meals': 'walking after meals', 'Balance': 'balance', 'Self-compassion': 'self-compassion', 'Stretching': 'stretching', 'Problem-solving steps': 'problem-solving steps', 'Slow breathing to wind down': 'slow breathing to wind down', 'Beans and lentils': 'beans and lentils', 'Bedtime to-do list': 'a bedtime to-do list' };
+const DIR = {
+  'Structured Cardio': 'Structured cardio could help you continue building aerobic fitness through regular sessions and intervals.',
+  'Cognitive & Emotional Regulation': 'Cognitive and emotional regulation could give you more ways to handle stress and emotions, from reframing and self-talk to self-compassion and problem-solving.',
+  'Rest & Enjoyment': 'Rest and enjoyment could help you make more room for nature, breaks, music and the activities you enjoy.',
+  'Sleep Duration & Support': 'Sleep duration and support could help you keep getting enough sleep, night after night.',
+  'Plant-Rich Eating': 'Plant-rich eating could help you add more vegetables, fruit, whole grains, beans and lentils to your week.'
+};
+// short citation for "What supports this", and full references with their DOI as a link
+const cite = r => { const au = r.split(/\(\d{4}\)/)[0], parts = au.split(/\.,\s+/).map(x => x.replace(/^&\s*/, '').split(',')[0].trim()).filter(Boolean), yr = (r.match(/\((\d{4})\)/) || [])[1] || ''; const who = parts.length > 2 || /\.\s\.\s\./.test(au) ? parts[0] + ' et al.' : parts.join(' & '); const t = (r.split(/\(\d{4}\)\.\s*/)[1] || '').split(/\.\s/)[0]; return `${who}, ${yr}${t ? '. ' + t : ''}`; };
+const linkDoi = t => esc(t).replace(/(https?:\/\/[^\s<]+[^\s<.,)])/g, '<a href="$1" target="_blank" rel="noopener">$1</a>');
+const GL = { focus: 'Focus now', improve: 'Worth improving', well: 'Going well' };
+// the Starting Position as a map: the member at the centre, six dimensions around them in a fixed order,
+// each linked to the centre. Focus now = large filled circle and solid line; worth improving = dashed; going well = fine outline and dotted line.
+function mapSvg(r) {
+  // spider web: three rings (outer = going well, middle = worth improving, inner = focus now); the shape dips where to focus
+  const W = 780, H = 580, cx = W / 2, cy = H / 2 + 4, R = 190;
+  const fill = { Nutrition: '#FE600C', Sleep: '#FFFFFF', Movement: '#F5A4C2', Mind: '#CB863A', Connection: '#4D2831', Prevention: '#000000' };
+  const lv = { well: 1, improve: .66, focus: .36 };
+  const ang = i => (-90 + i * 60) * Math.PI / 180, P = (i, k) => [cx + R * k * Math.cos(ang(i)), cy + R * k * Math.sin(ang(i))];
+  const hex = k => AREAS.map((a, i) => P(i, k).map(v => v.toFixed(1)).join(',')).join(' ');
+  const pts = AREAS.map((a, i) => P(i, lv[r.groups[a]]));
+  const rings = [[1, 'stroke-width="1.4"'], [.66, 'stroke-width="1.3" stroke-dasharray="7 6"'], [.36, 'stroke-width="1.6" stroke-dasharray="1 6" stroke-linecap="round"']]
+    .map(([k, st]) => `<polygon points="${hex(k)}" fill="none" stroke="#4D2831" stroke-opacity=".55" ${st}/>`).join('');
+  const spokes = AREAS.map((a, i) => { const [x, y] = P(i, 1); return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#4D2831" stroke-opacity=".3" stroke-width="1"/>`; }).join('');
+  const ringLab = [[1, 'Going well'], [.66, 'Worth improving'], [.36, 'Focus now']].map(([k, t]) => `<text x="${(cx + 6).toFixed(1)}" y="${(cy - R * k + 16).toFixed(1)}" class="rl">${t}</text>`).join('');
+  const shape = `<polygon points="${pts.map(p => p.map(v => v.toFixed(1)).join(',')).join(' ')}" fill="#D1E6E9" fill-opacity=".85" stroke="#4D2831" stroke-width="2" stroke-linejoin="round"/>`;
+  const dots = AREAS.map((a, i) => { const [x, y] = pts[i], g = r.groups[a]; return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${g === 'focus' ? 13 : 9}" fill="${fill[a]}" stroke="#4D2831" stroke-width="1.4"/>`; }).join('');
+  const labs = AREAS.map((a, i) => { const [x, y] = P(i, 1.2), c = Math.cos(ang(i)), anc = Math.abs(c) < .2 ? 'middle' : c > 0 ? 'start' : 'end', dy = Math.sin(ang(i)) < -.5 ? -12 : Math.sin(ang(i)) > .5 ? 14 : 0, g = r.groups[a];
+    return `<g class="ml ml-${g}"><text x="${x.toFixed(1)}" y="${(y + dy).toFixed(1)}" text-anchor="${anc}" class="mt">${a.toUpperCase()}</text><text x="${x.toFixed(1)}" y="${(y + dy + 22).toFixed(1)}" text-anchor="${anc}" class="ms">${GL[g]}</text></g>`; }).join('');
+  return `<svg class="mapsvg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Your six dimensions, shown as a web">${rings}${spokes}${shape}${dots}${labs}</svg>`;
+}
+// one ring per pillar, drawn in the identity's line language: filled = focus now, dotted = worth improving, fine solid line = going well
+function ring(a, g, mini) {
+  const fill = { Nutrition: '#FE600C', Sleep: '#FFFFFF', Movement: '#F5A4C2', Mind: '#CB863A', Connection: '#4D2831', Prevention: '#000000' }[a];
+  const v = mini ? 'viewBox="0 0 24 24" class="mini"' : 'viewBox="0 0 120 120"', c = mini ? 12 : 60, R = mini ? 10 : 54, w = mini ? 1.2 : 1.5;
+  if (g === 'focus') return `<svg ${v} aria-hidden="true"><circle cx="${c}" cy="${c}" r="${R}" fill="${mini ? '#4D2831' : fill}" stroke="#4D2831" stroke-width="${w}"/></svg>`;
+  if (g === 'improve') return `<svg ${v} aria-hidden="true"><circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="#4D2831" stroke-width="${w + .3}" stroke-dasharray="${mini ? '1 2.4' : '1.5 5.5'}" stroke-linecap="round"/></svg>`;
+  return `<svg ${v} aria-hidden="true"><circle cx="${c}" cy="${c}" r="${R}" fill="none" stroke="#4D2831" stroke-width="${w}"/></svg>`;
+}
+
+// generated members bring their own copy and timings
+D.filter(r => r.gen).forEach(r => { INTRO1[r.name] = r.intro1; SPC[r.name] = r.spc; FOC[r.name] = r.foc; PRC[r.name] = r.prc;
+  if (r.notice) NOTICE[r.name] = r.notice; else delete NOTICE[r.name]; delete PHOTO[r.name];
+  [...r.steps.m2, ...r.steps.m3, ...r.steps.later].forEach(x => { STEPMIN[x.fam] = x.min || 0; }); });
+if (GEN) Object.keys(NXT).forEach(k => delete NXT[k]);
+const ORDER = r => [...(r.gen ? r.focus : []).filter(a => r.groups[a] === 'focus'), ...AREAS.filter(a => r.groups[a] === 'focus' && !(r.gen && r.focus.includes(a))), ...AREAS.filter(a => r.groups[a] === 'improve'), ...AREAS.filter(a => r.groups[a] === 'well')];
+const S = [
+  // opening: their Good Span, a short portrait, and the Starting Position as one strip of six
+  r => `<div class="hero"><div class="htext">
+    <div class="ht"><h1>Your Good Span</h1><p class="kicker hk">${esc(r.name)} · ${esc(r.date || '12 October 2026')}</p><p class="hsub">A starting point that fits you</p></div>
+    <div class="hls">${intro(r).map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>
+    </div>${(() => { const k = PHOTO[r.name] || r.focus[0]; return IMG[k] ? `<figure class="hfig"><img src="${IMG[k]}" alt="${esc(ALT[k])}"><figcaption><span class="chip p-${r.focus[0]}">${esc(r.focus[0])}</span></figcaption></figure>` : ''; })()}
+  </div>
+    ${NOTICE[r.name] ? `<div class="check check-top notice"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="#CB863A"/><circle cx="24" cy="24" r="20" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(NOTICE[r.name].title)}</h3><p style="margin-top:6px">${esc(NOTICE[r.name].text)}</p></div></div>` : ''}
+    ${r.safety ? `<div class="check check-top"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2"/><circle cx="28" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(r.safety.title)}</h3><p style="margin-top:6px">${esc(r.safety.text)}</p></div></div>` : ''}`,
+
+  // Your Starting Position: one label and a short reading per pillar, in the order of the strip
+  r => `<h1>Your Starting Position</h1>
+    <p class="secsub">Your personal longevity map</p>
+    <p class="lead">Your answers reveal what is already supporting your wellbeing and where a small change could help you move forward.</p>
+    <figure class="map" aria-label="Your Starting Position across the six pillars">
+      ${mapSvg(r)}
+      <ul class="sr-only">${AREAS.map(a => `<li>${a}: ${GL[r.groups[a]]}</li>`).join('')}</ul>
+      <figcaption class="mlegend"><span><svg class="mini" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="33" y2="7" stroke="#4D2831" stroke-width="1.6"/></svg> Outer ring: going well</span><span><svg class="mini" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="33" y2="7" stroke="#4D2831" stroke-width="1.6" stroke-dasharray="6 4"/></svg> Middle: worth improving</span><span><svg class="mini" viewBox="0 0 34 14" aria-hidden="true"><line x1="1" y1="7" x2="33" y2="7" stroke="#4D2831" stroke-width="1.8" stroke-dasharray="1 4" stroke-linecap="round"/></svg> Inner: focus now</span></figcaption>
+    </figure>
+    <div class="brief">${ORDER(r).map(a => { const [lab, txt] = (SPC[r.name] || {})[a] || [GL[r.groups[a]], r.prof.pillars[a]]; return `<div class="bp a-${a} g-${r.groups[a]}"><div class="bh"><h3>${a}</h3><span class="tag t-${r.groups[a]}">${esc(lab)}</span></div><p>${esc(txt)}</p></div>`; }).join('')}</div>`,
+
+  r => `<h1>Where a small change could go a long way</h1>
+    <div class="fstack">${r.focus.map(a => { const f = (FOC[r.name] || {})[a] || { p: r.reasons[a] || [], well: [] }; return `<div class="fcard fwide a-${a}">${ARC([['100%', '100%', 90, 'currentColor', 'dash', 1.2]])}
+      <div class="fmain"><span class="chip">Your focus</span><span class="fh">${a}</span>${f.p.map(t => `<p>${esc(t)}</p>`).join('')}</div>
+      ${f.well.length ? `<div class="fwell"><h3>What you're already doing well</h3><ul>${f.well.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}</div>`; }).join('')}</div>
+    <p class="lead">We'll build on these habits instead of asking you to start from scratch.</p>`,
+
+  // section 4: first practices, each with what to do, how to make it work and why
+  r => `<h1>${r.practices.length === 1 ? 'Your first practice' : `Your first ${NUMW[r.practices.length]} practices`}</h1>
+    <p class="lead">These are your first steps for the month ahead. Each practice has been selected using your answers, your priorities and the time you have available.</p>
+    <div class="prs">${r.practices.map((x, i) => { const c = (PRC[r.name] || [])[i] || { t: x.fam, a: x.action + ' ' + x.freq + '.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area}"><div class="hd">${ARC([['100%', '100%', 120, 'currentColor', i % 2 ? 'dot' : 'dash', 1.5]])}<span class="chip">${esc(x.area)}</span><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
+      <p class="act">${esc(c.a)}</p></div><div class="bd">
+      <dl>${c.time ? `<dt>Time</dt><dd><p>${esc(c.time)}</p></dd>` : ''}<dt>Make it work for you</dt><dd>${c.make.map(t => `<p>${esc(t)}</p>`).join('')}</dd>${c.why ? `<dt>Why this practice</dt><dd><p>${esc(c.why)}</p></dd>` : ''}</dl>
+      ${(x.refs || []).length ? `<details><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${esc(cite(t))}.</li>`).join('')}</ul><p>The full list of references is <a href="#references">at the bottom of this page</a>.</p></details>` : ''}</div></article>`; }).join('')}</div>
+    ${fitBlock(r)}
+    ${r.found.length ? `<div class="later"><p class="kicker">Optional everyday habits</p><ul>${r.found.map(f => `<li>${esc(f.text)} <span class="note">${esc(f.why)}</span></li>`).join('')}</ul></div>` : ''}`,
+
+  // the six-month journey, with the next practices and the weekly time at each step
+  r => { const st = r.steps || { m2: [], m3: [], later: [] }; const add = a => a.reduce((t, x) => t + (STEPMIN[x.fam] || 0), 0);
+    const t1 = pmins(r), t2 = t1 + add(st.m2), t3 = t2 + add(st.m3), mins = v => v ? `About ${v} minutes a week in all` : 'Still no extra activity time';
+    const item = x => `<li class="js"><span class="chip p-${x.area}">${esc(x.area)}</span><b>${esc(STEPNAME[x.fam] || x.fam)}</b><span>${esc(NXT[x.fam] || (x.action + ' ' + x.freq + '.'))}</span></li>`;
+    const t = r.themes.length;
+    return `<h1>Your six-month journey</h1>
+    <p class="lead">Your Good Span is a starting point, not a fixed prescription. Each month, you'll reflect on what's working, adapt what isn't and decide what comes next. New practices join one at a time, once the earlier ones feel familiar.</p>
+    <div class="roadwrap">${ARC([['104%', '-22%', 150, '#4D2831', 'solid', 1.5], ['-3%', '112%', 110, '#FFFFFF', 'dot', 2]])}<ol class="road vroad">
+      <li class="now"><span class="pt"></span><span class="what">Month 1 · Begin</span><p>Get familiar with ${r.practices.length === 1 ? 'your first practice' : `your first ${NUMW[r.practices.length]} practices`} and find ways to make ${r.practices.length === 1 ? 'it' : 'them'} part of your week.</p><p class="jt">${t1 ? `About ${t1} minutes a week` : 'No extra activity time'}</p></li>
+      <li class="mid"><span class="pt"></span><span class="what">Month 2 · Build</span><p>Keep the practices that are working${st.m2.length ? ' and, when you feel ready, add:' : '.'}</p>${st.m2.length ? `<ul class="jsl">${st.m2.map(item).join('')}</ul><p class="jt">${mins(t2)}</p>` : ''}</li>
+      <li class="mid"><span class="pt"></span><span class="what">Month 3 · Refine</span><p>Review your progress and adjust the plan to fit your routines, priorities and experience${st.m3.length ? '. If it feels right, add:' : '.'}</p>${st.m3.length ? `<ul class="jsl">${st.m3.map(item).join('')}</ul><p class="jt">${mins(t3)}, within the ${esc(r.timeTxt)} you told us you have</p>` : ''}</li>
+      <li><span class="pt"></span><span class="what">Months 4–5 · Deepen</span><p>Explore the next practices in your focus areas, building on what you've learned so far${st.later.length ? `, such as ${list(st.later.map(x => `<b>${esc(STEPNAME[x.fam] || x.fam)}</b>`))}. Where time is tight, a new practice can replace one that is already a habit` : ''}.</p></li>
+      <li><span class="pt"></span><span class="what">Month 6 · Consolidate</span><p>Identify the habits that matter most to you and make them easier to sustain beyond the programme.</p></li>
+      <li class="end"><span class="pt"></span><span class="what">After six months: Your New Position</span><p>Repeat your assessment to see how your habits, priorities and starting position have evolved. Review the results with your Pilot and decide what you want to focus on next.</p></li>
+    </ol>
+    <div class="later"><p class="kicker">${t === 1 ? 'One possible next direction' : NUMW[t].charAt(0).toUpperCase() + NUMW[t].slice(1) + ' possible next directions'}</p>${r.themes.map(x => `<p>${esc(DIR[x[1]] || x[1] + '. ' + x[2])}</p>`).join('')}<p>Or you can keep going with what's working. Maintaining a habit that supports your wellbeing is progress too.</p></div></div>`; },
+
+  // section 8: the invitation and what every membership includes
+  r => `<div class="close">${ARC([['102%', '0%', 160, '#D1E6E9', 'solid', 2], ['104%', '86%', 110, '#4D2831', 'dash', 1.5], ['88%', '108%', 64, '#F5A4C2', 'dot', 2]])}
+    <h2>Ready to make your Good Span part of everyday life?</h2>
+    <p>Your plan gives you a place to start. The next six months are about turning that starting point into habits that last.</p>
+    <p>You can follow your Good Span independently, with regular guidance from a Pilot, or with more personalised support and access to specialist expertise.</p>
+    <p>Every membership includes your personalised longevity plan, practical tools to support your habits and opportunities to learn and connect with others. The difference is how much individual support you want along the way.</p></div>
+    <div class="incl"><h3>What's included in every membership</h3>
+      <ul>${[['Your personal longevity map', 'your Starting Position and personalised priorities.'], ['Practices chosen for you', `${NUMW[r.practices.length]} personalised practice${r.practices.length === 1 ? '' : 's'} to start, based on your assessment.`], ['A six-month plan', 'reviewed and adapted as you progress.'], ['A Pilot welcome conversation', 'review your Starting Position and refine your plan.'], ['Member App and Practice Journal', 'follow your practices and reflect on your progress.'], ['Monthly Longevity Live', 'join the session live or watch the replay.'], ['Member connections and gatherings', 'opportunities to learn and connect with others.'], ['Preferred member rates', 'access curated specialists, products and services at member rates.'], ['Your six-month review', 'repeat the assessment and review your New Position with your Pilot.']].map(([b, t]) => `<li><b>${esc(b)}:</b> ${esc(t)}</li>`).join('')}</ul></div>`,
+
+  // section 9: the three memberships
+  r => `<h1>Choose the support that suits you</h1>
+    <div class="tiers">
+      <div class="tier t-Self" data-t="Self"><span class="ui">Self</span><span class="price">€19<small>/month</small></span><span class="pterm">Six-month commitment</span><p class="tl">Your plan, on your terms.</p>
+        <p>Follow your Good Span independently, with a Pilot welcome conversation to review your Starting Position and refine your plan.</p>
+        <p>Over your six months, use the Member App and Practice Journal to follow your practices and reflect on your progress.</p>
+        <div class="tfoot"><button class="btn" type="button">Choose Self</button><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></div></div>
+      <div class="tier t-Core" data-t="Core"><span class="ui">Core</span><span class="price">€129<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">Personal guidance to keep you moving forward.</p>
+        <p>Take the lead day to day, with a Pilot who follows your progress, helps you work through challenges and adapts your Good Span with you.</p>
+        <p>Your membership includes regular Pilot reviews, WhatsApp support between reviews and a quarterly €50 Refuel.</p>
+        <div class="tfoot"><button class="btn primary" type="button">Choose Core</button></div></div>
+      <div class="tier t-Concierge" data-t="Concierge"><span class="ui">Concierge</span><span class="price">€249<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">More individual attention, coordinated around you.</p>
+        <p>Work closely with a Pilot who understands your goals, helps you adapt your Good Span and coordinates additional expertise when you need it.</p>
+        <p>Your membership includes extended Pilot reviews, direct WhatsApp support, a quarterly specialist consultation and a €100 quarterly Refuel.</p>
+        <div class="tfoot"><button class="btn" type="button">Choose Concierge</button></div></div>
+    </div>`,
+
+
+  // next step: book a Good Span Review with a Pilot, then choose how to continue
+  r => `<div class="pilot">${ARC([['102%', '-6%', 170, '#4D2831', 'solid', 1.5], ['104%', '70%', 110, '#FFFFFF', 'dash', 2]])}
+    <div class="pmain"><h2 class="sh">Your next step: meet your Pilot</h2>
+    <p>Your Good Span is designed around your answers, but the best place to begin is a conversation.</p>
+    <p>In a short Good Span Review, your Pilot will:</p>
+    <ul><li>review your Starting Position and first practices,</li><li>make sure the plan feels realistic for your life,</li><li>answer any questions,</li><li>and help you decide which level of support suits you best for the next six months.</li></ul>
+    <div class="pcta"><button class="btn pbtn" type="button">Book my Good Span Review</button><p class="pmeta">20 minutes · online · no preparation needed</p></div></div>
+    <div class="pafter"><p class="kicker">After the call, the next step becomes</p><h3>Choose how you want to continue</h3>
+      <ul><li><b>Self</b><span>Follow your Good Span independently</span></li><li><b>Core</b><span>Add regular Pilot guidance</span></li><li><b>Concierge</b><span>Add deeper support and specialist coordination</span></li></ul></div>
+  </div>`,
+
+  // references: every source behind every practice on this page (first practices and the next steps), alphabetical
+  r => { const st = r.steps || { m2: [], m3: [], later: [] }; const all = [...new Set([...r.practices, ...st.m2, ...st.m3, ...st.later].flatMap(x => x.refs || []))].sort((a, b) => a.localeCompare(b));
+    return `<div id="references" class="refs"><h2 class="sh">The science behind your plan</h2>
+    <p class="note">The research behind every practice in your Good Span.</p>
+    <ul class="refl">${all.slice(0, 2).map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul>${all.length > 2 ? `<ul class="refl refmore" id="refmore" hidden>${all.slice(2).map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul><button type="button" class="reft" aria-expanded="false" aria-controls="refmore">Show all references</button>` : ''}</div>`; }
+];
+
+const SHORT = ['Starting Position', 'Your map', 'Focus', 'Practices', 'Fits your life', 'Six months', 'Get started'];
+function render() {
+  const r = D[who];
+  document.getElementById('who').hidden = D.length < 2;
+  document.getElementById('who').innerHTML = D.map((m, i) => `<button type="button" aria-pressed="${i === who}" data-w="${i}">${esc(m.name)}</button>`).join('');
+  document.getElementById('screens').innerHTML = S.map((f, k) => `<section class="screen" id="sec-${k + 1}">${k ? f(r).replace(/<h1>/g, '<h2 class="sh">').replace(/<\/h1>/g, '</h2>') : f(r)}</section>`).join('');
+  document.querySelectorAll('.tier .btn').forEach(b => b.onclick = () => { document.querySelectorAll('.tier').forEach(t => t.classList.remove('sel')); b.closest('.tier').classList.add('sel'); });
+  // highlight the section in view
+  if (window.IntersectionObserver) {
+    const links = [...document.querySelectorAll('#jump a')];
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) links.forEach(l => l.toggleAttribute('aria-current', l.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-30% 0px -60% 0px' });
+    document.querySelectorAll('.screen').forEach(sec => io.observe(sec));
+  }
+}
+document.addEventListener('click', e => {
+  const refs = open => { const m = document.getElementById('refmore'), b = document.querySelector('.reft'); if (!m || !b) return; m.hidden = !open; b.setAttribute('aria-expanded', open); b.textContent = open ? 'Show fewer references' : 'Show all references'; };
+  if (e.target.closest('a[href="#references"]')) refs(true);
+  const rt = e.target.closest('.reft'); if (rt) refs(rt.getAttribute('aria-expanded') !== 'true');
+  const w = e.target.closest('[data-w]'); if (w) { who = +w.dataset.w; render(); scrollTo(0, 0); }
+  const j = e.target.closest('[data-j]'); if (j) { e.preventDefault(); document.getElementById('sec-' + (+j.dataset.j + 1)).scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+});
+render();
+</script>

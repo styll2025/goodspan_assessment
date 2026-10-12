@@ -25,12 +25,12 @@ const QUESTIONS = [
   { id: 'q6', s: 'about', type: 'single', text: 'Are you currently pregnant or breastfeeding?', options: ['Pregnant', 'Breastfeeding', 'Neither', 'Prefer not to say'] },
   { id: 'q7', s: 'nutrition', type: 'grid', text: 'How does your eating pattern typically look?', rows: [
       ['veg', 'Vegetables and fruit on a typical day', ['None', '1-2 portions', '3-4 portions', '5 or more portions']],
-      ['protein', 'Main meals that include a source of protein', ['None', 'One', 'Two', 'All of them']],
+      ['protein', 'Main meals on a typical day that include a source of protein', ['None', 'One', 'Two', 'All of them']],
       ['cooked', 'Home-cooked main meals in a typical week', ['Fewer than 3', '3–5', 'More than 5']],
       ['grains', 'Whole grains, such as oats, wholegrain bread or brown rice', FREQ4],
       ['beans', 'Beans, lentils or chickpeas', FREQ4],
       ['sugary', 'Sugary drinks, such as soft drinks, energy drinks or sweetened coffee or tea', FREQ4],
-      ['processed', 'Packaged or processed foods, such as ready meals, packaged snacks or processed meats', FREQ4],
+      ['processed', 'Processed foods, such as ready meals, crisps, biscuits, sugary cereals, sausages, ham or bacon', FREQ4],
       ['nuts', 'A handful of unsalted nuts', FREQ4],
       ['salt', 'Adding salt to your food, at the table or when cooking', FREQ4]] },
   { id: 'q8', s: 'nutrition', type: 'grid', text: 'How often do you do these at meals?', cols: ['Rarely', 'Sometimes', 'Most days'], rows: [
@@ -265,3 +265,6 @@ function toFeatures(A) {
   return p;
 }
 
+
+// node: export the question set and the answers-to-features step
+if (typeof module !== "undefined") module.exports = { QUESTIONS, SECTIONS, NONE_WORDS, toFeatures };

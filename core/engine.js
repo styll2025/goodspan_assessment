@@ -127,7 +127,7 @@ function makeEngine(DATA) {
     if (v === 0) add('Nutrition', 'H', "You don't usually eat vegetables or fruit. At least 5 portions a day are recommended.", 'Balanced plate');
     else if (v <= 2) add('Nutrition', 'M', 'You usually eat 1-2 portions of vegetables and fruit a day. At least 5 are recommended.', 'Balanced plate');
     if ((p.sugary || 0) >= 3) add('Nutrition', 'M', `You have sugary drinks on ${p.sugary_txt} days a week. Swapping some for water or unsweetened drinks is an easy way to cut added sugar.`, 'Reducing sugar');
-    if ((p.processed || 0) >= 3) add('Nutrition', 'M', `You eat packaged or processed foods on ${p.processed_txt} days a week. Eating more fresh and home-cooked food is linked with better long-term health.`, 'Less processed food');
+    if ((p.processed || 0) >= 3) add('Nutrition', 'M', `You eat processed foods on ${p.processed_txt} days a week. Eating more fresh and home-cooked food is linked with better long-term health.`, 'Less processed food');
     if (p.wholegrain_rare) add('Nutrition', 'M', 'You rarely eat whole grains. They add fibre, and eating more of them is linked with better heart and gut health.', 'Whole grains');
     if (p.beans_rare) add('Nutrition', 'M', 'You rarely eat beans, lentils or chickpeas. They are a good source of fibre and protein, and eating them more often is linked with better heart health.', 'Beans and lentils');
     if ((p.protein_meals ?? 3) <= 1) add('Nutrition', 'M', "Most of your main meals don't include a source of protein. Spreading protein across your meals helps you feel full and supports your muscles.", 'Protein at meals');
@@ -260,7 +260,7 @@ function makeEngine(DATA) {
     const order = AREAS.slice().sort((x, y) => (combined[y] - combined[x]) || ((wish.includes(y) ? 1 : 0) - (wish.includes(x) ? 1 : 0)) || (nH(S[y]) - nH(S[x])) || (AREAS.indexOf(x) - AREAS.indexOf(y)));
     const pri = [order[0]].concat(combined[order[1]] >= 2 ? [order[1]] : []);
     const light = order.filter(a => !pri.includes(a) && combined[a] >= 1).slice(0, 3);
-    const budget = BUDGET[p.time] || 60;
+    const budget = p.__perPillar ? 1e6 : (BUDGET[p.time] || 60);
     const cap = a => (CAP_LEARNING[a] || []).some(x => c.has(x)) ? 0 : 2;
     const startLevel = (a, f, role) => {
       const b = baseline(p, f);
@@ -533,6 +533,36 @@ function makeEngine(DATA) {
       if (!z) continue;
       chosen.push(z); log.push([z.area, z.fam, z.row.l, z.fill ? 'lighter touch added to reach six practices (starting set)' : 'lighter touch added to reach six practices']);
     }
+    if (p.__perPillar) {   // six practices for every pillar from the start. Same order, safety exclusions and opt-outs; filled in three passes:
+      // 1) as the rules choose today; 2) the next step up from something they already do part of the time; 3) the next level of something they already do
+      const sel = [], groups = new Set();   // practices that do the same job are never in the plan together, across pillars too
+      for (const a of [...pri, ...AREAS.filter(z => !pri.includes(z))]) {
+        const famsA = [...new Set(DATA.lib.filter(r => r.p === a).map(r => r.f))], rk = ranked(a, 'Priority');
+        const base = f => !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
+        const ord = [...rk, ...famsA.filter(f => !rk.includes(f) && base(f)).sort((u, v) => fit(a, v) - fit(a, u))];
+        const mine = [];
+        for (const pass of [1, 2, 3]) for (const f of ord) {
+          if (mine.length >= (+p.__perPillar > 1 ? +p.__perPillar : 6)) break;
+          if (mine.some(x => x.fam === f)) continue;
+          if (pass < 3 && (p.doing || []).includes(f)) continue;
+          const g = grp(f); if (g >= 0 && groups.has(g)) continue;
+          const lv = famOf(a, f); if (!lv) continue;
+          const b0 = baseline(p, f);
+          if (b0 === 'skip') continue;
+          let lvl = startLevel(a, f, 'Priority'); if (lvl === null) continue;
+          if (pass === 1 && !backed(a, f) && !(p.why_ans || {})[f] && b0 && b0 !== 'Learning') continue;
+          let minI = (b0 && cap(a) > 0) ? LEVELS.indexOf(b0) : 0;
+          if (pass === 3 && (p.doing || []).includes(f)) { minI = Math.min(2, Math.max(minI, LEVELS.indexOf(lvl)) + 1); lvl = LEVELS[minI]; }
+          const tries = lv['All levels'] ? ['All levels'] : LEVELS.slice(minI, Math.max(minI, LEVELS.indexOf(lvl)) + 1).reverse().concat(LEVELS.slice(minI)).filter((l, i, arr) => lv[l] && arr.indexOf(l) === i);
+          let row = null; for (const l of tries) { if (optedOut(f, l, optout) || excluded(lv[l], c, p).length) continue; row = lv[l]; break; }
+          if (!row) continue;
+          if (g >= 0) groups.add(g);
+          mine.push({ area: a, fam: f, row, role: pri.includes(a) ? 'Priority' : 'Practice', pass });
+        }
+        sel.push(...mine);
+      }
+      chosen = sel;
+    }
     chosen.forEach(x => { x.change = 'START'; x.why = why(p, S, x, wish); if (cap(x.area) === 0 && !x.note) x.note = 'kept gentle for safety: please check with your doctor before doing more than this'; });   // Rule 6c: safety hold shown from month 1
     const months = [chosen.map(x => Object.assign({}, x))];
     for (const m of [2, 3]) {
@@ -615,6 +645,15 @@ function makeEngine(DATA) {
       for (const f of ranked(a, 'Priority')) {
         const t = CAT.get(a + '|' + f), lv = famOf(a, f);
         if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && !themeOut.includes(t) && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, themeSrc(a, t)]); used.add(t); break; }
+      }
+    }
+    if (p.__perPillar) {   // three themes per pillar
+      themes.length = 0; used.clear();
+      for (const a of [...pri, ...AREAS.filter(z => !pri.includes(z))]) {
+        const famsA = [...new Set(DATA.lib.filter(r => r.p === a).map(r => r.f))], ord = [...ranked(a, 'Priority'), ...famsA];
+        let k = 0;
+        for (const f of ord) { if (k >= (p.__themesPer || 3)) break; const t = CAT.get(a + '|' + f), lv = famOf(a, f);
+          if (t && !used.has(t) && t !== 'Sharing Sleep Progress' && !themeOut.includes(t) && lv && Object.values(lv).some(r => !excluded(r, c, p).length)) { themes.push([a, t, themeSrc(a, t)]); used.add(t); k++; } }
       }
     }
     const notes = pilotNotes(p, c);

@@ -1,0 +1,391 @@
+<title>Good Span Conversation</title>
+<style>
+/* Layout: the assessment's own welcome screen, then one calm conversation column. Each section opens with a card in its pillar colour (light blue for the non-pillar sections); questions are set large in the display face, the member's answers as plum pills, options as soft chips. Brand: The Good Span identity. */
+@font-face{font-family:"BST Bazaine";src:url(__F_THIN__) format("opentype");font-weight:200;font-display:swap}
+@font-face{font-family:"BST Bazaine";src:url(__F_LIGHT__) format("opentype");font-weight:300;font-display:swap}
+@font-face{font-family:"BST Bazaine";src:url(__F_REG__) format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"Archivo";src:url(__F_UI__) format("truetype");font-weight:400;font-display:swap}
+:root{
+  --plum:#4D2831;--cream:#FFF2EA;--blue:#D1E6E9;--white:#FFFFFF;--pink:#F5A4C2;--orange:#FE600C;--ochre:#CB863A;--black:#000;
+  --muted:#7A5A5F;--line:rgba(77,40,49,.2);
+  --display:"BST Bazaine","Helvetica Neue",Arial,sans-serif;--ui:"Archivo","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--cream);color:var(--plum)}
+body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;margin:0}
+.top{border-bottom:1px solid var(--plum);padding-inline:16px}
+.top .in{max-width:1040px;margin:0 auto;padding-block:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
+.top img{height:20px;width:auto;display:block}
+.prog{display:flex;align-items:center;gap:12px}
+.bar{width:140px;height:3px;border-radius:999px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--plum);transition:width .4s}
+.ui{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0}
+.page{padding-inline:16px}
+/* welcome, as in the assessment */
+.welcome{max-width:760px;margin:0 auto;padding-block:clamp(36px,6vw,64px) 0;display:grid;gap:18px}
+.welcome .kick{font-family:var(--ui);font-size:15px;letter-spacing:.06em;text-transform:uppercase;margin:0}
+.welcome h1{margin:0;font-weight:200;font-size:clamp(56px,9vw,96px);line-height:1;letter-spacing:-.02em}
+.welcome .lead{margin:0;font-size:clamp(18px,2vw,21px);max-width:62ch}
+.wform{display:grid;gap:22px;max-width:420px;margin-top:6px}
+.wform label{display:grid;gap:10px;font-size:clamp(18px,2vw,21px)}
+.wform input{font:inherit;font-size:18px;color:var(--plum);background:transparent;border:1px solid var(--plum);border-radius:16px;padding:14px 16px;width:100%}
+.wform input::placeholder{color:var(--muted)}
+.wform input:focus{outline:2px solid var(--plum);outline-offset:1px}
+.wnav{display:flex;justify-content:flex-end;max-width:860px}
+.btn{font-family:var(--ui);font-size:13px;letter-spacing:.08em;text-transform:uppercase;border-radius:999px;padding:14px 26px;border:1px solid var(--plum);background:var(--plum);color:var(--cream);cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--plum);outline-offset:3px}
+/* conversation */
+.wrap{max-width:760px;margin:0 auto;padding-block:24px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
+.thread{display:flex;flex-direction:column;gap:14px;min-width:0}
+.sec{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:center;margin-top:10px;background:var(--sc,var(--blue));color:var(--st,var(--plum))}
+.sec>*{position:relative;z-index:1}
+.sec>.arcs{position:absolute;inset:0;z-index:0;pointer-events:none}
+.sec .arcs svg{position:absolute;right:-70px;top:-80px;width:280px;height:280px}
+.sec h2{margin:0;font-weight:200;font-size:clamp(30px,4.6vw,42px);line-height:1.05}
+.sec p{margin:0;max-width:52ch}
+.sec .stx{display:grid;gap:10px;min-width:0}
+.photo{width:clamp(96px,15vw,128px);aspect-ratio:1;max-width:100%;border-radius:50%;overflow:hidden;border:1.5px solid currentColor}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.msg{display:flex;gap:12px;align-items:flex-start;max-width:min(600px,92%);min-width:0}
+.msg .av{flex:none;width:28px;height:28px;display:grid;place-items:center;margin-top:4px}
+.msg .av img{width:22px;height:auto;opacity:.9}
+.msg.say .av,.msg.lead .av{visibility:hidden}
+.msg.q{margin-top:4px}
+.bub{min-width:0;overflow-wrap:anywhere}
+.msg.q .bub{font-size:clamp(20px,2.6vw,23px);line-height:1.35}
+.msg.q .bub .row{display:block;margin-top:6px;font-size:18px}
+.msg.say .bub,.msg.lead .bub{font-size:17px;color:var(--muted)}
+.msg.say .bub b{font-weight:400;color:var(--plum)}
+.bub small{display:block;margin-top:6px;font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.bub .qh{display:block;margin-top:6px;font-size:15px;color:var(--muted);line-height:1.45}
+.me{align-self:flex-end}
+.me .bub{background:var(--plum);color:var(--cream);border-radius:22px 22px 6px 22px;padding:10px 18px;font-size:17px}
+.typing .bub{display:flex;gap:5px;padding:12px 0}
+.typing .bub i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
+.typing .bub i:nth-child(2){animation-delay:.15s}.typing .bub i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding-left:40px}
+.chip{font-family:var(--display);font-size:16px;font-weight:300;color:var(--plum);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--plum)}
+.chip[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:var(--cream)}
+.chip.go,.chip.alt{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px}
+.chip.go{background:var(--plum);border-color:var(--plum);color:var(--cream)}
+.chip.alt{background:transparent;border-color:var(--plum)}
+.chip.go:disabled{opacity:.3;cursor:default}
+.chip:focus-visible,.send:focus-visible,.mic:focus-visible,#txt:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+.comp{position:sticky;bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(to bottom,rgba(255,242,234,0),var(--cream) 30%);padding-block:18px 8px;display:grid;gap:6px}
+.inrow{min-width:0;position:relative;display:flex;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 20px}
+.inrow:focus-within{border-color:var(--plum)}
+#txt{flex:1;min-width:0;width:0;border:0;background:transparent;font-family:var(--display);font-size:17px;font-weight:300;color:var(--plum);padding:9px 0}
+#txt:focus{outline:none}
+#txt::placeholder{color:var(--muted)}
+.mic,.send{flex:none;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--plum);display:grid;place-items:center;cursor:pointer}
+.send{background:var(--plum);border-color:var(--plum);color:var(--cream)}
+.mic svg,.send svg{width:18px;height:18px}
+.inrow.off{opacity:.4}
+.hint{font-size:14px;color:var(--muted);padding-left:20px;min-height:1.4em;margin:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sum{background:var(--white);border-radius:24px;overflow:hidden;display:grid;margin-top:8px}
+.sum .hd{background:var(--plum);color:var(--cream);padding:24px;display:grid;gap:6px}
+.sum .hd h2{margin:0;font-weight:300;font-size:clamp(26px,3.6vw,34px);line-height:1.15}
+.sum .bd{padding:20px 24px 24px;display:grid;gap:14px}
+.sum .bd>p{margin:0}
+.sum details{border-top:1px dotted var(--line);padding-top:10px}
+.sum summary{cursor:pointer;font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.sum dl{margin:8px 0 0;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:0 18px}
+.sum dt,.sum dd{padding:7px 0;border-bottom:1px dotted var(--line);font-size:14px}
+.sum dt{color:var(--muted)}
+.sum dd{margin:0}
+.sum .how{font-family:var(--ui);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:8px;white-space:nowrap}
+.stat{display:flex;flex-wrap:wrap;gap:8px}
+.stat span{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+@media (max-width:560px){.sec>.arcs{display:none}.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
+@media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
+#plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--cream);z-index:10}
+html.planon,html.planon body{overflow:hidden}
+</style>
+
+<header class="top"><div class="in">
+  <img src="__LOGO__" alt="The Good Span">
+  <div class="prog" id="prog" hidden><span class="bar" aria-hidden="true"><i id="bar"></i></span><span class="ui" id="cnt"></span></div>
+</div></header>
+
+<div class="page">
+  <section class="welcome" id="welcome" aria-labelledby="wh">
+    <p class="kick">Find your Good Span</p>
+    <h1 id="wh">Welcome.</h1>
+    <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
+  </section>
+
+  <div class="wrap" id="chat">
+    <main class="thread" id="thread" aria-live="polite"></main>
+    <div class="comp" id="comp">
+      <div class="inrow" id="inrow">
+        <label for="txt" class="sr">Your answer</label>
+        <input id="txt" type="text" autocomplete="off" placeholder="Type your answer, or tap an option">
+        <button class="mic" id="mic" type="button" aria-label="Speak your answer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+        <button class="send" id="send" type="button" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6"/></svg></button>
+      </div>
+      <p class="hint" id="hint"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ---- the assessment itself: the same questions, follow-ups and skips as the standard form ----
+__QUESTIONS__
+__RESULT_JS__
+// ---- conversation layer ----
+const SYM = "__SYM__", IMG = __IMG__;
+const PILLAR = { nutrition: ['#FE600C', '#000', 'Nutrition'], sleep: ['#FFFFFF', '#000', 'Sleep'], movement: ['#F5A4C2', '#000', 'Movement'], mind: ['#CB863A', '#000', 'Mind'], connection: ['#4D2831', '#FFF2EA', 'Connection'], prevention: ['#000000', '#FFF2EA', 'Prevention'] };
+const ALT = { nutrition: 'Hands stirring a steaming pot of rice.', sleep: 'A woman laughing as she reads on cushions by a sunny window.', movement: 'A small group doing yoga together on the grass in a Lisbon park.', mind: 'A textile artist smiling as she stitches red thread at her table.', connection: 'Two women of different generations walking arm in arm at golden hour, smiling at each other.', prevention: 'A hand brushing through herbs in a rooftop garden.' };
+// health checks, conditions and mood are answered by choosing, never interpreted from free text
+const FIXED = new Set(['q4', 'q5', 'q5a', 'q5b', 'q6', 'q29', 'q32']);
+// grids whose rows read better as their own questions, and a one-tap answer for 'none of them'
+const ROWQ = { q40: { tobacco: 'Do you currently smoke cigarettes, cigars, rolling tobacco or other tobacco?', vape: 'And do you use vapes or e-cigarettes?' } };
+const ALLNEVER = { q40: "I don't smoke or vape" };
+const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.", q32: "These next four help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", q55: "Nearly there. These last ones set the limits your Good Span will respect." };
+const EXCL = q => NONE_WORDS;
+let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
+const $ = id => document.getElementById(id), T = $('thread');
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const scrollEnd = () => window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
+const visible = q => !q.show || q.show(A);
+const secIdx = q => SECTIONS.findIndex(s => s.id === q.s);
+const label = o => o.replace(/ - .*/, '');
+const rowOpts = q => q.rows[row][2] || q.cols;   // a grid row has its own options, or shares the grid's columns   // "Nutrition - how you eat…" shows as "Nutrition" on a chip
+
+function bot(html, small, kind) { const d = document.createElement('div'); d.className = 'msg ' + (kind || 'say'); d.innerHTML = `<span class="av"><img src="${SYM}" alt=""></span><div class="bub">${html}${small ? `<small>${small}</small>` : ''}</div>`; T.append(d); return d; }
+function me(text) { const d = document.createElement('div'); d.className = 'msg me'; d.innerHTML = `<div class="bub">${esc(text)}</div>`; T.append(d); scrollEnd(); }
+function typing(ms) { return new Promise(res => { if (reduce || !ms) return res(); const d = document.createElement('div'); d.className = 'msg typing'; d.innerHTML = `<span class="av"><img src="${SYM}" alt=""></span><div class="bub"><i></i><i></i><i></i></div>`; T.append(d); scrollEnd(); setTimeout(() => { d.remove(); res(); }, ms); }); }
+const clearChips = () => T.querySelectorAll('.chips').forEach(e => e.remove());
+function composer(on, hint) { $('inrow').classList.toggle('off', !on); $('txt').disabled = !on; $('send').disabled = !on; $('mic').disabled = !on; $('hint').textContent = hint || ''; }
+function progress() {
+  const q = QUESTIONS[qi], i = q ? secIdx(q) : SECTIONS.length;
+  $('cnt').textContent = q ? `Find your Good Span · ${i + 1} of ${SECTIONS.length}` : 'Complete';
+  $('bar').style.width = (q ? i / SECTIONS.length * 100 : 100) + '%';
+}
+function sectionCard(i) {
+  const s = SECTIONS[i], p = PILLAR[s.id], d = document.createElement('section'); d.className = 'sec';
+  if (p) d.style.cssText = `--sc:${p[0]};--st:${p[1]}`;
+  if (s.id === 'sleep') d.style.boxShadow = 'inset 0 0 0 1px var(--plum)';
+  d.innerHTML = `${p ? `<div class="arcs" aria-hidden="true"><svg viewBox="0 0 280 280"><circle cx="140" cy="140" r="130" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="100" cy="180" r="90" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 7" stroke-linecap="round"/></svg></div>` : ''}
+    <div class="stx"><p class="ui">${i + 1} of ${SECTIONS.length}${p ? ' · ' + p[2] : ''}</p><h2>${esc(s.title)}</h2><p>${esc(s.intro)}</p></div>${IMG[s.id] ? `<div class="photo"><img src="${IMG[s.id]}" alt="${esc(ALT[s.id])}"></div>` : ''}`;
+  T.append(d);
+}
+
+async function ask(fast) {
+  ready = false;
+  while (qi < QUESTIONS.length && !visible(QUESTIONS[qi])) qi++;
+  progress();
+  if (qi >= QUESTIONS.length) return finish();
+  const q = QUESTIONS[qi], si = secIdx(q);
+  if (si !== secShown) { secShown = si; await typing(fast ? 0 : 350); sectionCard(si); }
+  await typing(fast ? 0 : 450);
+  if (row === 0 && LEAD[q.id]) bot(esc(LEAD[q.id]), '', 'lead');
+  if (q.type === 'grid') {
+    // a grid becomes a short run of questions: the shared lead-in once, then each row asked on its own
+    const own = (ROWQ[q.id] || {})[q.rows[row][0]];
+    if (row === 0 && !ROWQ[q.id]) bot(esc(q.text) + (q.hint ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.rows.length > 1 ? `${q.rows.length} short parts` : '', 'lead');
+    bot(esc(own || q.rows[row][1]), q.rows.length > 1 && !ROWQ[q.id] ? `${row + 1} of ${q.rows.length}` : '', 'q');
+  } else bot(esc(q.text) + (q.hint && q.type !== 'habit' ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.type === 'multi' ? (q.max ? `Choose up to ${q.max}` : 'Choose all that apply') : '', 'q');
+  options(q); ready = true;
+  if (FIXED.has(q.id)) composer(false, 'Please choose from the options for this one, so we get it exactly right.');
+  else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
+  else composer(true, q.type === 'multi' ? 'Tap the options, or describe it in your own words.' : 'Tap an option, or type it your way.');
+  scrollEnd();
+}
+
+function options(q, pre) {
+  clearChips(); sel = new Set(pre || []);
+  const box = document.createElement('div'); box.className = 'chips';
+  if (q.type === 'grid') {
+    const all = row === 0 && ALLNEVER[q.id];
+    box.innerHTML = (all ? `<button type="button" class="chip" data-all="1">${esc(all)}</button>` : '') + rowOpts(q).map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(o)}</button>`).join('');
+    box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.all) return answerAll(q, all); answerGrid(q, b.dataset.o); };
+  } else if (q.type === 'habit') {
+    box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this one</button>`;
+    box.onclick = e => { if (e.target.closest('[data-skip]')) { A[q.id] = null; me('Skip'); next(); } };
+  } else if (q.type === 'single') {
+    box.innerHTML = q.options.map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(label(o))}</button>`).join('');
+    box.onclick = e => { const b = e.target.closest('.chip'); if (b) answer(q, [b.dataset.o], 'tapped'); };
+  } else {
+    const render = () => { box.innerHTML = q.options.map(o => `<button type="button" class="chip" aria-pressed="${sel.has(o)}" data-o="${esc(o)}">${esc(label(o))}</button>`).join('') + `<button type="button" class="chip go" data-go="1" ${sel.size ? '' : 'disabled'}>Done</button>`; };
+    render();
+    box.onclick = e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      if (b.dataset.go) return answer(q, [...sel], 'tapped');
+      const o = b.dataset.o;
+      if (sel.has(o)) sel.delete(o);
+      else { if (NONE_WORDS.test(o) || o === 'I’m not sure yet') sel.clear(); else [...sel].filter(x => NONE_WORDS.test(x) || x === 'I’m not sure yet').forEach(x => sel.delete(x)); if (q.max && sel.size >= q.max) return; sel.add(o); }
+      render();
+    };
+  }
+  T.append(box);
+}
+
+// ---- matching a typed answer to the existing options (stand-in for the AI step; it always confirms) ----
+const NUM = { couple: 2, few: 3, zero: 0, none: 0, no: 0, never: 0, one: 1, once: 1, a: null, two: 2, twice: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+function numIn(t) {
+  t = t.replace(/(\d),(\d{3})/g, '$1$2');
+  let m = t.match(/(\d+(?:\.\d+)?)\s*k\b/); if (m) return +m[1] * 1000;
+  if (/half an hour|half hour/.test(t)) return 30;
+  m = t.match(/\d+(?:\.\d+)?/); let n = m ? +m[0] : null;
+  if (n == null) for (const w of t.split(/[^a-z]+/)) if (NUM[w] != null) { n = NUM[w]; break; }
+  if (n == null && /\ban hour\b/.test(t)) n = 1;
+  if (n != null && /hour/.test(t) && !/min/.test(t) && /minute|min\b/i.test(QUESTIONS[qi].text)) n *= 60;
+  return n;
+}
+function band(o) {
+  const s = o.replace(/,/g, '').replace(/–/g, '-');
+  let m = s.match(/^(?:Less|Fewer) than (\d+(?:\.\d+)?)/i); if (m) return [-Infinity, +m[1] - 1e-9];
+  m = s.match(/^(?:More than )(\d+(?:\.\d+)?)/i); if (m) return [+m[1] + 1e-9, Infinity];
+  m = s.match(/^(\d+(?:\.\d+)?)\s*(?:or more|\+)/i); if (m) return [+m[1], Infinity];
+  m = s.match(/^(?:About )?(\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)/i); if (m) return [+m[1], +m[2]];
+  m = s.match(/^(\d+(?:\.\d+)?)$/); if (m) return [+m[1], +m[1]];
+  m = s.match(/^(\d+(?:\.\d+)?) (?:day|time|hour|minute|night|portion|drink|meal)/i); if (m) return [+m[1], +m[1]];
+  return null;
+}
+const STOP = new Set('the and for with that this what your you have from about more less most some into than them they just like really very much also when then been being does dont doesnt didnt would could should there their about over each make made much usually typically mostly often sometimes week weeks days daily'.split(' '));
+const words = t => t.toLowerCase().replace(/[’']/g, '').split(/[^a-z]+/).filter(w => w.length > 3 && !STOP.has(w)).map(w => w.replace(/(ing|ers|er|es|s|ed|ly)$/, ''));
+function interpret(q, raw) {
+  const t = raw.toLowerCase().trim();
+  if (q.type === 'habit') return raw.trim() ? [raw.trim()] : null;
+  const opts = q.options, none = opts.find(o => NONE_WORDS.test(o));
+  if (none && /^(none|nothing|no\b|not really|nope)/.test(t)) return [none];
+  if (/prefer not/.test(t)) { const p = opts.find(o => /^Prefer not/.test(o)); if (p) return [p]; }
+  // the option's own wording typed in full wins (e.g. "1-2 hours")
+  const norm = x => x.toLowerCase().replace(/[–—]/g, '-').replace(/\s+/g, ' ');
+  const exact = opts.filter(o => norm(t).includes(norm(label(o))) && label(o).length > 2);
+  if (q.type === 'single' && exact.length) return [exact.sort((a, b) => b.length - a.length)[0]];
+  if (q.type === 'single') {
+    const unit = x => (x.match(/\b(day|week|month|night|year)s?\b/i) || [])[1];
+    const tu = unit(t);
+    const bands = opts.map(o => (tu && unit(o) && unit(o).toLowerCase() !== tu.toLowerCase()) ? null : band(o));
+    if (bands.filter(Boolean).length >= 2) {
+      if (/every ?day|daily|every night/.test(t)) { const o = opts.find(x => /^(7|6-7|6–7)/.test(x)); if (o) return [o]; }
+      if (/most days|most nights/.test(t)) { const o = opts.find(x => /^(5|3-5|3–5)/.test(x)); if (o) return [o]; }
+      if (/rarely|hardly|never/.test(t)) { const o = opts.find(x => /^(0|Never|Rarely)/.test(x)); if (o) return [o]; }
+      const n = numIn(t);
+      if (n != null) { const hits = bands.map((b, k) => b && n >= b[0] && n <= b[1] ? k : -1).filter(k => k >= 0); const i = hits.length > 1 ? (hits.find(k => bands[k][0] === n) ?? hits[0]) : hits[0] ?? -1; if (i >= 0) return [opts[i]]; const nb = bands.map((b, k) => b ? [Math.min(Math.abs(n - b[0]), Math.abs(n - b[1])), k] : [Infinity, k]).sort((a, b) => a[0] - b[0])[0]; if (nb[0] < Infinity) return [opts[nb[1]]]; }
+    }
+  }
+  const tw = new Set(words(t)); if (!tw.size) return null;
+  const sc = opts.map(o => [words(o).filter(w => tw.has(w)).length, o]).filter(x => x[0] > 0 && !NONE_WORDS.test(x[1]));
+  if (!sc.length) return null;
+  if (q.type === 'single') { sc.sort((a, b) => b[0] - a[0]); return sc.length > 1 && sc[0][0] === sc[1][0] ? null : [sc[0][1]]; }
+  return sc.sort((a, b) => b[0] - a[0]).map(x => x[1]).slice(0, q.max || 99);
+}
+
+async function typed() {
+  const raw = $('txt').value.trim(); if (!raw || !ready) return;
+  if (stage === 'contact') return typedContact(raw);
+  if (qi >= QUESTIONS.length) return;
+  const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: q0.rows[row][1] } : q0;
+  $('txt').value = ''; me(raw);
+  if (q.type === 'habit') { A[q.id] = { text: raw }; how[q.id] = 'typed'; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
+  const v = interpret(q, raw);
+  await typing(450);
+  if (!v) { bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); return; }
+  clearChips();
+  bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
+  const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = `<button type="button" class="chip go" data-y="1">Yes, that's right</button><button type="button" class="chip alt" data-n="1">Change it</button>`;
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.y) { if (q0.type === 'grid') { how[q0.id] = 'typed'; return answerGrid(q0, v[0], true); } answer(q, v, 'typed', true); } else { box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); scrollEnd(); } };
+  T.append(box); scrollEnd();
+}
+function habitChoice(q) {
+  clearChips(); const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = q.options.map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(o)}</button>`).join('');
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; A[q.id].choice = b.dataset.o; me(b.dataset.o); next(); };
+  T.append(box); composer(false, ''); scrollEnd();
+}
+function answer(q, v, src, confirmed) {
+  clearChips(); me(confirmed ? "Yes, that's right" : v.map(label).join(', '));
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+}
+function answerAll(q, text) {
+  clearChips(); me(text);
+  A[q.id] = Object.fromEntries(q.rows.map(r => [r[0], (r[2] || q.cols)[0]])); how[q.id] = 'tapped'; next();
+}
+function answerGrid(q, col, typedIn) {
+  clearChips(); me(typedIn ? "Yes, that's right" : col);
+  A[q.id] = Object.assign({}, A[q.id], { [q.rows[row][0]]: col }); if (!typedIn && how[q.id] !== 'typed') how[q.id] = 'tapped';
+  if (++row < q.rows.length) return ask(); next();
+}
+async function next() {
+  const q = QUESTIONS[qi]; row = 0; qi++;
+  // a short, scripted response where it adds something
+  if (q.id === 'q1') { const a = (A.q1 || []).map(label).filter(x => !/not sure/.test(x)); await typing(350); bot(a.length ? `Thanks${name ? ', ' + esc(name) : ''}. We'll ask about every area, and keep ${esc(a.join(' and '))} front of mind.` : `That's fine${name ? ', ' + esc(name) : ''}. We'll let your answers show where to start.`); }
+  if (q.id === 'q21' && A.q20 && A.q21) { const w = +A.q20 * (A.q21 === '150 or more' ? 150 : +A.q21); await typing(350); bot(`Thanks. That's around ${w} minutes a week${w >= 150 ? ', at or above the 150-minute guideline' : ''}.`); }
+  ask();
+}
+
+function show(id, v) {
+  const q = QUESTIONS.find(x => x.id === id);
+  if (v == null) return '';
+  if (q.type === 'grid') return q.rows.map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
+  if (q.type === 'habit') return [v.text, v.choice].filter(Boolean).join(' · ');
+  return [].concat(v).map(label).join(', ');
+}
+function finish() {
+  composer(false, ''); clearChips(); $('comp').hidden = true;
+  const ids = QUESTIONS.filter(q => A[q.id] !== undefined), typedN = ids.filter(q => how[q.id] === 'typed').length;
+  const d = document.createElement('section'); d.className = 'sum';
+  d.innerHTML = `<div class="hd"><p class="ui">Find your Good Span · complete</p><h2>Thank you${name ? ', ' + esc(name) : ''}. Your Good Span is ready.</h2></div>
+    <div class="bd"><p>We've used your answers to map your Starting Position, find where a small change could go a long way, and choose your first practices.</p>
+    <div class="nextp"><button type="button" class="chip go" id="see">See my Good Span</button><button type="button" class="chip alt" id="again">Start again</button></div>
+    <details><summary>Your answers (${ids.length} questions, ${typedN} in your own words)</summary>
+    ${SECTIONS.map(s => { const qs = ids.filter(q => q.s === s.id); return qs.length ? `<details><summary>${esc(s.title)}</summary><dl>${qs.map(q => `<dt>${esc(q.text)}</dt><dd>${esc(show(q.id, A[q.id]))}<span class="how">${how[q.id] === 'typed' ? 'In your words' : 'Tapped'}</span></dd>`).join('')}</dl></details>` : ''; }).join('')}</details></div>`;
+  T.append(d); $('again').onclick = restart; $('see').onclick = openPlan; progress(); scrollEnd();
+}
+// the member's Good Span, built from these answers by the same engine and rules as the standard assessment
+function openPlan() {
+  let r;
+  try { r = buildResult(name, A, { E: makeEngine(GS_DATA), DATA: GS_DATA, toFeatures, profile: gsProfile }); }
+  catch (e) { console.error(e); alert("Sorry, we couldn't build your Good Span from these answers."); return; }
+  const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention };
+  const html = RESULT_TPL.replace('_' + '_IMG__', () => JSON.stringify(img)).replace('_' + '_DATA__', () => JSON.stringify([r]).replace(/</g, '\\u003c'));
+  // shown in its own frame over the conversation, so the page runs exactly as the result page does
+  const f = document.createElement('iframe'); f.id = 'plan'; f.title = 'Your Good Span';
+  f.srcdoc = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>';
+  document.body.append(f); document.documentElement.classList.add('planon'); window.scrollTo(0, 0);
+}
+
+// the welcome is a conversation too: name and email, one at a time
+const CONTACT = [
+  ['name', () => 'What would you like us to call you?', 'Your first name', 'text'],
+  ['email', () => `Lovely to meet you${contact.name ? ', ' + esc(contact.name) : ''}. What's the best email address for you?`, 'you@example.com', 'email']
+];
+async function askContact(fast) {
+  ready = false; const c = CONTACT[ci];
+  await typing(fast ? 0 : 450);
+  bot(c[1](), '', 'q');
+  $('txt').placeholder = c[2]; $('txt').setAttribute('inputmode', c[3]); $('txt').setAttribute('autocomplete', c[0] === 'name' ? 'given-name' : c[0] === 'email' ? 'email' : 'tel');
+  composer(true, c[0] === 'name' ? 'Type your first name.' : ''); ready = true; scrollEnd(); if (!fast) $('txt').focus({ preventScroll: true });
+}
+async function typedContact(raw) {
+  const c = CONTACT[ci]; me(raw); $('txt').value = '';
+  if (c[0] === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) { await typing(350); bot("That doesn't look quite like an email address. Could you check it?"); scrollEnd(); return; }
+  if (c[0] === 'mobile' && (raw.match(/\d/g) || []).length < 7) { await typing(350); bot('Could you check that number? It looks a little short.'); scrollEnd(); return; }
+  contact[c[0]] = c[0] === 'name' ? raw.split(/\s+/)[0].replace(/^./, x => x.toUpperCase()) : raw;
+  if (++ci < CONTACT.length) return askContact();
+  stage = 'questions'; name = contact.name || ''; ready = false;
+  $('txt').placeholder = 'Type your answer, or tap an option'; $('txt').setAttribute('inputmode', 'text'); $('txt').setAttribute('autocomplete', 'off');
+  $('prog').hidden = false; await typing(450);
+  bot(`Thanks${name ? ', ' + esc(name) : ''}. I'll take you through the questions one at a time. Tap an option, or answer in your own words, and I'll check anything I'm unsure about.`, '', 'say');
+  ask();
+}
+function begin() {
+  stage = 'contact'; ci = 0; contact = {}; name = '';
+  A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
+  askContact(true);
+}
+function restart() { begin(); window.scrollTo(0, 0); }
+$('send').onclick = typed;
+$('txt').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); typed(); } });
+begin();
+</script>
