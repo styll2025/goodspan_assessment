@@ -105,6 +105,9 @@ body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;m
 @media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
 #plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--cream);z-index:10}
 html.planon,html.planon body{overflow:hidden}
+.mic.on{background:var(--pink);border-color:var(--plum);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 6px rgba(245,164,194,.35)}}
+@media (prefers-reduced-motion:reduce){.mic.on{animation:none}}
 </style>
 
 <header class="top"><div class="in">
@@ -114,9 +117,9 @@ html.planon,html.planon body{overflow:hidden}
 
 <div class="page">
   <section class="welcome" id="welcome" aria-labelledby="wh">
-    <p class="kick">Find your Good Span</p>
-    <h1 id="wh">Welcome.</h1>
-    <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
+    <p class="kick">Welcome</p>
+    <h1 id="wh">Let's find your Good Span.</h1>
+    <p class="lead">We'll ask you a few questions about your life today, what already works well and what you'd most like to change. You can type your answers or simply talk to us. It should take around 15 minutes.</p>
   </section>
 
   <div class="wrap" id="chat">
@@ -149,6 +152,9 @@ const ALLNEVER = { q40: "I don't smoke or vape" };
 const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.", q32: "These next four help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", q55: "Nearly there. These last ones set the limits your Good Span will respect." };
 const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
+// talk or type: chosen at the start, switchable at any point with the microphone button
+let mode = 'type', rec = null, listening = false, viaVoice = false;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const $ = id => document.getElementById(id), T = $('thread');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -186,18 +192,25 @@ async function ask(fast) {
   if (si !== secShown) { secShown = si; await typing(fast ? 0 : 350); sectionCard(si); }
   await typing(fast ? 0 : 450);
   if (row === 0 && LEAD[q.id]) bot(esc(LEAD[q.id]), '', 'lead');
+  let pre = null;
+  if (q.id === 'q1' && A.q0 && (A.q0.areas || []).length) {
+    pre = A.q0.areas.slice(0, q.max || 2).map(a => q.options.find(o => o.startsWith(a))).filter(Boolean);
+    bot(`From what you said, we've highlighted ${esc(list2(pre.map(label)))}. Change ${pre.length > 1 ? 'them' : 'it'} if you like.`, '', 'lead');
+  }
   if (q.type === 'grid') {
     // a grid becomes a short run of questions: the shared lead-in once, then each row asked on its own
     const own = (ROWQ[q.id] || {})[q.rows[row][0]];
     if (row === 0 && !ROWQ[q.id]) bot(esc(q.text) + (q.hint ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.rows.length > 1 ? `${q.rows.length} short parts` : '', 'lead');
     bot(esc(own || q.rows[row][1]), q.rows.length > 1 && !ROWQ[q.id] ? `${row + 1} of ${q.rows.length}` : '', 'q');
   } else bot(esc(q.text) + (q.hint && q.type !== 'habit' ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.type === 'multi' ? (q.max ? `Choose up to ${q.max}` : 'Choose all that apply') : '', 'q');
-  options(q); ready = true;
+  options(q, pre); ready = true;
   if (FIXED.has(q.id)) composer(false, 'Please choose from the options for this one, so we get it exactly right.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
   else composer(true, q.type === 'multi' ? 'Tap the options, or describe it in your own words.' : 'Tap an option, or type it your way.');
+  if (mode === 'talk' && !FIXED.has(q.id)) listen();
   scrollEnd();
 }
+const list2 = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 
 function options(q, pre) {
   clearChips(); sel = new Set(pre || []);
@@ -282,11 +295,15 @@ function interpret(q, raw) {
 
 async function typed() {
   const raw = $('txt').value.trim(); if (!raw || !ready) return;
+  stopListen();
   if (stage === 'contact') return typedContact(raw);
+  if (stage === 'open') return typedOpen(raw);
+  if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: q0.rows[row][1] } : q0;
   $('txt').value = ''; me(raw);
-  if (q.type === 'habit') { A[q.id] = { text: raw }; how[q.id] = 'typed'; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
+  const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
+  if (q.type === 'habit') { A[q.id] = { text: raw }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
   const v = interpret(q, raw);
   await typing(450);
   if (!v) { bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); return; }
@@ -294,7 +311,7 @@ async function typed() {
   bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
   const box = document.createElement('div'); box.className = 'chips';
   box.innerHTML = `<button type="button" class="chip go" data-y="1">Yes, that's right</button><button type="button" class="chip alt" data-n="1">Change it</button>`;
-  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.y) { if (q0.type === 'grid') { how[q0.id] = 'typed'; return answerGrid(q0, v[0], true); } answer(q, v, 'typed', true); } else { box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); scrollEnd(); } };
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.y) { if (q0.type === 'grid') { how[q0.id] = src; return answerGrid(q0, v[0], true); } answer(q, v, src, true); } else { box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); scrollEnd(); } };
   T.append(box); scrollEnd();
 }
 function habitChoice(q) {
@@ -313,16 +330,34 @@ function answerAll(q, text) {
 }
 function answerGrid(q, col, typedIn) {
   clearChips(); me(typedIn ? "Yes, that's right" : col);
-  A[q.id] = Object.assign({}, A[q.id], { [q.rows[row][0]]: col }); if (!typedIn && how[q.id] !== 'typed') how[q.id] = 'tapped';
+  A[q.id] = Object.assign({}, A[q.id], { [q.rows[row][0]]: col }); if (!typedIn && !['typed', 'spoken'].includes(how[q.id])) how[q.id] = 'tapped';
   if (++row < q.rows.length) return ask(); next();
 }
 async function next() {
   const q = QUESTIONS[qi]; row = 0; qi++;
-  // a short, scripted response where it adds something
+  const ack = ACK[q.id] && !FIXED.has(q.id) || q.id === 'q32' ? ACK[q.id](A) : '';
   if (q.id === 'q1') { const a = (A.q1 || []).map(label).filter(x => !/not sure/.test(x)); await typing(350); bot(a.length ? `Thanks${name ? ', ' + esc(name) : ''}. We'll ask about every area, and keep ${esc(a.join(' and '))} front of mind.` : `That's fine${name ? ', ' + esc(name) : ''}. We'll let your answers show where to start.`); }
-  if (q.id === 'q21' && A.q20 && A.q21) { const w = +A.q20 * (A.q21 === '150 or more' ? 150 : +A.q21); await typing(350); bot(`Thanks. That's around ${w} minutes a week${w >= 150 ? ', at or above the 150-minute guideline' : ''}.`); }
+  else if (ack) { await typing(350); bot(esc(ack)); }
   ask();
 }
+// one short line where it adds something: what already works, and the limits they've set. Rules only; no advice, no judgement.
+const G = (q, r) => (A[q] || {})[r];
+const ACK = {
+  q7: A => G('q7', 'veg') === '5 or more portions' ? 'Five or more portions of vegetables and fruit a day. You already have strong foundations here.'
+    : ['3–5', 'More than 5'].includes(G('q7', 'cooked')) ? "You cook most of your main meals at home. Useful to know: we'll build on that." : '',
+  q12: A => ({ '7-8': 'Seven to eight hours most nights. A good base to build from.', '8-9': 'Eight to nine hours most nights. A good base to build from.' })[A.q12] || '',
+  q17: A => Object.values(A.q17 || {}).filter(v => v === 'I do this now').length >= 4 ? "You already have quite a few good sleep habits in place. We'll build on them rather than asking you to start again." : '',
+  q21: A => { if (!A.q20 || !A.q21) return ''; const w = +A.q20 * (A.q21 === '150 or more' ? 150 : +A.q21); return w >= 150 ? `That's around ${w} minutes a week, already within the guideline. We won't ask you for more of the same.` : w ? `Thanks. That's around ${w} minutes a week.` : ''; },
+  q22: A => ({ '2': "You're already doing strength work twice a week. Useful to know: we'll build on that rather than asking you to start again.", '3 or more': "You're already doing strength work three or more times a week. We'll build on that rather than asking you to start again." })[A.q22] || '',
+  q24: A => ['8,000-9,999', '10,000 or more'].includes(A.q24) ? "That's a good number of steps on a typical day." : '',
+  q30: A => ['2 to 3 hours', 'More than 3 hours'].includes(A.q30) ? "Time in nature most weeks. We'll make sure your Good Span protects that." : '',
+  q32: A => Object.values(A.q32 || {}).some(v => /More than half|Nearly every/.test(v)) ? "Thank you for telling us. We'll keep it in mind." : '',
+  q34: A => (A.q34 || []).some(x => !NONE_WORDS.test(x)) ? "Good to know what already helps you. We'll build on it." : '',
+  q36: A => G('q36', 'meet') === 'Weekly or more' ? 'Seeing people you care about every week matters more than most people think.' : '',
+  q55: A => !A.q55 ? '' : A.q55 === 'It varies' ? "That's fine. We'll keep your Good Span light enough to fit the weeks that are busier." : `${label(A.q55)} a week. We'll plan for the lower end, so it stays realistic.`,
+  q56: A => /^Small/.test(A.q56 || '') ? 'Small, easy steps it is.' : /^A bigger/.test(A.q56 || '') ? "A bigger challenge it is, at a pace that's still safe for you." : '',
+  q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x)); return o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; },
+};
 
 function show(id, v) {
   const q = QUESTIONS.find(x => x.id === id);
@@ -333,13 +368,13 @@ function show(id, v) {
 }
 function finish() {
   composer(false, ''); clearChips(); $('comp').hidden = true;
-  const ids = QUESTIONS.filter(q => A[q.id] !== undefined), typedN = ids.filter(q => how[q.id] === 'typed').length;
+  const ids = QUESTIONS.filter(q => A[q.id] !== undefined), typedN = ids.filter(q => ['typed', 'spoken'].includes(how[q.id])).length;
   const d = document.createElement('section'); d.className = 'sum';
   d.innerHTML = `<div class="hd"><p class="ui">Find your Good Span · complete</p><h2>Thank you${name ? ', ' + esc(name) : ''}. Your Good Span is ready.</h2></div>
     <div class="bd"><p>We've used your answers to map your Starting Position, find where a small change could go a long way, and choose your first practices.</p>
     <div class="nextp"><button type="button" class="chip go" id="see">See my Good Span</button><button type="button" class="chip alt" id="again">Start again</button></div>
     <details><summary>Your answers (${ids.length} questions, ${typedN} in your own words)</summary>
-    ${SECTIONS.map(s => { const qs = ids.filter(q => q.s === s.id); return qs.length ? `<details><summary>${esc(s.title)}</summary><dl>${qs.map(q => `<dt>${esc(q.text)}</dt><dd>${esc(show(q.id, A[q.id]))}<span class="how">${how[q.id] === 'typed' ? 'In your words' : 'Tapped'}</span></dd>`).join('')}</dl></details>` : ''; }).join('')}</details></div>`;
+    ${SECTIONS.map(s => { const qs = ids.filter(q => q.s === s.id); return qs.length ? `<details><summary>${esc(s.title)}</summary><dl>${qs.map(q => `<dt>${esc(q.text)}</dt><dd>${esc(show(q.id, A[q.id]))}<span class="how">${how[q.id] === 'spoken' ? 'Spoken' : how[q.id] === 'typed' ? 'In your words' : 'Tapped'}</span></dd>`).join('')}</dl></details>` : ''; }).join('')}</details></div>`;
   T.append(d); $('again').onclick = restart; $('see').onclick = openPlan; progress(); scrollEnd();
 }
 // the member's Good Span, built from these answers by the same engine and rules as the standard assessment
@@ -368,19 +403,93 @@ async function askContact(fast) {
   composer(true, c[0] === 'name' ? 'Type your first name.' : ''); ready = true; scrollEnd(); if (!fast) $('txt').focus({ preventScroll: true });
 }
 async function typedContact(raw) {
-  const c = CONTACT[ci]; me(raw); $('txt').value = '';
+  const c = CONTACT[ci];
+  if (c[0] === 'email' && !raw.includes('@')) raw = raw.toLowerCase().replace(/\s+at\s+/g, '@').replace(/\s+dot\s+/g, '.').replace(/\s+/g, '');
+  me(raw); $('txt').value = '';
   if (c[0] === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(raw)) { await typing(350); bot("That doesn't look quite like an email address. Could you check it?"); scrollEnd(); return; }
   if (c[0] === 'mobile' && (raw.match(/\d/g) || []).length < 7) { await typing(350); bot('Could you check that number? It looks a little short.'); scrollEnd(); return; }
   contact[c[0]] = c[0] === 'name' ? raw.split(/\s+/)[0].replace(/^./, x => x.toUpperCase()) : raw;
   if (++ci < CONTACT.length) return askContact();
-  stage = 'questions'; name = contact.name || ''; ready = false;
+  name = contact.name || ''; ready = false;
   $('txt').placeholder = 'Type your answer, or tap an option'; $('txt').setAttribute('inputmode', 'text'); $('txt').setAttribute('autocomplete', 'off');
-  $('prog').hidden = false; await typing(450);
-  bot(`Thanks${name ? ', ' + esc(name) : ''}. I'll take you through the questions one at a time. Tap an option, or answer in your own words, and I'll check anything I'm unsure about.`, '', 'say');
+  askMode();
+}
+
+// ---- how they'd like to answer: talk or type (switch any time with the microphone)
+async function askMode() {
+  stage = 'mode'; await typing(450);
+  bot(`Thanks${name ? ', ' + esc(name) : ''}. How would you like to do this?`, 'You can switch at any point', 'q');
+  const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = '<button type="button" class="chip" data-m="talk">Talk</button><button type="button" class="chip" data-m="type">Type</button>';
+  box.onclick = async e => { const b = e.target.closest('[data-m]'); if (!b) return; box.remove(); me(b.textContent); mode = b.dataset.m; await typing(350);
+    if (mode === 'talk' && !SR) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
+    else bot(mode === 'talk' ? 'Talk it is. Tap the microphone any time to switch to typing.' : 'Typing it is. Tap the microphone any time if you would rather talk.');
+    askOpen(); };
+  T.append(box); composer(false, ''); scrollEnd();
+}
+
+// ---- the opening question, in their own words; one follow-up at most
+const OPEN_CHIPS = ['energy', 'sleep', 'stress', 'mood', 'fitness', 'ease', 'food', 'connection', 'health'];
+async function askOpen() {
+  stage = 'open'; ready = false; $('prog').hidden = false; await typing(500);
+  bot('If the next six months went really well, what would you most like to feel different?', 'Tap any that fit, or say it in your own words', 'q');
+  sel = new Set(); const box = document.createElement('div'); box.className = 'chips';
+  const TH = buildResult.THEMES;
+  const render = () => { box.innerHTML = OPEN_CHIPS.map(k => `<button type="button" class="chip" aria-pressed="${sel.has(k)}" data-k="${k}">${esc(cap1(TH[k].label))}</button>`).join('') + `<button type="button" class="chip alt" data-ns="1">I'm not sure yet</button><button type="button" class="chip go" data-go="1" ${sel.size ? '' : 'disabled'}>Done</button>`; };
+  render();
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return;
+    if (b.dataset.ns) { box.remove(); me("I'm not sure yet"); return openAnswered('', []); }
+    if (b.dataset.go) { box.remove(); const ks = [...sel]; const t = cap1(list2(ks.map(k => TH[k].label))); me(t); return openAnswered(t, ks, true); }
+    const k = b.dataset.k; sel.has(k) ? sel.delete(k) : sel.size < 3 && sel.add(k); render(); };
+  T.append(box); composer(true, 'Tap, type or talk.'); ready = true; if (mode === 'talk') listen(); scrollEnd();
+}
+const cap1 = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
+async function typedOpen(raw) {
+  $('txt').value = ''; clearChips(); me(raw);
+  const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
+  openAnswered(raw, buildResult.themesOf(raw), false, src);
+}
+async function openAnswered(text, ks, tapped, src) {
+  ready = false; composer(false, '');
+  const TH = buildResult.THEMES, areas = [...new Set(ks.flatMap(k => TH[k].areas))];
+  A.q0 = { text, themes: ks, areas }; how.q0 = tapped ? 'tapped' : (src || 'typed');
+  await typing(450);
+  if (!ks.length) { bot(text ? "Thank you, that's helpful to know. We'll keep it in mind as we go." : "That's fine. Your answers will show where to start."); return startQuestions(); }
+  const heard = cap1(list2(ks.map(k => TH[k].label)));
+  if (ks.length === 1) { bot(`${esc(heard)}: understood.`); return startQuestions(); }
+  bot(`${esc(heard)}: understood. If one of those improved first, which would make the biggest difference?`, '', 'q');
+  const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = ks.map(k => `<button type="button" class="chip" data-k="${k}">${esc(cap1(TH[k].label))}</button>`).join('');
+  box.onclick = async e => { const b = e.target.closest('[data-k]'); if (!b) return; box.remove(); me(b.textContent);
+    const k = b.dataset.k; A.q0.first = k; A.q0.areas = [...new Set([...TH[k].areas, ...areas])];
+    await typing(350); bot("Thank you. We'll keep that front of mind."); startQuestions(); };
+  T.append(box); scrollEnd();
+}
+async function startQuestions() {
+  stage = 'questions'; await typing(350);
+  bot("I'll take you through the rest one at a time. Tap an option, type or talk, and I'll check anything I'm unsure about.", '', 'say');
   ask();
 }
+
+// ---- voice: the browser's own speech recognition; what it hears goes through the same matching and confirmation as typing
+function listen() {
+  if (!SR || listening || $('txt').disabled) return;
+  rec = new SR(); rec.lang = 'en-GB'; rec.interimResults = true; rec.maxAlternatives = 1;
+  rec.onresult = e => { const t = [...e.results].map(r => r[0].transcript).join(' ').trim(); $('txt').value = t; if (e.results[e.results.length - 1].isFinal && t) { viaVoice = true; stopListen(); typed(); } };
+  rec.onerror = e => { stopListen(); if (/not-allowed|service-not-allowed|audio-capture/.test(e.error)) { mode = 'type'; $('hint').textContent = "We can't use the microphone here, so let's type for now."; } };
+  rec.onend = () => { listening = false; $('mic').classList.remove('on'); };
+  try { rec.start(); listening = true; $('mic').classList.add('on'); $('mic').setAttribute('aria-pressed', 'true'); $('hint').textContent = 'Listening. Speak your answer, or tap the microphone to type instead.'; } catch (err) { listening = false; }
+}
+function stopListen() { if (rec) { try { rec.abort(); } catch (err) {} } rec = null; listening = false; $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
+$('mic').onclick = () => {
+  if (listening) { stopListen(); mode = 'type'; $('hint').textContent = 'Typing. Tap the microphone any time to talk again.'; $('txt').focus(); return; }
+  if (!SR) { $('hint').textContent = "Voice isn't available in this browser, so please type for now."; return; }
+  mode = 'talk'; listen();
+};
+$('txt').addEventListener('keydown', () => { if (listening) { stopListen(); mode = 'type'; } });
+
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = '';
+  stage = 'contact'; ci = 0; contact = {}; name = ''; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }

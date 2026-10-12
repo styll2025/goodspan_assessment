@@ -18,7 +18,7 @@ answers (A)  ──►  toFeatures(A)  ──►  engine.plan()  ──►  buil
 | `core/profile.js` | One short, factual paragraph per pillar from the member's own answers (used for the Starting Position). |
 | `core/result.js` | **New.** `buildResult(name, answers, env)` applies the agreed plan structure and writes the page copy. |
 | `templates/result_page.tpl.html` | The result page. Placeholders: `__DATA__` (array of records from `buildResult`), `__IMG__` (pillar photos), fonts and logo. It still contains the hand-written copy for Inês, Marta and Hugo; any record with `gen: true` uses its own generated copy instead. |
-| `templates/conversation.tpl.html` | The conversational assessment. At the end, **See my Good Span** calls `buildResult` and shows the page in a full-screen frame. |
+| `templates/conversation.tpl.html` | The conversational assessment: welcome, talk or type, the opening question, then the 52 questions with short acknowledgements. At the end, **See my Good Span** calls `buildResult` and shows the page in a full-screen frame. |
 | `reference/` | The current built prototype and the hand-reviewed page for Inês, Marta and Hugo, for comparison. |
 
 ## Use
@@ -59,9 +59,59 @@ In the browser the same files load as plain scripts (`makeEngine` and `buildResu
    - "Something worth discussing", when they've felt anxious or low on more than half the days;
    - an area they asked for that needs a health professional's input first. The page never names a condition.
 
+## The conversation layer (templates/conversation.tpl.html)
+
+Controlled, not an open AI conversation: everything below is fixed rules and fixed wording.
+
+1. **Welcome**: "Let's find your Good Span…", then first name and email.
+2. **Talk or type**: the member chooses, and the microphone button switches at any point. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
+3. **Opening question**: "If the next six months went really well, what would you most like to feel different?" The member taps suggestions or answers in their own words. Their words are matched to themes (`THEMES` in `core/result.js`: energy, sleep, stress, mood, fitness, ease, food, connection, health).
+   - With two or more themes, the chat asks one follow-up: "If one of those improved first, which would make the biggest difference?"
+   - The matching areas are pre-selected on q1, so the member can confirm or change them.
+   - Stored as `A.q0 = { text, themes, areas, first }`; `toFeatures` ignores it, so the engine is unchanged.
+4. **Acknowledgements**: one short line after selected answers (`ACK` in the template), only for what already works and the limits they set, e.g. "You're already doing strength work twice a week…". There are none on health or safety questions; the anxious-or-low questions only get "Thank you for telling us."
+5. **Safety and health questions** (q4, q5, q5a, q5b, q6, q29, q32) can only be answered by tapping, never typed or spoken.
+
+## The opening of Your Good Span
+
+The opening gives the conclusion first and the reasoning later. `buildResult` returns `opening = { situation, lead, paras, starts, after, own }` in one of five situations:
+
+| situation | when | lead |
+|---|---|---|
+| `safety` | a symptom not yet checked by a doctor | "Hugo, you told us you want to improve your fitness. One thing comes first." |
+| `sensitive` | anxious or low on more than half the days | "Marta, your Good Span starts with what matters most to you: feeling better day to day." (or "thank you for being open with us") |
+| `priority` | they chose an area that is in focus | "…you told us you'd like to “sleep through the night”, so that's where we're starting." |
+| `unexpected` | what they chose is already going well, or needs a professional first | "…your answers point somewhere slightly different from where you might expect." |
+| `doing-well` / `start` | no choice; three or more areas going well (or not) | "Inês, you're already doing a lot right." / "…here's where we'd start." |
+
+Each opening uses a few variables: what matters to them, what already goes well, the main opportunity, one relevant opt-out ("You also told us meditation and journalling aren't for you…"), and when another focus area follows.
+
+The "Your Good Span starts with" line (`starts`) is calculated from the plan, never typed in: the number of practices, the area that comes first, and the weekly minutes.
+
+**Their own words** are quoted back only when:
+- the text is 4–80 characters;
+- it contains no numbers;
+- it mentions no conditions, symptoms, medicines, weight or self-harm, and no swearing (`ownWords()` in `core/result.js`);
+- it points to the area the plan starts with.
+
+Otherwise the page uses our wording. Goal reasons also use the member's voice: "You told us managing stress matters to you", not "You picked …".
+
+## Order of the result page
+
+1. Opening
+2. Starting Position
+3. Where a small change could go a long way
+4. First practices
+5. Six-month journey
+6. **Belonging and Meet your Pilot**: "Longevity is personal. It shouldn't be lonely." and **Book my Good Span Review**
+7. **Ways to continue after your Review**: what's included, then Self, Core and Concierge, explained but with no "Choose" buttons. The tier is decided with the Pilot.
+8. The science behind your plan
+
 ## Before launch
 
 - Safety rules and notice wording need professional review.
 - Fonts in `assets/` are the BST Bazaine **trial** files; swap in the licensed versions.
+- Voice: test speech recognition on the browsers your members use; when the app is hosted in a frame, the frame needs `allow="microphone"`.
+- The acknowledgement lines and the opening wording are fixed copy; review them with the team like any other copy.
 - Practice cards use library names (e.g. "Reframing") and library minute values; the hand-written titles and timings in the reviewed pages are not in the library yet.
 - If you later add AI for free-text understanding or voice transcription, keep any API key on a server, and review privacy first: health answers currently go only to the Google Sheet.
