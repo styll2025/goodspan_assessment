@@ -114,28 +114,35 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
    - Listening continues until a 1.5-second pause, up to 20 seconds, so answers aren't cut off mid-sentence.
    - The browser's top three guesses are kept.
    - The language is set with `window.GS_SPEECH_LANG` (default `en-GB`; `pt-PT` for Portuguese).
+   - While the member is talking, the page also keeps a short recording. That recording is only uploaded if step 3 is needed.
 2. **Rules (in the page).** Each guess is tried against the options. "No idea" and "not sure" pick a matching option ("I don't track my steps") or ask again, and are never read as zero.
-3. **AI matching (optional).** It runs only when the rules fail. The page sends the question, its options and what was said to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
+3. **Whisper, only when it is needed.** It runs when the member spoke and the rules could not place the answer (including when the browser heard nothing). The page sends the recording to `/api/transcribe`. That route calls OpenAI's transcriptions API with model `whisper-1`. You do not choose the model when you create the key; the route names it.
+   - Typed answers are not sent.
+   - The question wording and the option labels go with the recording as a hint, so words like "10,000" are easier to hear.
+   - The new transcript is tried with the rules, then with AI matching if that is on.
+   - If the secret is missing, the route answers `not_configured` and the page carries on without Whisper.
+4. **AI matching (optional).** It runs only when the rules still cannot place the answer. The page sends the question, its options and the transcript to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
    - The server and the page both reject anything that isn't on the list.
    - The member still confirms with "Is that right?".
    - The model can also read Portuguese answers.
-4. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
+5. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
 
-Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only and are blocked from the AI endpoint on both sides. Contact details are never sent.
+Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only. They are blocked from both `/api/interpret` and `/api/transcribe`. Contact details are never sent.
 
-**Turn AI matching on**
-- On the published assessment (https://thegoodspan-assessment.pages.dev/): the page already calls `/api/interpret`. Add the key in Cloudflare, not in GitHub and not in the page. Dashboard → Workers & Pages → **thegoodspan-assessment** → Settings → Variables and Secrets → Add. Name: `ANTHROPIC_API_KEY`. Type: Secret. Environment: Production (and Preview, if you use preview links). Save, then retry the latest deployment so the secret is picked up. Do not commit the key.
-- Locally, only if the project is on that computer: `ANTHROPIC_API_KEY=sk-... node server/dev-server.js`, then open http://localhost:8787. Each match is logged in the terminal with its timing. Without a key, the page runs on rules only.
+**Turn the keys on**
+- On the published assessment (https://thegoodspan-assessment.pages.dev/): the page already calls both routes. Add each key in Cloudflare, not in GitHub and not in the page. Dashboard → Workers & Pages → **thegoodspan-assessment** → Settings → Variables and Secrets → Add. Type: Secret. Environment: Production (and Preview, if you use preview links). Save, then retry the latest deployment so the secret is picked up. Do not commit the key.
+  - Name: `ANTHROPIC_API_KEY` for matching a transcript to an option.
+  - Name: `OPENAI_API_KEY` for Whisper. Optional override: `OPENAI_TRANSCRIBE_MODEL` (leave it unset to use `whisper-1`).
+- Locally, only if the project is on that computer: `ANTHROPIC_API_KEY=sk-... OPENAI_API_KEY=sk-... node server/dev-server.js`, then open http://localhost:8787. Each match and transcript is logged in the terminal. Without a key, that step stays off.
 - In your app:
-  1. Call `handleInterpret(body)` from `server/ai-interpret.js` in your own API route (Next.js, Express, Vercel or Netlify function).
-  2. Set `window.GS_AI_URL` to that route before the conversation script loads.
-- Keep the key on the server only.
-- Model: set `GS_AI_MODEL` (default `claude-haiku-4-5`).
-- `node test/ai-interpret.test.js` checks the guard rails without a key.
+  1. Call `handleInterpret(body)` from `server/ai-interpret.js` for matching, and `handleTranscribe(body)` from `server/transcribe.js` for Whisper.
+  2. Set `window.GS_AI_URL` and `window.GS_TRANSCRIBE_URL` to those routes before the conversation script loads.
+- Keep both keys on the server only.
+- Model for matching: set `GS_AI_MODEL` (default `claude-haiku-4-5`).
+- `node test/ai-interpret.test.js` and `node test/transcribe.test.js` check the guard rails without a key.
 
 **Not done yet**
-- **Consent:** to be added once the prototype is agreed (answers pass through the AI provider when matching is on).
-- **A dedicated transcription service:** consider one if the browser's speech recognition is still too weak after these changes. Several accept the question's options as hints.
+- **Consent:** to be added once the prototype is agreed. When matching is on, the transcript passes through Claude. When Whisper is needed, the spoken recording passes through OpenAI. Tap-only health questions do neither.
 
 ## Before launch
 
@@ -144,4 +151,4 @@ Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only and ar
 - Voice: test speech recognition on the browsers your members use; when the app is hosted in a frame, the frame needs `allow="microphone"`.
 - The acknowledgement lines and the opening wording are fixed copy; review them with the team like any other copy.
 - Practice cards use library names (e.g. "Reframing") and library minute values; the hand-written titles and timings in the reviewed pages are not in the library yet.
-- If you later add AI for free-text understanding or voice transcription, keep any API key on a server, and review privacy first: health answers currently go only to the Google Sheet.
+- Keep `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on the server. Health answers are tap-only and are not sent to either API. The Google Sheet still receives the assessment answers.
