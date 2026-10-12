@@ -108,6 +108,7 @@ html.planon,html.planon body{overflow:hidden}
 .mic.on{background:var(--pink);border-color:var(--plum);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(245,164,194,.35)}}
 @media (prefers-reduced-motion:reduce){.mic.on{animation:none}}
+.thinking{color:var(--muted);font-size:15px}
 </style>
 
 <header class="top"><div class="in">
@@ -1640,7 +1641,11 @@ const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.
 const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
 // talk or type: chosen at the start, switchable at any point with the microphone button
-let mode = 'type', rec = null, listening = false, viaVoice = false;
+let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
+// settings: the language the browser listens for, and the optional AI matching endpoint (empty = rules only)
+const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
+const AI_URL = window.GS_AI_URL || '';
+const SILENCE_MS = 1500, MAX_LISTEN_MS = 20000;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const $ = id => document.getElementById(id), T = $('thread');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -1671,7 +1676,7 @@ function sectionCard(i) {
 }
 
 async function ask(fast) {
-  ready = false;
+  ready = false; misses = 0;
   while (qi < QUESTIONS.length && !visible(QUESTIONS[qi])) qi++;
   progress();
   if (qi >= QUESTIONS.length) return finish();
@@ -1728,13 +1733,14 @@ function options(q, pre) {
 }
 
 // ---- matching a typed answer to the existing options (stand-in for the AI step; it always confirms) ----
-const NUM = { couple: 2, few: 3, zero: 0, none: 0, no: 0, never: 0, one: 1, once: 1, a: null, two: 2, twice: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
+const NUM = { couple: 2, few: 3, zero: 0, none: 0, never: 0, one: 1, once: 1, a: null, two: 2, twice: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12 };
 function numIn(t) {
   t = t.replace(/(\d),(\d{3})/g, '$1$2');
   let m = t.match(/(\d+(?:\.\d+)?)\s*k\b/); if (m) return +m[1] * 1000;
   if (/half an hour|half hour/.test(t)) return 30;
   m = t.match(/\d+(?:\.\d+)?/); let n = m ? +m[0] : null;
   if (n == null) for (const w of t.split(/[^a-z]+/)) if (NUM[w] != null) { n = NUM[w]; break; }
+  if (n == null && /\bno (days?|times?|hours?|minutes?|drinks?|portions?|meals?|nights?)\b/.test(t)) n = 0;
   if (n == null && /\ban hour\b/.test(t)) n = 1;
   if (n != null && /hour/.test(t) && !/min/.test(t) && /minute|min\b/i.test(QUESTIONS[qi].text)) n *= 60;
   return n;
@@ -1755,6 +1761,8 @@ function interpret(q, raw) {
   const t = raw.toLowerCase().trim();
   if (q.type === 'habit') return raw.trim() ? [raw.trim()] : null;
   const opts = q.options, none = opts.find(o => NONE_WORDS.test(o));
+  // "no idea", "not sure": the option that says so, if there is one; otherwise ask again (never guess)
+  if (/\b(no idea|not sure|unsure|don'?t know|dunno|hard to say|can'?t say)\b/.test(t.replace(/[’]/g, "'"))) { const u = opts.find(o => /not sure|don['’]t know|don['’]t track/i.test(o)); return u ? [u] : null; }
   if (none && /^(none|nothing|no\b|not really|nope)/.test(t)) return [none];
   if (/prefer not/.test(t)) { const p = opts.find(o => /^Prefer not/.test(o)); if (p) return [p]; }
   // the option's own wording typed in full wins (e.g. "1-2 hours")
@@ -1787,13 +1795,18 @@ async function typed() {
   if (stage === 'open') return typedOpen(raw);
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
-  const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: q0.rows[row][1] } : q0;
+  const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
   $('txt').value = ''; me(raw);
   const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
   if (q.type === 'habit') { A[q.id] = { text: raw }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
-  const v = interpret(q, raw);
+  const heard = src === 'spoken' ? [raw, ...alts.filter(a => a && a !== raw)] : [raw]; alts = [];
+  let v = null; for (const t of heard) { v = interpret(q, t); if (v) break; }
   await typing(450);
-  if (!v) { bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); return; }
+  if (!v && AI_URL) { const w = bot('<span class="thinking">One moment…</span>'); v = await aiInterpret(q, raw, heard.slice(1)); w.remove(); }
+  if (!v) {
+    if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
+    bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen(); return;
+  }
   clearChips();
   bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
   const box = document.createElement('div'); box.className = 'chips';
@@ -1934,7 +1947,13 @@ const cap1 = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 async function typedOpen(raw) {
   $('txt').value = ''; clearChips(); me(raw);
   const src = viaVoice ? 'spoken' : 'typed'; viaVoice = false;
-  openAnswered(raw, buildResult.themesOf(raw), false, src);
+  let ks = buildResult.themesOf([raw, ...alts].join(' ')); alts = [];
+  if (!ks.length && AI_URL) {
+    const TH = buildResult.THEMES, keys = Object.keys(TH);
+    const v = await aiInterpret({ id: 'q0', type: 'multi', max: 3, text: 'If the next six months went really well, what would you most like to feel different?', options: keys.map(k => TH[k].label) }, raw, []);
+    if (v) ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean);
+  }
+  openAnswered(raw, ks, false, src);
 }
 async function openAnswered(text, ks, tapped, src) {
   ready = false; composer(false, '');
@@ -1961,13 +1980,43 @@ async function startQuestions() {
 // ---- voice: the browser's own speech recognition; what it hears goes through the same matching and confirmation as typing
 function listen() {
   if (!SR || listening || $('txt').disabled) return;
-  rec = new SR(); rec.lang = 'en-GB'; rec.interimResults = true; rec.maxAlternatives = 1;
-  rec.onresult = e => { const t = [...e.results].map(r => r[0].transcript).join(' ').trim(); $('txt').value = t; if (e.results[e.results.length - 1].isFinal && t) { viaVoice = true; stopListen(); typed(); } };
-  rec.onerror = e => { stopListen(); if (/not-allowed|service-not-allowed|audio-capture/.test(e.error)) { mode = 'type'; $('hint').textContent = "We can't use the microphone here, so let's type for now."; } };
-  rec.onend = () => { listening = false; $('mic').classList.remove('on'); };
-  try { rec.start(); listening = true; $('mic').classList.add('on'); $('mic').setAttribute('aria-pressed', 'true'); $('hint').textContent = 'Listening. Speak your answer, or tap the microphone to type instead.'; } catch (err) { listening = false; }
+  rec = new SR(); rec.lang = SPEECH_LANG; rec.interimResults = true; rec.continuous = true; rec.maxAlternatives = 3;
+  let finals = [], silence = null, cap = null, done = false;
+  const finish = () => {
+    if (done) return; done = true; clearTimeout(silence); clearTimeout(cap);
+    const text = $('txt').value.trim(); stopListen();
+    if (!text) return;
+    // other versions of what was said: each final segment's second and third guesses
+    alts = [1, 2].map(k => finals.map(r => (r[k] || r[0]).transcript).join(' ').trim()).filter(Boolean);
+    viaVoice = true; typed();
+  };
+  rec.onresult = e => {
+    finals = [...e.results].filter(r => r.isFinal);
+    $('txt').value = [...e.results].map(r => r[0].transcript).join(' ').replace(/\s+/g, ' ').trim();
+    clearTimeout(silence); silence = setTimeout(finish, SILENCE_MS);   // wait for a pause before sending
+  };
+  rec.onerror = e => { if (/not-allowed|service-not-allowed|audio-capture/.test(e.error)) { done = true; stopListen(); mode = 'type'; $('hint').textContent = "We can't use the microphone here, so let's type for now."; } };
+  rec.onend = () => { if (!done && $('txt').value.trim()) finish(); else { listening = false; $('mic').classList.remove('on'); } };
+  try { rec.start(); listening = true; cap = setTimeout(finish, MAX_LISTEN_MS); $('mic').classList.add('on'); $('mic').setAttribute('aria-pressed', 'true'); $('hint').textContent = 'Listening. Take your time; we send it after a short pause. Tap the microphone to type instead.'; } catch (err) { listening = false; }
 }
-function stopListen() { if (rec) { try { rec.abort(); } catch (err) {} } rec = null; listening = false; $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
+function stopListen() { if (rec) { const r = rec; rec = null; r.onend = null; r.onresult = null; try { r.abort(); } catch (err) {} } listening = false; $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
+
+// ---- optional AI matching: only when the rules can't place an answer. It may only return options from the list;
+// the member always confirms. Health and safety questions are never sent (they are tap-only).
+async function aiInterpret(q, raw, others) {
+  if (!AI_URL || FIXED.has(q.id)) return null;
+  try {
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
+    const res = await fetch(AI_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
+      body: JSON.stringify({ questionId: q.id, question: q.text, type: q.type === 'multi' ? 'multi' : 'single', max: q.max || null, options: q.options, answer: raw.slice(0, 500), alternatives: (others || []).slice(0, 2).map(a => a.slice(0, 500)) }) });
+    clearTimeout(t);
+    if (!res.ok) return null;
+    const out = await res.json();
+    const v = (out.answer || []).filter(o => q.options.includes(o));   // never trust anything outside the list
+    if (!v.length || out.unclear) return null;
+    return q.type === 'multi' ? v.slice(0, q.max || 99) : [v[0]];
+  } catch (err) { return null; }
+}
 $('mic').onclick = () => {
   if (listening) { stopListen(); mode = 'type'; $('hint').textContent = 'Typing. Tap the microphone any time to talk again.'; $('txt').focus(); return; }
   if (!SR) { $('hint').textContent = "Voice isn't available in this browser, so please type for now."; return; }
