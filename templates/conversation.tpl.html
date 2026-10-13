@@ -1,6 +1,6 @@
 <title>Good Span Conversation</title>
 <style>
-/* Layout: the assessment's own welcome screen, then one calm conversation column. Each section opens with a card in its pillar colour (light blue for the non-pillar sections); questions are set large in the display face, the member's answers as plum pills, options as soft chips. Brand: The Good Span identity. */
+/* Layout: the assessment's own welcome screen, then one calm conversation column. The page sits on light blue with plum type (the contrast matrix rates that pair AAA). Each section opens with a card in its pillar colour (white for the non-pillar sections); questions are set large in the display face, the member's answers as plum pills, options as soft chips. Brand: The Good Span identity. */
 @font-face{font-family:"BST Bazaine";src:url(__F_THIN__) format("opentype");font-weight:200;font-display:swap}
 @font-face{font-family:"BST Bazaine";src:url(__F_LIGHT__) format("opentype");font-weight:300;font-display:swap}
 @font-face{font-family:"BST Bazaine";src:url(__F_REG__) format("opentype");font-weight:400;font-display:swap}
@@ -13,7 +13,7 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-html,body{background:var(--cream);color:var(--plum)}
+html,body{background:var(--blue);color:var(--plum)}
 body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;margin:0}
 .top{border-bottom:1px solid var(--plum);padding-inline:16px}
 .top .in{max-width:1040px;margin:0 auto;padding-block:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
@@ -39,7 +39,7 @@ body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;m
 /* conversation */
 .wrap{max-width:760px;margin:0 auto;padding-block:24px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .thread{display:flex;flex-direction:column;gap:14px;min-width:0}
-.sec{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:center;margin-top:10px;background:var(--sc,var(--blue));color:var(--st,var(--plum))}
+.sec{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:center;margin-top:10px;background:var(--sc,var(--white));color:var(--st,var(--plum))}
 .sec>*{position:relative;z-index:1}
 .sec>.arcs{position:absolute;inset:0;z-index:0;pointer-events:none}
 .sec .arcs svg{position:absolute;right:-70px;top:-80px;width:280px;height:280px}
@@ -75,7 +75,7 @@ body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;m
 .chip.alt{background:transparent;border-color:var(--plum)}
 .chip.go:disabled{opacity:.3;cursor:default}
 .chip:focus-visible,.send:focus-visible,.mic:focus-visible,#txt:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
-.comp{position:sticky;bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(to bottom,rgba(255,242,234,0),var(--cream) 30%);padding-block:18px 8px;display:grid;gap:6px}
+.comp{position:sticky;bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(to bottom,rgba(209,230,233,0),var(--blue) 30%);padding-block:18px 8px;display:grid;gap:6px}
 .inrow{min-width:0;position:relative;display:flex;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 20px}
 .inrow:focus-within{border-color:var(--plum)}
 #txt{flex:1;min-width:0;width:0;border:0;background:transparent;font-family:var(--display);font-size:17px;font-weight:300;color:var(--plum);padding:9px 0}
@@ -103,7 +103,7 @@ body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;m
 .stat span{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
 @media (max-width:560px){.sec>.arcs{display:none}.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
 @media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
-#plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--cream);z-index:10}
+#plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--blue);z-index:10}
 html.planon,html.planon body{overflow:hidden}
 .mic.on{background:var(--pink);border-color:var(--plum);animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 6px rgba(245,164,194,.35)}}
