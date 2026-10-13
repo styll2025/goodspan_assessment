@@ -13,7 +13,7 @@ const Q = { questionId: 'q24', question: 'How many steps do you take on a typica
   r = await handleInterpret(Q, { apiKey: 'x', fetchImpl: fake({ options: [2], unclear: true }) });
   ok(r.json.unclear && !r.json.answer.length, 'unclear returns nothing');
   r = await handleInterpret(Object.assign({}, Q, { questionId: 'q5' }), { apiKey: 'x', fetchImpl: fake({ options: [1], unclear: false }) });
-  ok(r.status === 400, 'health and safety questions are refused');
+  ok(r.status === 200 && r.json.answer[0] === 'Fewer than 5,000', 'a health question can be matched, and only to a listed option');
   r = await handleInterpret(Q, { apiKey: '', fetchImpl: fake({}) });
   ok(r.status === 503, 'no key: switched off');
   const req = buildRequest({ question: Q.question, type: 'single', max: null, options: Q.options, answer: 'I work nine to five', alternatives: [], model: '' });

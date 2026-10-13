@@ -67,10 +67,10 @@ Controlled, not an open AI conversation: everything below is fixed rules and fix
 2. **Talk or type**: the member chooses, and the microphone button switches at any point. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
 3. **Opening question**: "If the next six months went really well, what would you most like to feel different?" The member taps suggestions or answers in their own words. Their words are matched to themes (`THEMES` in `core/result.js`: energy, sleep, stress, mood, fitness, ease, food, connection, health).
    - With two or more themes, the chat asks one follow-up: "If one of those improved first, which would make the biggest difference?"
-   - The matching areas are pre-selected on q1, so the member can confirm or change them.
+   - The focus areas on the next question start with nothing selected.
    - Stored as `A.q0 = { text, themes, areas, first }`; `toFeatures` ignores it, so the engine is unchanged.
 4. **Acknowledgements**: one short line after selected answers (`ACK` in the template), only for what already works and the limits they set, e.g. "You're already doing strength work twice a week…". There are none on health or safety questions; the anxious-or-low questions only get "Thank you for telling us."
-5. **Safety and health questions** (q4, q5, q5a, q5b, q6, q29, q32) can only be answered by tapping, never typed or spoken.
+5. **Safety and health questions** (q4, q5, q5a, q5b, q6, q29, q32) can be tapped or spoken. A spoken or typed answer is always read back ("I've noted …. Is that right?") before it is saved. Tapping an option is kept as chosen.
 
 ## The opening of Your Good Span
 
@@ -121,12 +121,12 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
    - If the secret is missing, the route answers `not_configured` and the page uses the browser's transcript.
 4. **AI matching.** It runs when the answer is not already the option's own words, so a paraphrase can still land on an option. The page sends the question, its options and what was said to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
    - The server and the page both reject anything that isn't on the list.
-   - If they said the option itself, or a number that fits only one band, that match is accepted straight away and the meaning check is skipped.
+   - If they said the option itself, or a number that fits only one band, that match is accepted straight away and the meaning check is skipped. A health question is the exception: it is always read back.
    - A paraphrase still asks "Is that right?".
    - The model can also read Portuguese answers.
 5. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
 
-Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only. They are blocked from both `/api/interpret` and `/api/transcribe`. Contact details are never sent.
+Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) can be spoken. The recording and, when the words are not the option, the transcript are sent the same way as any other spoken answer, and the page asks "Is that right?" before saving. Contact details are never sent.
 
 **Turn the keys on**
 - On the published assessment (https://thegoodspan-assessment.pages.dev/): the page already calls both routes. Add each key in Cloudflare, not in GitHub and not in the page. Dashboard → Workers & Pages → **thegoodspan-assessment** → Settings → Variables and Secrets → Add. Type: Secret. Environment: Production (and Preview, if you use preview links). Save, then retry the latest deployment so the secret is picked up. Do not commit the key.
@@ -141,7 +141,7 @@ Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only. They 
 - `node test/ai-interpret.test.js` and `node test/transcribe.test.js` check the guard rails without a key.
 
 **Not done yet**
-- **Consent:** to be added once the prototype is agreed. When matching is on, the transcript passes through Claude. Every spoken answer's recording passes through OpenAI. Tap-only health questions do neither.
+- **Consent:** to be added once the prototype is agreed. When matching is on, the transcript passes through Claude. Every spoken answer's recording, including a health question, passes through OpenAI.
 
 ## Before launch
 
@@ -150,4 +150,4 @@ Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only. They 
 - Voice: test speech recognition on the browsers your members use; when the app is hosted in a frame, the frame needs `allow="microphone"`.
 - The acknowledgement lines and the opening wording are fixed copy; review them with the team like any other copy.
 - Practice cards use library names (e.g. "Reframing") and library minute values; the hand-written titles and timings in the reviewed pages are not in the library yet.
-- Keep `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on the server. Health answers are tap-only and are not sent to either API. The Google Sheet still receives the assessment answers.
+- Keep `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on the server. A spoken health answer is sent the same way as any other spoken answer, and it is only saved after the member confirms it. The Google Sheet still receives the assessment answers.
