@@ -155,7 +155,7 @@ const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
 // talk or type: chosen at the start, switchable at any point with the microphone button
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
-let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false;
+let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false, pending = null;
 // settings: the language the browser listens for, optional AI matching, and Whisper for a spoken answer the rules could not place
 const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
 const AI_URL = window.GS_AI_URL || '';
@@ -327,9 +327,26 @@ function takeAnswer(q0, q, v, src) {
   }
   A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
 }
-function missed(q) {
-  if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
-  bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen();
+function saidYes(t) {
+  t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
+  return /^(yes|yeah|yep|yup|correct|that's right|that is right|yes that's right|yes that is right|yes please)$/.test(t);
+}
+function saidNo(t) {
+  t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
+  return /^(no|nope|nah|change|change it|wrong|that's wrong|that is wrong|not quite)$/.test(t);
+}
+function missed(q0) {
+  if (++misses >= 2) {
+    pending = null; stopListen(); clearChips();
+    bot("Let's make this one easy: tap the option that fits best.");
+    options(q0);
+    composer(false, 'Tap the one that fits best.');
+    scrollEnd();
+    return;
+  }
+  bot("I didn't quite catch that. Could you say it another way, or tap one of the options?");
+  scrollEnd();
+  if (mode === 'talk') listen();
 }
 
 async function typed() {
@@ -343,6 +360,12 @@ async function typed() {
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
+  if (pending && raw && (saidYes(raw) || saidNo(raw))) {
+    $('txt').value = '';
+    const yes = saidYes(raw), p = pending; pending = null;
+    if (!yes) me(raw);
+    return yes ? p.accept() : p.redo();
+  }
   $('txt').value = '';
   const src = spoke ? 'spoken' : 'typed';
   let said = raw, fromWhisper = false;
@@ -352,7 +375,13 @@ async function typed() {
     w.remove();
     if (text) { said = text; fromWhisper = true; }
   }
-  if (!said) return missed(q);
+  if (!said) return missed(q0);
+  if (pending && (saidYes(said) || saidNo(said))) {
+    const yes = saidYes(said), p = pending; pending = null;
+    if (!yes) me(said);
+    return yes ? p.accept() : p.redo();
+  }
+  if (pending) { pending = null; clearChips(); }
   me(said);
   if (q.type === 'habit') { A[q.id] = { text: said }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
   const browserAlts = alts.filter(a => a && a !== raw); alts = [];
@@ -370,14 +399,21 @@ async function typed() {
   }
   if (!v && fromWhisper && raw && raw !== said) { v = interpret(q, raw); if (v) used = raw; }
   if (v) await typing(200);
-  if (!v) return missed(q);
+  if (!v) return missed(q0);
   if (spoke && !fromAi && obviousMatch(q, used, v)) return takeAnswer(q0, q, v, src);
+  misses = 0;
   clearChips();
   bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
   const box = document.createElement('div'); box.className = 'chips';
   box.innerHTML = `<button type="button" class="chip go" data-y="1">Yes, that's right</button><button type="button" class="chip alt" data-n="1">Change it</button>`;
-  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.y) { if (q0.type === 'grid') { how[q0.id] = src; return answerGrid(q0, v[0], true); } answer(q, v, src, true); } else { box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); scrollEnd(); } };
-  T.append(box); scrollEnd();
+  const accept = () => { pending = null; if (q0.type === 'grid') { how[q0.id] = src; return answerGrid(q0, v[0], true); } answer(q, v, src, true); };
+  const redo = () => { pending = null; box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); composer(true, 'Tap an option, or say it again.'); scrollEnd(); if (mode === 'talk') listen(); };
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; b.dataset.y ? accept() : redo(); };
+  pending = { accept, redo };
+  T.append(box);
+  composer(true, "Say yes if that's right, or change it.");
+  scrollEnd();
+  if (mode === 'talk') listen();
 }
 function habitChoice(q) {
   clearChips(); const box = document.createElement('div'); box.className = 'chips';
@@ -696,7 +732,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }
