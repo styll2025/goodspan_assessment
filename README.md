@@ -18,7 +18,7 @@ answers (A)  ──►  toFeatures(A)  ──►  engine.plan()  ──►  buil
 | `core/profile.js` | One short, factual paragraph per pillar from the member's own answers (used for the Starting Position). |
 | `core/result.js` | **New.** `buildResult(name, answers, env)` applies the agreed plan structure and writes the page copy. |
 | `templates/result_page.tpl.html` | The result page. Placeholders: `__DATA__` (array of records from `buildResult`), `__IMG__` (pillar photos), fonts and logo. It still contains the hand-written copy for Inês, Marta and Hugo; any record with `gen: true` uses its own generated copy instead. |
-| `templates/conversation.tpl.html` | The conversational assessment: welcome, talk or type, the opening question, then the 52 questions with short acknowledgements. At the end, **See my Good Span** calls `buildResult` and shows the page in a full-screen frame. |
+| `templates/conversation.tpl.html` | The conversational assessment: welcome, the opening question, then the 52 questions with short acknowledgements. At the end, **See my Good Span** calls `buildResult` and shows the page in a full-screen frame. |
 | `reference/` | The current built prototype and the hand-reviewed page for Inês, Marta and Hugo, for comparison. |
 
 ## Use
@@ -63,14 +63,13 @@ In the browser the same files load as plain scripts (`makeEngine` and `buildResu
 
 Controlled, not an open AI conversation: everything below is fixed rules and fixed wording.
 
-1. **Welcome**: "Let's find your Good Span…", then first name and email.
-2. **Talk or type**: the member chooses, and the microphone button switches at any point. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
-3. **Opening question**: "If the next six months went really well, what would you most like to feel different?" The member taps suggestions or answers in their own words. Their words are matched to themes (`THEMES` in `core/result.js`: energy, sleep, stress, mood, fitness, ease, food, connection, health).
+1. **Welcome**: "Let's find your Good Span…", then first name and email. The welcome says they can type or talk. The microphone starts talking at any point, and typing or tapping an option returns to the box. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
+2. **Opening question**: "If the next six months went really well, what would you most like to feel different?" The member taps suggestions or answers in their own words. Their words are matched to themes (`THEMES` in `core/result.js`: energy, sleep, stress, mood, fitness, ease, food, connection, health).
    - With two or more themes, the chat asks one follow-up: "If one of those improved first, which would make the biggest difference?"
    - The focus areas on the next question start with nothing selected.
    - Stored as `A.q0 = { text, themes, areas, first }`; `toFeatures` ignores it, so the engine is unchanged.
-4. **Acknowledgements**: one short line after selected answers (`ACK` in the template), only for what already works and the limits they set, e.g. "You're already doing strength work twice a week…". There are none on health or safety questions; the anxious-or-low questions only get "Thank you for telling us."
-5. **Safety and health questions** (q4, q5, q5a, q5b, q6, q29, q32) can be tapped or spoken. A spoken or typed answer is always read back ("I've noted …. Is that right?") before it is saved. Tapping an option is kept as chosen.
+3. **Acknowledgements**: one short line after selected answers (`ACK` in the template), only for what already works and the limits they set, e.g. "You're already doing strength work twice a week…". There are none on health or safety questions; the anxious-or-low questions only get "Thank you for telling us."
+4. **Safety and health questions** (q4, q5, q5a, q5b, q6, q29, q32) can be tapped or spoken. A spoken or typed answer is always read back ("I've noted …. Is that right?") before it is saved. Tapping an option is kept as chosen.
 
 ## The opening of Your Good Span
 

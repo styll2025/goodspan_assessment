@@ -153,7 +153,7 @@ const ALLNEVER = { q40: "I don't smoke or vape" };
 const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.", q32: "These next four help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", q55: "Nearly there. These last ones set the limits your Good Span will respect." };
 const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
-// talk or type: chosen at the start, switchable at any point with the microphone button
+// talk or type: the microphone starts talking, and typing or tapping returns to the box
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
 let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false, pending = null;
 // settings: the language the browser listens for, optional AI matching, and Whisper for a spoken answer the rules could not place
@@ -522,20 +522,8 @@ async function typedContact(raw) {
   if (++ci < CONTACT.length) return askContact();
   name = contact.name || ''; ready = false;
   $('txt').placeholder = 'Type your answer, or tap an option'; $('txt').setAttribute('inputmode', 'text'); $('txt').setAttribute('autocomplete', 'off');
-  askMode();
-}
-
-// ---- how they'd like to answer: talk or type (switch any time with the microphone)
-async function askMode() {
-  stage = 'mode'; await typing(450);
-  bot(`Thanks${name ? ', ' + esc(name) : ''}. How would you like to do this?`, 'You can switch at any point', 'q');
-  const box = document.createElement('div'); box.className = 'chips';
-  box.innerHTML = '<button type="button" class="chip" data-m="talk">Talk</button><button type="button" class="chip" data-m="type">Type</button>';
-  box.onclick = async e => { const b = e.target.closest('[data-m]'); if (!b) return; box.remove(); me(b.textContent); mode = b.dataset.m; await typing(350);
-    if (mode === 'talk' && !canTalk()) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
-    else bot(mode === 'talk' ? 'Talk it is. Tap the microphone any time to switch to typing.' : 'Typing it is. Tap the microphone any time if you would rather talk.');
-    askOpen(); };
-  T.append(box); composer(false, ''); scrollEnd();
+  composer(false, '');
+  askOpen();
 }
 
 // ---- the opening question, in their own words; one follow-up at most
