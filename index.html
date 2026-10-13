@@ -1852,6 +1852,7 @@ async function typed() {
   if ((!raw && !clip) || !ready) return;
   stopListen();
   if (stage === 'contact') { if (raw) return typedContact(raw); return; }
+  if (stage === 'mode') return typedMode(raw, clip, spoke);
   if (stage === 'open') return typedOpen(raw, clip, spoke);
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
@@ -2018,11 +2019,36 @@ async function askMode() {
   bot(`Thanks${name ? ', ' + esc(name) : ''}. How would you like to do this?`, 'You can switch at any point', 'q');
   const box = document.createElement('div'); box.className = 'chips';
   box.innerHTML = '<button type="button" class="chip" data-m="talk">Talk</button><button type="button" class="chip" data-m="type">Type</button>';
-  box.onclick = async e => { const b = e.target.closest('[data-m]'); if (!b) return; box.remove(); me(b.textContent); mode = b.dataset.m; await typing(350);
-    if (mode === 'talk' && !canTalk()) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
-    else bot(mode === 'talk' ? 'Talk it is. Tap the microphone any time to switch to typing.' : 'Typing it is. Tap the microphone any time if you would rather talk.');
-    askOpen(); };
-  T.append(box); composer(false, ''); scrollEnd();
+  box.onclick = async e => { const b = e.target.closest('[data-m]'); if (!b) return; box.remove(); me(b.textContent); applyMode(b.dataset.m); };
+  T.append(box); composer(true, 'Tap one, or say talk or type.'); ready = true; scrollEnd();
+  if (mode === 'talk') listen();
+}
+function chooseMode(raw) {
+  const t = String(raw || '').toLowerCase().replace(/[’']/g, "'").replace(/[^a-z'\s]/g, ' ').replace(/\s+/g, ' ').trim();
+  const talk = /\b(talk|talking|speak|speaking|voice|microphone|aloud|out loud)\b/.test(t);
+  const type = /\b(type|typing|write|writing|keyboard)\b/.test(t);
+  if (talk === type) return null;
+  return talk ? 'talk' : 'type';
+}
+async function applyMode(pick) {
+  mode = pick; await typing(350);
+  if (mode === 'talk' && !canTalk()) { mode = 'type'; bot("Voice isn't available in this browser, so let's type for now. You can tap the microphone any time to try again."); }
+  else bot(mode === 'talk' ? 'Talk it is. Tap the microphone any time to switch to typing.' : 'Typing it is. Tap the microphone any time if you would rather talk.');
+  askOpen();
+}
+async function typedMode(raw, clip, spoke) {
+  $('txt').value = '';
+  let said = raw;
+  if (spoke && clip && transcribeOn) {
+    const w = bot('<span class="thinking">One moment…</span>');
+    const text = await whisperText({ id: 'qmode', text: 'How would you like to do this? Talk or type.', options: ['Talk', 'Type'] }, clip, true);
+    w.remove();
+    if (text) said = text;
+  }
+  if (!said) { bot("I didn't quite catch that. Say talk or type, or tap one."); scrollEnd(); if (mode === 'talk') listen(); return; }
+  const pick = chooseMode(said);
+  if (!pick) { me(said); bot('Say talk or type, or tap one of those.'); scrollEnd(); if (mode === 'talk') listen(); return; }
+  clearChips(); me(said); applyMode(pick);
 }
 
 // ---- the opening question, in their own words; one follow-up at most
