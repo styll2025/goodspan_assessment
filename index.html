@@ -1873,18 +1873,18 @@ async function typed() {
   if (q.type === 'habit') { A[q.id] = { text: said }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
   const browserAlts = alts.filter(a => a && a !== raw); alts = [];
   let v = null, fromAi = false, used = said;
-  const whisperHit = fromWhisper ? interpret(q, said) : null;
-  const browserHit = raw && raw !== said ? interpret(q, raw) : (fromWhisper ? null : interpret(q, said));
-  if (whisperHit && obviousMatch(q, said, whisperHit)) { v = whisperHit; used = said; }
-  else if (browserHit && raw && obviousMatch(q, raw, browserHit)) { v = browserHit; used = raw; }
-  else if (whisperHit) { v = whisperHit; used = said; }
-  else if (!fromWhisper && browserHit) { v = browserHit; used = raw || said; }
-  if (!v && AI_URL && said) {
+  const ruleHit = interpret(q, said);
+  const browserHit = raw && raw !== said ? interpret(q, raw) : null;
+  if (ruleHit && obviousMatch(q, said, ruleHit)) { v = ruleHit; used = said; }
+  else if (browserHit && obviousMatch(q, raw, browserHit)) { v = browserHit; used = raw; }
+  else if (AI_URL && said) {
     const w = bot('<span class="thinking">One moment…</span>');
     v = await aiInterpret(q, said, (fromWhisper ? [raw, ...browserAlts] : browserAlts).filter(Boolean).slice(0, 2));
     fromAi = !!v; w.remove();
-  }
-  if (!v && fromWhisper && raw && raw !== said) { v = interpret(q, raw); if (v) used = raw; }
+    if (!v && ruleHit) { v = ruleHit; used = said; fromAi = false; }
+    else if (!v && browserHit) { v = browserHit; used = raw; fromAi = false; }
+  } else if (ruleHit) { v = ruleHit; used = said; }
+  else if (browserHit) { v = browserHit; used = raw; }
   if (v) await typing(200);
   if (!v) return missed(q0);
   if (spoke && !fromAi && obviousMatch(q, used, v)) return takeAnswer(q0, q, v, src);
@@ -2193,8 +2193,8 @@ async function whisperText(q, clip, quiet) {
   return text;
 }
 
-// ---- optional AI matching: only when the rules can't place an answer. It may only return options from the list;
-// the member always confirms. Health and safety questions are never sent (they are tap-only).
+// ---- AI matching when the answer is not already the option's own words. It may only return options from the list.
+// The member confirms a paraphrase. Health and safety questions are never sent (they are tap-only).
 async function aiInterpret(q, raw, others) {
   if (!AI_URL || !raw || FIXED.has(q.id)) return null;
   try {

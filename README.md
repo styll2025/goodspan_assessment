@@ -119,9 +119,10 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
    - Typed answers are not sent.
    - The question wording and the option labels go with the recording as a hint, so words like "10,000" are easier to hear.
    - If the secret is missing, the route answers `not_configured` and the page uses the browser's transcript.
-4. **AI matching (optional).** It runs only when the rules still cannot place the answer. The page sends the question, its options and the transcript to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
+4. **AI matching.** It runs when the answer is not already the option's own words, so a paraphrase can still land on an option. The page sends the question, its options and what was said to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
    - The server and the page both reject anything that isn't on the list.
-   - A clear match (they said the option, or a number that fits only one band) is accepted straight away. Anything less clear still asks "Is that right?".
+   - If they said the option itself, or a number that fits only one band, that match is accepted straight away and the meaning check is skipped.
+   - A paraphrase still asks "Is that right?".
    - The model can also read Portuguese answers.
 5. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
 
