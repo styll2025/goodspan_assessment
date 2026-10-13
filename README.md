@@ -110,20 +110,19 @@ Otherwise the page uses our wording. Goal reasons also use the member's voice: "
 ## Voice and AI matching
 
 **How an answer is understood**, in order:
-1. **Voice capture (browser).**
-   - Listening continues until a 1.5-second pause, up to 20 seconds, so answers aren't cut off mid-sentence.
-   - The browser's top three guesses are kept.
+1. **Voice capture.**
+   - Listening continues until a 0.8-second pause, up to 20 seconds.
+   - The browser shows words as they are heard. Every spoken answer is also recorded and sent to Whisper, which supplies the transcript the page trusts.
    - The language is set with `window.GS_SPEECH_LANG` (default `en-GB`; `pt-PT` for Portuguese).
-   - While the member is talking, the page also keeps a short recording. That recording is only uploaded if step 3 is needed.
-2. **Rules (in the page).** Each guess is tried against the options. "No idea" and "not sure" pick a matching option ("I don't track my steps") or ask again, and are never read as zero.
-3. **Whisper, only when it is needed.** It runs when the member spoke and the rules could not place the answer (including when the browser heard nothing). The page sends the recording to `/api/transcribe`. That route calls OpenAI's transcriptions API with model `whisper-1`. You do not choose the model when you create the key; the route names it.
+2. **Rules (in the page).** The Whisper transcript is tried against the options. "No idea" and "not sure" pick a matching option ("I don't track my steps") or ask again, and are never read as zero. If Whisper heard nothing useful, the browser's transcript is tried.
+3. **Whisper, for every spoken answer.** The page sends the recording to `/api/transcribe`. That route calls OpenAI's transcriptions API with model `whisper-1`. You do not choose the model when you create the key; the route names it.
    - Typed answers are not sent.
    - The question wording and the option labels go with the recording as a hint, so words like "10,000" are easier to hear.
-   - The new transcript is tried with the rules, then with AI matching if that is on.
-   - If the secret is missing, the route answers `not_configured` and the page carries on without Whisper.
-4. **AI matching (optional).** It runs only when the rules still cannot place the answer. The page sends the question, its options and the transcript to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
+   - If the secret is missing, the route answers `not_configured` and the page uses the browser's transcript.
+4. **AI matching.** It runs when the answer is not already the option's own words, so a paraphrase can still land on an option. The page sends the question, its options and what was said to `/api/interpret`, which asks Claude Haiku to pick from the numbered options or answer "unclear".
    - The server and the page both reject anything that isn't on the list.
-   - The member still confirms with "Is that right?".
+   - If they said the option itself, or a number that fits only one band, that match is accepted straight away and the meaning check is skipped.
+   - A paraphrase still asks "Is that right?".
    - The model can also read Portuguese answers.
 5. **After two misses** on the same question, typing and talking pause for that question and the member taps an option.
 
@@ -142,7 +141,7 @@ Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) are tap-only. They 
 - `node test/ai-interpret.test.js` and `node test/transcribe.test.js` check the guard rails without a key.
 
 **Not done yet**
-- **Consent:** to be added once the prototype is agreed. When matching is on, the transcript passes through Claude. When Whisper is needed, the spoken recording passes through OpenAI. Tap-only health questions do neither.
+- **Consent:** to be added once the prototype is agreed. When matching is on, the transcript passes through Claude. Every spoken answer's recording passes through OpenAI. Tap-only health questions do neither.
 
 ## Before launch
 

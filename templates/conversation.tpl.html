@@ -155,13 +155,13 @@ const EXCL = q => NONE_WORDS;
 let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
 // talk or type: chosen at the start, switchable at any point with the microphone button
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
-let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false;
+let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false, pending = null;
 // settings: the language the browser listens for, optional AI matching, and Whisper for a spoken answer the rules could not place
 const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
 const AI_URL = window.GS_AI_URL || '';
 const TRANSCRIBE_URL = window.GS_TRANSCRIBE_URL || '';
 let transcribeOn = !!TRANSCRIBE_URL;
-const SILENCE_MS = 1500, MAX_LISTEN_MS = 20000;
+const SILENCE_MS = 800, MAX_LISTEN_MS = 20000;
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 const $ = id => document.getElementById(id), T = $('thread');
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -303,6 +303,51 @@ function interpret(q, raw) {
   if (q.type === 'single') { sc.sort((a, b) => b[0] - a[0]); return sc.length > 1 && sc[0][0] === sc[1][0] ? null : [sc[0][1]]; }
   return sc.sort((a, b) => b[0] - a[0]).map(x => x[1]).slice(0, q.max || 99);
 }
+// A match is obvious when they said the option itself, or a number that fits only one band.
+// A fuzzy word match, or a guess from the AI, still asks "Is that right?".
+function obviousMatch(q, text, v) {
+  if (!v || !v.length || !text) return false;
+  const norm = x => String(x).toLowerCase().replace(/[–—]/g, '-').replace(/[’']/g, '').replace(/\s+/g, ' ').trim();
+  const t = norm(text);
+  if (v.every(o => { const lab = norm(label(o)); return lab.length > 2 && t.includes(lab); })) return true;
+  if (q.type !== 'single' || v.length !== 1) return false;
+  const n = numIn(t);
+  if (n == null) return false;
+  const hits = (q.options || []).filter(o => { const b = band(o); return b && n >= b[0] && n <= b[1]; });
+  return hits.length === 1 && hits[0] === v[0];
+}
+function takeAnswer(q0, q, v, src) {
+  clearChips();
+  bot(`Noted: <b>${esc(v.map(label).join(', '))}</b>.`);
+  if (q0.type === 'grid') {
+    how[q0.id] = src;
+    A[q0.id] = Object.assign({}, A[q0.id], { [q0.rows[row][0]]: v[0] });
+    if (++row < q0.rows.length) return ask();
+    return next();
+  }
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+}
+function saidYes(t) {
+  t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
+  return /^(yes|yeah|yep|yup|correct|that's right|that is right|yes that's right|yes that is right|yes please)$/.test(t);
+}
+function saidNo(t) {
+  t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
+  return /^(no|nope|nah|change|change it|wrong|that's wrong|that is wrong|not quite)$/.test(t);
+}
+function missed(q0) {
+  if (++misses >= 2) {
+    pending = null; stopListen(); clearChips();
+    bot("Let's make this one easy: tap the option that fits best.");
+    options(q0);
+    composer(false, 'Tap the one that fits best.');
+    scrollEnd();
+    return;
+  }
+  bot("I didn't quite catch that. Could you say it another way, or tap one of the options?");
+  scrollEnd();
+  if (mode === 'talk') listen();
+}
 
 async function typed() {
   const raw = $('txt').value.trim();
@@ -315,47 +360,60 @@ async function typed() {
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
+  if (pending && raw && (saidYes(raw) || saidNo(raw))) {
+    $('txt').value = '';
+    const yes = saidYes(raw), p = pending; pending = null;
+    if (!yes) me(raw);
+    return yes ? p.accept() : p.redo();
+  }
   $('txt').value = '';
-  if (raw) me(raw);
   const src = spoke ? 'spoken' : 'typed';
-  if (q.type === 'habit') {
-    let text = raw;
-    if (!text && spoke && needsWhisper(q, false)) text = await whisperText(q, clip);
-    if (!text) {
-      if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
-      bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen(); return;
-    }
-    if (!raw) me(text);
-    A[q.id] = { text }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return;
-  }
-  const heard = src === 'spoken' ? [raw, ...alts.filter(a => a && a !== raw)].filter(Boolean) : [raw].filter(Boolean); alts = [];
-  let v = null; for (const t of heard) { v = interpret(q, t); if (v) break; }
-  if (!v && (needsWhisper(q, false) && clip || AI_URL && raw)) {
+  let said = raw, fromWhisper = false;
+  if (spoke && clip && needsWhisper(q)) {
     const w = bot('<span class="thinking">One moment…</span>');
-    let heardByWhisper = '';
-    if (needsWhisper(q, false) && clip) {
-      const text = await whisperText(q, clip, true);
-      if (text) {
-        heardByWhisper = text;
-        if (!raw) me(text);
-        v = interpret(q, text);
-        if (!v) v = await aiInterpret(q, text, heard.slice(0, 2));
-      }
-    }
-    if (!v && raw && raw !== heardByWhisper) v = await aiInterpret(q, raw, heard.slice(1));
+    const text = await whisperText(q, clip, true);
     w.remove();
+    if (text) { said = text; fromWhisper = true; }
   }
-  if (v) await typing(250);
-  if (!v) {
-    if (++misses >= 2) { stopListen(); composer(false, 'Tap the one that fits best.'); bot("Let's make this one easy: tap the option that fits best."); scrollEnd(); return; }
-    bot("I didn't quite catch that. Could you say it another way, or tap one of the options?"); scrollEnd(); if (mode === 'talk') listen(); return;
+  if (!said) return missed(q0);
+  if (pending && (saidYes(said) || saidNo(said))) {
+    const yes = saidYes(said), p = pending; pending = null;
+    if (!yes) me(said);
+    return yes ? p.accept() : p.redo();
   }
+  if (pending) { pending = null; clearChips(); }
+  me(said);
+  if (q.type === 'habit') { A[q.id] = { text: said }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
+  const browserAlts = alts.filter(a => a && a !== raw); alts = [];
+  let v = null, fromAi = false, used = said;
+  const ruleHit = interpret(q, said);
+  const browserHit = raw && raw !== said ? interpret(q, raw) : null;
+  if (ruleHit && obviousMatch(q, said, ruleHit)) { v = ruleHit; used = said; }
+  else if (browserHit && obviousMatch(q, raw, browserHit)) { v = browserHit; used = raw; }
+  else if (AI_URL && said) {
+    const w = bot('<span class="thinking">One moment…</span>');
+    v = await aiInterpret(q, said, (fromWhisper ? [raw, ...browserAlts] : browserAlts).filter(Boolean).slice(0, 2));
+    fromAi = !!v; w.remove();
+    if (!v && ruleHit) { v = ruleHit; used = said; fromAi = false; }
+    else if (!v && browserHit) { v = browserHit; used = raw; fromAi = false; }
+  } else if (ruleHit) { v = ruleHit; used = said; }
+  else if (browserHit) { v = browserHit; used = raw; }
+  if (v) await typing(200);
+  if (!v) return missed(q0);
+  if (spoke && !fromAi && obviousMatch(q, used, v)) return takeAnswer(q0, q, v, src);
+  misses = 0;
   clearChips();
   bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
   const box = document.createElement('div'); box.className = 'chips';
   box.innerHTML = `<button type="button" class="chip go" data-y="1">Yes, that's right</button><button type="button" class="chip alt" data-n="1">Change it</button>`;
-  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; if (b.dataset.y) { if (q0.type === 'grid') { how[q0.id] = src; return answerGrid(q0, v[0], true); } answer(q, v, src, true); } else { box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); scrollEnd(); } };
-  T.append(box); scrollEnd();
+  const accept = () => { pending = null; if (q0.type === 'grid') { how[q0.id] = src; return answerGrid(q0, v[0], true); } answer(q, v, src, true); };
+  const redo = () => { pending = null; box.remove(); bot('No problem. Pick the right one below, or try again in your own words.'); options(q0, q.type === 'multi' ? v : null); composer(true, 'Tap an option, or say it again.'); scrollEnd(); if (mode === 'talk') listen(); };
+  box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return; b.dataset.y ? accept() : redo(); };
+  pending = { accept, redo };
+  T.append(box);
+  composer(true, "Say yes if that's right, or change it.");
+  scrollEnd();
+  if (mode === 'talk') listen();
 }
 function habitChoice(q) {
   clearChips(); const box = document.createElement('div'); box.className = 'chips';
@@ -490,30 +548,26 @@ const cap1 = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 async function typedOpen(raw, clip, spoke) {
   if (!raw && !(spoke && clip)) return;
   $('txt').value = '';
-  if (raw) { clearChips(); me(raw); }
-  let said = raw;
   const TH = buildResult.THEMES, keys = Object.keys(TH);
   const openQ = { id: 'q0', type: 'multi', max: 3, text: 'If the next six months went really well, what would you most like to feel different?', options: keys.map(k => TH[k].label) };
-  let ks = said ? buildResult.themesOf([said, ...alts].join(' ')) : [];
-  const browserAlts = alts; alts = [];
-  if (!ks.length && (needsWhisper(openQ, false) && clip || AI_URL && said)) {
+  let said = raw;
+  if (spoke && clip && needsWhisper(openQ)) {
     const w = bot('<span class="thinking">One moment…</span>');
-    let heardByWhisper = '';
-    if (needsWhisper(openQ, false) && clip) {
-      const text = await whisperText(openQ, clip, true);
-      if (text) { heardByWhisper = text; said = text; if (!raw) { clearChips(); me(text); } ks = buildResult.themesOf(text); }
-    }
-    if (!ks.length && AI_URL && said) {
-      const v = await aiInterpret(openQ, said, browserAlts.slice(0, 2));
-      if (v) ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean);
-    }
-    if (!ks.length && AI_URL && heardByWhisper && raw && raw !== heardByWhisper) {
-      const v = await aiInterpret(openQ, raw, browserAlts.slice(0, 2));
-      if (v) { ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean); said = raw; }
-    }
+    const text = await whisperText(openQ, clip, true);
     w.remove();
+    if (text) said = text;
   }
   if (!said) { bot("I didn't quite catch that. Could you say it another way?"); scrollEnd(); if (mode === 'talk') listen(); return; }
+  clearChips(); me(said);
+  let ks = buildResult.themesOf(said);
+  const browserAlts = alts; alts = [];
+  if (!ks.length && raw && raw !== said) ks = buildResult.themesOf([raw, ...browserAlts].join(' '));
+  if (!ks.length && AI_URL && said) {
+    const w = bot('<span class="thinking">One moment…</span>');
+    const v = await aiInterpret(openQ, said, browserAlts.slice(0, 2));
+    if (v) ks = v.map(l => keys.find(k => TH[k].label === l)).filter(Boolean);
+    w.remove();
+  }
   openAnswered(said, ks, false, spoke ? 'spoken' : 'typed');
 }
 async function openAnswered(text, ks, tapped, src) {
@@ -538,11 +592,12 @@ async function startQuestions() {
   ask();
 }
 
-// ---- voice. Order: browser transcript, then the rules. Whisper is called only when this was spoken,
-// the rules could not place it, and the question is not tap-only. Same rule as shouldTranscribe in server/transcribe.js.
+// ---- voice. Whisper hears every spoken answer. The pause after speech is short.
+// A clear rules match is accepted at once. A fuzzy or AI match still asks "Is that right?".
+// Health and safety questions are tap-only and are never sent.
 function canRecord() { return !!(transcribeOn && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
 function canTalk() { return !!(SR || canRecord()); }
-function needsWhisper(q, matched) { return !!(transcribeOn && !matched && q && !FIXED.has(q.id)); }
+function needsWhisper(q) { return !!(transcribeOn && q && !FIXED.has(q.id)); }
 function clearVoiceTimers() { clearTimeout(capTimer); capTimer = null; clearTimeout(silenceTimer); silenceTimer = null; }
 function micOff() { $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
 function armRecorder(id) {
@@ -614,7 +669,7 @@ function listen() {
     if (canRecord()) { clipOnly = true; try { rec && rec.abort(); } catch (err) {} rec = null; if (!capTimer) capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Tap the microphone when you have finished.'; }
   };
   rec.onend = () => { if (id === session && listening && $('txt').value.trim()) finishListen(id); };
-  try { rec.start(); capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Take your time; we send it after a short pause. Tap the microphone to type instead.'; }
+  try { rec.start(); capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Take your time. Tap the microphone to type instead.'; }
   catch (err) {
     rec = null;
     if (canRecord()) { clipOnly = true; capTimer = setTimeout(() => finishListen(id), MAX_LISTEN_MS); $('hint').textContent = 'Listening. Tap the microphone when you have finished.'; }
@@ -630,7 +685,7 @@ function blobToBase64(blob) {
   return new Promise(resolve => { const r = new FileReader(); r.onload = () => resolve(String(r.result).split(',')[1] || ''); r.onerror = () => resolve(''); r.readAsDataURL(blob); });
 }
 async function transcribeAudio(q, blob) {
-  if (!TRANSCRIBE_URL || !needsWhisper(q, false) || !blob) return '';
+  if (!TRANSCRIBE_URL || !needsWhisper(q) || !blob) return '';
   try {
     const audio = await blobToBase64(blob); if (!audio) return '';
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
@@ -644,15 +699,15 @@ async function transcribeAudio(q, blob) {
   } catch (err) { return ''; }
 }
 async function whisperText(q, clip, quiet) {
-  if (!clip || !needsWhisper(q, false)) return '';
+  if (!clip || !needsWhisper(q)) return '';
   const w = quiet ? null : bot('<span class="thinking">One moment…</span>');
   const text = await transcribeAudio(q, clip);
   if (w) w.remove();
   return text;
 }
 
-// ---- optional AI matching: only when the rules can't place an answer. It may only return options from the list;
-// the member always confirms. Health and safety questions are never sent (they are tap-only).
+// ---- AI matching when the answer is not already the option's own words. It may only return options from the list.
+// The member confirms a paraphrase. Health and safety questions are never sent (they are tap-only).
 async function aiInterpret(q, raw, others) {
   if (!AI_URL || !raw || FIXED.has(q.id)) return null;
   try {
@@ -677,7 +732,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }

@@ -1,6 +1,6 @@
 // Turns a short spoken answer into text, using OpenAI Whisper.
-// The page calls this only when the member spoke and the built-in rules could not place the answer.
-// Typed answers are never sent. Health and safety questions are refused here and are tap-only in the page.
+// The page calls this for every spoken answer. Typed answers are never sent.
+// Health and safety questions are refused here and are tap-only in the page.
 //
 // Needs OPENAI_API_KEY on the server (never in the page). Optional: OPENAI_TRANSCRIBE_MODEL (default whisper-1).
 // The model is chosen here, in the request. It is not chosen when the API key is created.
@@ -25,9 +25,9 @@ function fromProcess(name) {
   } catch (e) { return ''; }
 }
 
-// Spoken, not already matched, and not a tap-only health question.
-function shouldTranscribe({ spoken, matched, blocked } = {}) {
-  return spoken === true && matched !== true && blocked !== true;
+// Every spoken answer is transcribed. Typed answers and tap-only health questions are not.
+function shouldTranscribe({ spoken, blocked } = {}) {
+  return spoken === true && blocked !== true;
 }
 
 function whisperLanguage(code) {

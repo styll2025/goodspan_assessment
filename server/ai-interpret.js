@@ -1,6 +1,7 @@
 // AI matching for the conversational assessment: turns what a member typed or said into one of the listed options.
 // It is a narrow classifier, not a conversation: it can only choose from the options it is given, or say "unclear".
-// The page calls it only when the built-in rules can't place an answer, and the member always confirms the result.
+// The page calls it when an answer is not already the option's own words: a paraphrase should still map to one listed option.
+// The member confirms that result. An obvious wording match never needs this call.
 //
 // Needs ANTHROPIC_API_KEY on the server (never in the page). Optional: GS_AI_MODEL (default below).
 // Use handleInterpret(body) from any server or serverless function (Vercel, Netlify, Express…); see dev-server.js.
@@ -21,10 +22,12 @@ const SYSTEM = `You map a person's answer to a wellbeing questionnaire onto the 
 Rules:
 - Choose only from the numbered options. Never invent, combine or reword an option.
 - For "single", choose exactly one option. For "multi", choose every option the answer clearly states, up to the maximum.
-- Use the meaning, not just the words: "on my feet all day at work" can mean a lot of steps; "a glass of wine most evenings" is a drinking frequency.
-- The answer may come from speech recognition and contain misheard words ("for" for "four", "to" for "two"); use the alternative transcripts when helpful.
+- Match the meaning even when their words are not the option's words. "On my feet all day" can be a high step count. "A glass of wine most evenings" is a drinking frequency. "I work nine to five" is regular daytime work. "I barely sleep" is a short sleep band. "I want to work on how I eat" is a nutrition goal.
+- Everyday speech counts: "a couple", "most nights", "hardly ever", "I'm on my feet", "I sit at a desk".
+- The answer may come from speech recognition and contain misheard words ("for" for "four", "to" for "two", "mine" for "mind"). Use the question and the options to resolve a near miss when one option is clearly intended.
 - The answer may be in English or Portuguese.
-- If the answer is ambiguous, off-topic, a question, or could fit two single-choice options equally, set unclear to true and choose nothing.
+- If the meaning clearly points to one option, choose it. Do not require the option's exact wording.
+- If it could fit two single-choice options equally, is off-topic, or does not answer the question, set unclear to true and choose nothing.
 - Do not give advice and do not comment. Only call the tool.`;
 
 function buildRequest({ question, type, max, options, answer, alternatives, model }) {

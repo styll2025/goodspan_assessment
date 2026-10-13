@@ -5,10 +5,9 @@ const Q = { questionId: 'q24', language: 'en-GB', mime: 'audio/webm', prompt: 'H
 
 (async () => {
   const fails = [], ok = (c, m) => c || fails.push(m);
-  ok(shouldTranscribe({ spoken: true, matched: false, blocked: false }) === true, 'spoken and unmatched: call Whisper');
-  ok(shouldTranscribe({ spoken: false, matched: false, blocked: false }) === false, 'typed answers are not sent');
-  ok(shouldTranscribe({ spoken: true, matched: true, blocked: false }) === false, 'a rules match is not sent');
-  ok(shouldTranscribe({ spoken: true, matched: false, blocked: true }) === false, 'tap-only questions are not sent');
+  ok(shouldTranscribe({ spoken: true, blocked: false }) === true, 'every spoken answer is sent');
+  ok(shouldTranscribe({ spoken: false, blocked: false }) === false, 'typed answers are not sent');
+  ok(shouldTranscribe({ spoken: true, blocked: true }) === false, 'tap-only questions are not sent');
 
   let seen = null;
   const fake = text => async (url, init) => {
