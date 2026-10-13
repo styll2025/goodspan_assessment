@@ -64,7 +64,7 @@ In the browser the same files load as plain scripts (`makeEngine` and `buildResu
 Controlled, not an open AI conversation: everything below is fixed rules and fixed wording.
 
 1. **Welcome**: "Let's find your Good Span…", then first name and email.
-2. **Talk or type**: the member chooses, and the microphone button switches at any point. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
+2. **Talk or type**: the member taps Talk or Type, or says either word. The microphone stays available on this question. It also switches between talking and typing at any later point. Voice uses the browser's own speech recognition (Chrome, Edge and Safari; no key, no server). What it hears goes through exactly the same matching and "Is that right?" check as typing. If the browser has no voice support, or the microphone is blocked, it falls back to typing and says so.
 3. **Opening question**: "If the next six months went really well, what would you most like to feel different?" The member taps suggestions or answers in their own words. Their words are matched to themes (`THEMES` in `core/result.js`: energy, sleep, stress, mood, fitness, ease, food, connection, health).
    - With two or more themes, the chat asks one follow-up: "If one of those improved first, which would make the biggest difference?"
    - The focus areas on the next question start with nothing selected.
