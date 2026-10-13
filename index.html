@@ -1923,7 +1923,7 @@ function openPlan() {
 // the welcome is a conversation too: name and email, one at a time
 const CONTACT = [
   ['name', () => 'What would you like us to call you?', 'Your first name', 'text'],
-  ['email', () => `Lovely to meet you${contact.name ? ', ' + esc(contact.name) : ''}. What's the best email address for you?`, 'you@example.com', 'email']
+  ['email', () => `Nice to meet you${contact.name ? ', ' + esc(contact.name) : ''}. What's the best email address for you?`, 'you@example.com', 'email']
 ];
 async function askContact(fast) {
   ready = false; const c = CONTACT[ci];
