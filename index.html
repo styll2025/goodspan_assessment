@@ -1687,18 +1687,13 @@ async function ask(fast) {
   if (si !== secShown) { secShown = si; await typing(fast ? 0 : 350); sectionCard(si); }
   await typing(fast ? 0 : 450);
   if (row === 0 && LEAD[q.id]) bot(esc(LEAD[q.id]), '', 'lead');
-  let pre = null;
-  if (q.id === 'q1' && A.q0 && (A.q0.areas || []).length) {
-    pre = A.q0.areas.slice(0, q.max || 2).map(a => q.options.find(o => o.startsWith(a))).filter(Boolean);
-    bot(`From what you said, we've highlighted ${esc(list2(pre.map(label)))}. Change ${pre.length > 1 ? 'them' : 'it'} if you like.`, '', 'lead');
-  }
   if (q.type === 'grid') {
     // a grid becomes a short run of questions: the shared lead-in once, then each row asked on its own
     const own = (ROWQ[q.id] || {})[q.rows[row][0]];
     if (row === 0 && !ROWQ[q.id]) bot(esc(q.text) + (q.hint ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.rows.length > 1 ? `${q.rows.length} short parts` : '', 'lead');
     bot(esc(own || q.rows[row][1]), q.rows.length > 1 && !ROWQ[q.id] ? `${row + 1} of ${q.rows.length}` : '', 'q');
   } else bot(esc(q.text) + (q.hint && q.type !== 'habit' ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.type === 'multi' ? (q.max ? `Choose up to ${q.max}` : 'Choose all that apply') : '', 'q');
-  options(q, pre); ready = true;
+  options(q); ready = true;
   if (FIXED.has(q.id)) composer(false, 'Please choose from the options for this one, so we get it exactly right.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
   else composer(true, q.type === 'multi' ? 'Tap the options, or describe it in your own words.' : 'Tap an option, or type it your way.');
