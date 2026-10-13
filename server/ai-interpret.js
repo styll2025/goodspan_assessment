@@ -1,7 +1,7 @@
 // AI matching for the conversational assessment: turns what a member typed or said into one of the listed options.
 // It is a narrow classifier, not a conversation: it can only choose from the options it is given, or say "unclear".
 // The page calls it when an answer is not already the option's own words: a paraphrase should still map to one listed option.
-// The member confirms that result. An obvious wording match never needs this call.
+// The member confirms that result. An obvious wording match never needs this call, except on a health question, which the page always reads back.
 //
 // Needs ANTHROPIC_API_KEY on the server (never in the page). Optional: GS_AI_MODEL (default below).
 // Use handleInterpret(body) from any server or serverless function (Vercel, Netlify, Express…); see dev-server.js.
@@ -14,8 +14,6 @@ function fromProcess(name) {
     return process.env[name] || '';
   } catch (e) { return ''; }
 }
-// health, symptoms, pregnancy, movement limits and mood are tap-only and never sent here (also blocked in the page)
-const BLOCKED = new Set(['q4', 'q5', 'q5a', 'q5b', 'q6', 'q29', 'q32']);
 const MAX_TEXT = 500, MAX_OPTIONS = 40;
 
 const SYSTEM = `You map a person's answer to a wellbeing questionnaire onto the answer options they were shown.
@@ -48,7 +46,6 @@ function buildRequest({ question, type, max, options, answer, alternatives, mode
 async function handleInterpret(body, { fetchImpl = fetch, apiKey = fromProcess('ANTHROPIC_API_KEY'), model = '' } = {}) {
   const b = body || {};
   if (!apiKey) return { status: 503, json: { error: 'not_configured' } };
-  if (BLOCKED.has(b.questionId)) return { status: 400, json: { error: 'question_not_allowed' } };
   if (typeof b.answer !== 'string' || !b.answer.trim() || !Array.isArray(b.options) || !b.options.length || b.options.length > MAX_OPTIONS || typeof b.question !== 'string')
     return { status: 400, json: { error: 'bad_request' } };
   const req = buildRequest({ question: b.question.slice(0, 400), type: b.type === 'multi' ? 'multi' : 'single', max: Number(b.max) || null,
@@ -69,4 +66,4 @@ async function handleInterpret(body, { fetchImpl = fetch, apiKey = fromProcess('
   return { status: 200, json: { answer: unclear ? [] : answer, unclear } };
 }
 
-module.exports = { handleInterpret, buildRequest, BLOCKED };
+module.exports = { handleInterpret, buildRequest };

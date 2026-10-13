@@ -1,14 +1,11 @@
 // Turns a short spoken answer into text, using OpenAI Whisper.
-// The page calls this for every spoken answer. Typed answers are never sent.
-// Health and safety questions are refused here and are tap-only in the page.
+// The page calls this for every spoken answer, including health questions. Typed answers are never sent.
 //
 // Needs OPENAI_API_KEY on the server (never in the page). Optional: OPENAI_TRANSCRIBE_MODEL (default whisper-1).
 // The model is chosen here, in the request. It is not chosen when the API key is created.
 
 const DEFAULT_MODEL = 'whisper-1';
 const ENDPOINT = 'https://api.openai.com/v1/audio/transcriptions';
-// Keep this list in step with BLOCKED in server/ai-interpret.js.
-const BLOCKED = new Set(['q4', 'q5', 'q5a', 'q5b', 'q6', 'q29', 'q32']);
 const MAX_AUDIO = 3000000;
 const MAX_B64 = Math.ceil(MAX_AUDIO / 3) * 4 + 8;
 const MAX_PROMPT = 800;
@@ -25,7 +22,7 @@ function fromProcess(name) {
   } catch (e) { return ''; }
 }
 
-// Every spoken answer is transcribed. Typed answers and tap-only health questions are not.
+// Every spoken answer is transcribed. Typed answers are not.
 function shouldTranscribe({ spoken, blocked } = {}) {
   return spoken === true && blocked !== true;
 }
@@ -58,8 +55,6 @@ function decodeAudio(audio) {
 async function handleTranscribe(body, { fetchImpl = fetch, apiKey = fromProcess('OPENAI_API_KEY'), model = '' } = {}) {
   const b = body || {};
   if (!apiKey) return { status: 503, json: { error: 'not_configured' } };
-  // The page only calls this when shouldTranscribe says so. This still refuses a tap-only question if one is posted directly.
-  if (BLOCKED.has(b.questionId)) return { status: 400, json: { error: 'question_not_allowed' } };
   if (typeof b.questionId !== 'string' || !/^q[a-z0-9]+$/i.test(b.questionId))
     return { status: 400, json: { error: 'bad_request' } };
   const decoded = decodeAudio(b.audio);
@@ -87,4 +82,4 @@ async function handleTranscribe(body, { fetchImpl = fetch, apiKey = fromProcess(
   return { status: 200, json: { text } };
 }
 
-module.exports = { handleTranscribe, shouldTranscribe, whisperLanguage, BLOCKED, DEFAULT_MODEL, ENDPOINT };
+module.exports = { handleTranscribe, shouldTranscribe, whisperLanguage, DEFAULT_MODEL, ENDPOINT };

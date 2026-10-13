@@ -7,7 +7,7 @@ const Q = { questionId: 'q24', language: 'en-GB', mime: 'audio/webm', prompt: 'H
   const fails = [], ok = (c, m) => c || fails.push(m);
   ok(shouldTranscribe({ spoken: true, blocked: false }) === true, 'every spoken answer is sent');
   ok(shouldTranscribe({ spoken: false, blocked: false }) === false, 'typed answers are not sent');
-  ok(shouldTranscribe({ spoken: true, blocked: true }) === false, 'tap-only questions are not sent');
+  ok(shouldTranscribe({ spoken: true, blocked: true }) === false, 'a held-back question is not sent');
 
   let seen = null;
   const fake = text => async (url, init) => {
@@ -31,7 +31,8 @@ const Q = { questionId: 'q24', language: 'en-GB', mime: 'audio/webm', prompt: 'H
   ok(!JSON.stringify(r.json).includes('sk-test'), 'the reply does not contain the key');
 
   r = await handleTranscribe(Object.assign({}, Q, { questionId: 'q5' }), { apiKey: 'sk-test', fetchImpl: counting });
-  ok(r.status === 400 && r.json.error === 'question_not_allowed' && calls === 0, 'health questions are refused before any call');
+  ok(r.status === 200 && r.json.text === 'ten thousand steps' && calls === 1, 'a spoken health answer is transcribed');
+  calls = 0;
   r = await handleTranscribe(Q, { apiKey: '', fetchImpl: counting });
   ok(r.status === 503 && r.json.error === 'not_configured' && calls === 0, 'no key: switched off');
   r = await handleTranscribe(Object.assign({}, Q, { audio: '%%%' }), { apiKey: 'sk-test', fetchImpl: counting });

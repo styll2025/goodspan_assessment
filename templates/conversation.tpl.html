@@ -145,7 +145,7 @@ __RESULT_JS__
 const SYM = "__SYM__", IMG = __IMG__;
 const PILLAR = { nutrition: ['#FE600C', '#000', 'Nutrition'], sleep: ['#FFFFFF', '#000', 'Sleep'], movement: ['#F5A4C2', '#000', 'Movement'], mind: ['#CB863A', '#000', 'Mind'], connection: ['#4D2831', '#FFF2EA', 'Connection'], prevention: ['#000000', '#FFF2EA', 'Prevention'] };
 const ALT = { nutrition: 'Hands stirring a steaming pot of rice.', sleep: 'A woman laughing as she reads on cushions by a sunny window.', movement: 'A small group doing yoga together on the grass in a Lisbon park.', mind: 'A textile artist smiling as she stitches red thread at her table.', connection: 'Two women of different generations walking arm in arm at golden hour, smiling at each other.', prevention: 'A hand brushing through herbs in a rooftop garden.' };
-// health checks, conditions and mood are answered by choosing, never interpreted from free text
+// health checks, conditions and mood can be tapped or spoken. A spoken or typed answer is always read back before it is saved.
 const FIXED = new Set(['q4', 'q5', 'q5a', 'q5b', 'q6', 'q29', 'q32']);
 // grids whose rows read better as their own questions, and a one-tap answer for 'none of them'
 const ROWQ = { q40: { tobacco: 'Do you currently smoke cigarettes, cigars, rolling tobacco or other tobacco?', vape: 'And do you use vapes or e-cigarettes?' } };
@@ -207,10 +207,10 @@ async function ask(fast) {
     bot(esc(own || q.rows[row][1]), q.rows.length > 1 && !ROWQ[q.id] ? `${row + 1} of ${q.rows.length}` : '', 'q');
   } else bot(esc(q.text) + (q.hint && q.type !== 'habit' ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.type === 'multi' ? (q.max ? `Choose up to ${q.max}` : 'Choose all that apply') : '', 'q');
   options(q); ready = true;
-  if (FIXED.has(q.id)) composer(false, 'Please choose from the options for this one, so we get it exactly right.');
+  if (FIXED.has(q.id)) composer(true, q.type === 'multi' ? 'Tap what applies, or say it. I will check it with you.' : 'Tap an option, or say it. I will check it with you.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
   else composer(true, q.type === 'multi' ? 'Tap the options, or describe it in your own words.' : 'Tap an option, or type it your way.');
-  if (mode === 'talk' && !FIXED.has(q.id)) listen();
+  if (mode === 'talk') listen();
   scrollEnd();
 }
 const list2 = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
@@ -279,7 +279,11 @@ function interpret(q, raw) {
   // the option's own wording typed in full wins (e.g. "1-2 hours")
   const norm = x => x.toLowerCase().replace(/[–—]/g, '-').replace(/\s+/g, ' ');
   const exact = opts.filter(o => norm(t).includes(norm(label(o))) && label(o).length > 2);
-  if (q.type === 'single' && exact.length) return [exact.sort((a, b) => b.length - a.length)[0]];
+  if (exact.length) {
+    const ranked = exact.sort((a, b) => label(b).length - label(a).length);
+    if (q.type === 'single') return [ranked[0]];
+    return ranked.slice(0, q.max || 99);
+  }
   if (q.type === 'single') {
     const unit = x => (x.match(/\b(day|week|month|night|year)s?\b/i) || [])[1];
     const tu = unit(t);
@@ -295,8 +299,18 @@ function interpret(q, raw) {
   const tw = new Set(words(t)); if (!tw.size) return null;
   const sc = opts.map(o => [words(o).filter(w => tw.has(w)).length, o]).filter(x => x[0] > 0 && !NONE_WORDS.test(x[1]));
   if (!sc.length) return null;
-  if (q.type === 'single') { sc.sort((a, b) => b[0] - a[0]); return sc.length > 1 && sc[0][0] === sc[1][0] ? null : [sc[0][1]]; }
-  return sc.sort((a, b) => b[0] - a[0]).map(x => x[1]).slice(0, q.max || 99);
+  sc.sort((a, b) => b[0] - a[0]);
+  if (q.type === 'single') return sc.length > 1 && sc[0][0] === sc[1][0] ? null : [sc[0][1]];
+  // a shared word such as "blood" must not pull in a second condition when a stronger option already covers it
+  const covered = new Set();
+  const kept = [];
+  for (const [, o] of sc) {
+    const ws = words(o).filter(w => tw.has(w));
+    if (ws.every(w => covered.has(w))) continue;
+    ws.forEach(w => covered.add(w));
+    kept.push(o);
+  }
+  return kept.slice(0, q.max || 99);
 }
 // A match is obvious when they said the option itself, or a number that fits only one band.
 // A fuzzy word match, or a guess from the AI, still asks "Is that right?".
@@ -354,7 +368,7 @@ async function typed() {
   if (stage === 'open') return typedOpen(raw, clip, spoke);
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
-  const q0 = QUESTIONS[qi]; if (FIXED.has(q0.id)) return; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
+  const q0 = QUESTIONS[qi]; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
   if (pending && raw && (saidYes(raw) || saidNo(raw))) {
     $('txt').value = '';
     const yes = saidYes(raw), p = pending; pending = null;
@@ -395,7 +409,7 @@ async function typed() {
   else if (browserHit) { v = browserHit; used = raw; }
   if (v) await typing(200);
   if (!v) return missed(q0);
-  if (spoke && !fromAi && obviousMatch(q, used, v)) return takeAnswer(q0, q, v, src);
+  if (spoke && !FIXED.has(q.id) && !fromAi && obviousMatch(q, used, v)) return takeAnswer(q0, q, v, src);
   misses = 0;
   clearChips();
   bot(`I've noted <b>${esc(v.map(label).join(', '))}</b>. Is that right?`);
@@ -587,12 +601,12 @@ async function startQuestions() {
   ask();
 }
 
-// ---- voice. Whisper hears every spoken answer. The pause after speech is short.
-// A clear rules match is accepted at once. A fuzzy or AI match still asks "Is that right?".
-// Health and safety questions are tap-only and are never sent.
+// ---- voice. Whisper hears every spoken answer, including health questions. The pause after speech is short.
+// A clear rules match is accepted at once, except on a health question, which is always read back.
+// A fuzzy or AI match still asks "Is that right?".
 function canRecord() { return !!(transcribeOn && navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder); }
 function canTalk() { return !!(SR || canRecord()); }
-function needsWhisper(q) { return !!(transcribeOn && q && !FIXED.has(q.id)); }
+function needsWhisper(q) { return !!(transcribeOn && q); }
 function clearVoiceTimers() { clearTimeout(capTimer); capTimer = null; clearTimeout(silenceTimer); silenceTimer = null; }
 function micOff() { $('mic').classList.remove('on'); $('mic').setAttribute('aria-pressed', 'false'); }
 function armRecorder(id) {
@@ -702,9 +716,9 @@ async function whisperText(q, clip, quiet) {
 }
 
 // ---- AI matching when the answer is not already the option's own words. It may only return options from the list.
-// The member confirms a paraphrase. Health and safety questions are never sent (they are tap-only).
+// The member confirms a paraphrase. A health question is always read back, even when the words match.
 async function aiInterpret(q, raw, others) {
-  if (!AI_URL || !raw || FIXED.has(q.id)) return null;
+  if (!AI_URL || !raw) return null;
   try {
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 6000);
     const res = await fetch(AI_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal,
