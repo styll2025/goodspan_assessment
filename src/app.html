@@ -114,7 +114,7 @@ let A = {}, sec = 0, mode = 'welcome', member = null, tried = false;   // tried 
 try { const s = JSON.parse(localStorage.getItem('gs-member') || 'null'); if (s && s.member) { A = s.A || {}; sec = s.sec || 0; mode = s.mode || 'welcome'; member = s.member; REQ = s.REQ || {}; } } catch (e) {}
 const save = () => { try { localStorage.setItem('gs-member', JSON.stringify({ A, sec, mode, member, REQ })); } catch (e) {} };
 const visible = q => !q.show || q.show(A);
-const answered = q => { const v = A[q.id]; if (q.type === 'grid') return v && Object.keys(v).length >= q.rows.length; if (q.type === 'habit') return !!(v && (v.text || v.choice)); return Array.isArray(v) ? v.length > 0 : !!v; };
+const answered = q => { const v = A[q.id]; if (q.type === 'grid') { const rows = gridRows(q, A); return !!v && rows.length > 0 && rows.every(r => v[r[0]]); } if (q.type === 'habit') return !!(v && (v.text || v.choice)); return Array.isArray(v) ? v.length > 0 : !!v; };
 
 function qHTML(q, n) {
   const v = A[q.id];
@@ -126,8 +126,9 @@ function qHTML(q, n) {
     body = `<div class="opts">${q.options.map((o, i) => { const on = sel.includes(o); return `<label class="opt"><input type="checkbox" name="${q.id}" id="${q.id}_${i}" value="${esc(o)}" ${on ? 'checked' : ''} ${full && !on ? 'disabled' : ''}><span>${esc(o)}</span></label>`; }).join('')}</div>`;
   } else if (q.type === 'grid') {
     const g = v || {};
-    if (q.cols) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${q.rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
-    else body = `<div class="menus">${q.rows.map(([k, lab, opts]) => `<label class="menurow"><span>${esc(lab)}</span><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`).join('')}</div>`;
+    const rows = gridRows(q, A);
+    if (q.cols) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    else body = `<div class="menus">${rows.map(([k, lab, opts]) => `<label class="menurow"><span>${esc(lab)}</span><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`).join('')}</div>`;
   } else if (q.type === 'habit') {
     const h = v || {};
     body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
@@ -367,7 +368,7 @@ const PLAN_SAVE_URLS = ["api/plans", "https://goodspan-longevity-map.saraportell
 const VERSION = 'October 2026 · 50 questions · rules 1–18';
 function answerText(q, v) {
   if (v == null) return '';
-  if (q.type === 'grid') return q.rows.map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
+  if (q.type === 'grid') return gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
   if (q.type === 'habit') return v.text ? `${v.text} (${v.choice || 'no choice'})` : '';
   return Array.isArray(v) ? v.join('; ') : String(v);
 }

@@ -214,6 +214,7 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 |---|---|---|---|
 | Sleep | Sleep difficulties on 3+ nights a week (2 or more, or 1 with under 6 hours' sleep) | Ask how long it has been going on. If 3 months or more, suggest they talk to their doctor. | Wind-down and sleep-timing practices only. No insomnia therapy in the plan. |
 | Sleep | Loud snoring or pauses in breathing | Suggest they mention it to their doctor. | Nothing changes. |
+| Sleep | Works with a professional or a sleep programme such as CBT-I, or tried one and it didn't help. Asked only when they chose Sleep in question 1. “I'm not sure yet” does not count. | Ask how it is going, or what got in the way. | Nothing is added to the plan. No insomnia therapy. |
 | Movement | Chest pain, breathlessness, dizziness, palpitations, swollen ankles or calf pain | Ask whether they've seen their doctor. | Movement stays at Learning (rule 6); harder cardio excluded. |
 | Movement | Heart, metabolic or kidney condition and less than 150 minutes of activity | Ask whether their doctor has advised on activity. | Movement stays at Learning (rule 6); harder cardio excluded. |
 | Movement | A fall in the past 12 months | Ask whether they've seen a doctor or physiotherapist about it. | Balance practice suggested; level not raised; higher-intensity practices excluded. |
