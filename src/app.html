@@ -150,7 +150,7 @@ function renderAssess() {
   QUESTIONS.forEach(q => { if (visible(q)) nums[q.id] = ++n; });
   const qs = QUESTIONS.filter(q => q.s === S.id && visible(q));
   document.getElementById('view').innerHTML = `<div class="wrap">
-    <div class="intro"><p class="kicker">Find your Good Span · ${sec + 1} of ${SECTIONS.length}</p><h1>${esc(S.title)}.</h1><p class="lead">${esc(S.intro)}</p></div>
+    <div class="intro"><p class="kicker">Find your Good Span · ${sec + 1} of ${SECTIONS.length}</p><h1>${esc(S.title)}.</h1>${S.intro ? `<p class="lead">${esc(S.intro)}</p>` : ''}</div>
     ${missingMsg()}
     <form class="qwrap" id="qform" novalidate>${qs.map(q => qHTML(q, nums[q.id])).join('')}</form>
     <div class="nav"><button class="btn" type="button" id="back">Back</button>

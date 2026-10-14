@@ -2,7 +2,7 @@
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
 const SECTIONS = [
-  { id: 'focus', title: 'Your focus', intro: "This assessment helps us understand where you are today across six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention. There are no right or wrong answers. You tell us what you'd like to improve, and your answers show us where the greatest opportunity is. Your Good Span comes from both, and we'll explain why each practice is in it. It takes about 15 minutes." },
+  { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
   { id: 'nutrition', title: 'Nutrition', intro: 'Think about a typical week over the past month.' },
   { id: 'sleep', title: 'Sleep', intro: 'Think about the past month.' },

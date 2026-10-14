@@ -144,7 +144,7 @@ html.planon,html.planon body{overflow:hidden}
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
 const SECTIONS = [
-  { id: 'focus', title: 'Your focus', intro: "This assessment helps us understand where you are today across six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention. There are no right or wrong answers. You tell us what you'd like to improve, and your answers show us where the greatest opportunity is. Your Good Span comes from both, and we'll explain why each practice is in it. It takes about 15 minutes." },
+  { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
   { id: 'nutrition', title: 'Nutrition', intro: 'Think about a typical week over the past month.' },
   { id: 'sleep', title: 'Sleep', intro: 'Think about the past month.' },
@@ -1675,7 +1675,7 @@ function sectionCard(i) {
   if (p) d.style.cssText = `--sc:${p[0]};--st:${p[1]}`;
   if (s.id === 'sleep') d.style.boxShadow = 'inset 0 0 0 1px var(--plum)';
   d.innerHTML = `${p ? `<div class="arcs" aria-hidden="true"><svg viewBox="0 0 280 280"><circle cx="140" cy="140" r="130" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="100" cy="180" r="90" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 7" stroke-linecap="round"/></svg></div>` : ''}
-    <div class="stx"><p class="ui">${i + 1} of ${SECTIONS.length}${p ? ' · ' + p[2] : ''}</p><h2>${esc(s.title)}</h2><p>${esc(s.intro)}</p></div>${IMG[s.id] ? `<div class="photo"><img src="${IMG[s.id]}" alt="${esc(ALT[s.id])}"></div>` : ''}`;
+    <div class="stx"><p class="ui">${i + 1} of ${SECTIONS.length}${p ? ' · ' + p[2] : ''}</p><h2>${esc(s.title)}</h2>${s.intro ? `<p>${esc(s.intro)}</p>` : ''}</div>${IMG[s.id] ? `<div class="photo"><img src="${IMG[s.id]}" alt="${esc(ALT[s.id])}"></div>` : ''}`;
   T.append(d);
 }
 
@@ -1697,7 +1697,7 @@ async function ask(fast) {
   options(q); ready = true;
   if (FIXED.has(q.id)) composer(true, q.type === 'multi' ? 'Tap what applies, or say it. I will check it with you.' : 'Tap an option, or say it. I will check it with you.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
-  else composer(true, q.type === 'multi' ? 'Tap the options, or describe it in your own words.' : 'Tap an option, or type it your way.');
+  else composer(true, q.type === 'multi' ? 'Talk or tap the options.' : 'Tap an option, or type it your way.');
   if (mode === 'talk') listen();
   scrollEnd();
 }
