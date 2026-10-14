@@ -170,6 +170,11 @@ const visible = q => !q.show || q.show(A);
 const secIdx = q => SECTIONS.findIndex(s => s.id === q.s);
 const label = o => o.replace(/ - .*/, '');
 const rowOpts = q => q.rows[row][2] || q.cols;   // a grid row has its own options, or shares the grid's columns   // "Nutrition - how you eat…" shows as "Nutrition" on a chip
+function stepRow(q) {
+  row++;
+  while (row < q.rows.length && q.rows[row][3] && !q.rows[row][3](A)) row++;
+  return row < q.rows.length;
+}
 
 function bot(html, small, kind) { const d = document.createElement('div'); d.className = 'msg ' + (kind || 'say'); d.innerHTML = `<span class="av"><img src="${SYM}" alt=""></span><div class="bub">${html}${small ? `<small>${small}</small>` : ''}</div>`; T.append(d); return d; }
 function me(text) { const d = document.createElement('div'); d.className = 'msg me'; d.innerHTML = `<div class="bub">${esc(text)}</div>`; T.append(d); scrollEnd(); }
@@ -198,9 +203,12 @@ async function ask(fast) {
   if (row === 0 && LEAD[q.id]) bot(esc(LEAD[q.id]), '', 'lead');
   if (q.type === 'grid') {
     // a grid becomes a short run of questions: the shared lead-in once, then each row asked on its own
+    while (row < q.rows.length && q.rows[row][3] && !q.rows[row][3](A)) row++;
+    if (row >= q.rows.length) return next();
+    const shown = gridRows(q, A), at = shown.findIndex(r => r[0] === q.rows[row][0]);
     const own = (ROWQ[q.id] || {})[q.rows[row][0]];
-    if (row === 0 && !ROWQ[q.id]) bot(esc(q.text) + (q.hint ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.rows.length > 1 ? `${q.rows.length} short parts` : '', 'lead');
-    bot(esc(own || q.rows[row][1]), q.rows.length > 1 && !ROWQ[q.id] ? `${row + 1} of ${q.rows.length}` : '', 'q');
+    if (at === 0 && !ROWQ[q.id]) bot(esc(q.text) + (q.hint ? `<span class="qh">${esc(q.hint)}</span>` : ''), shown.length > 1 ? `${shown.length} short parts` : '', 'lead');
+    bot(esc(own || q.rows[row][1]), shown.length > 1 && !ROWQ[q.id] ? `${at + 1} of ${shown.length}` : '', 'q');
   } else bot(esc(q.text) + (q.hint && q.type !== 'habit' ? `<span class="qh">${esc(q.hint)}</span>` : ''), q.type === 'multi' ? (q.max ? `Choose up to ${q.max}` : 'Choose all that apply') : '', 'q');
   options(q); ready = true;
   if (FIXED.has(q.id)) composer(true, q.type === 'multi' ? 'Tap what applies, or say it. I will check it with you.' : 'Tap an option, or say it. I will check it with you.');
@@ -327,7 +335,7 @@ function takeAnswer(q0, q, v, src) {
   if (q0.type === 'grid') {
     how[q0.id] = src;
     A[q0.id] = Object.assign({}, A[q0.id], { [q0.rows[row][0]]: v[0] });
-    if (++row < q0.rows.length) return ask();
+    if (stepRow(q0)) return ask();
     return next();
   }
   A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
@@ -432,12 +440,12 @@ function answer(q, v, src, confirmed) {
 }
 function answerAll(q, text) {
   clearChips(); me(text);
-  A[q.id] = Object.fromEntries(q.rows.map(r => [r[0], (r[2] || q.cols)[0]])); how[q.id] = 'tapped'; next();
+  A[q.id] = Object.fromEntries(gridRows(q, A).map(r => [r[0], (r[2] || q.cols)[0]])); how[q.id] = 'tapped'; next();
 }
 function answerGrid(q, col, typedIn) {
   clearChips(); me(typedIn ? "Yes, that's right" : col);
   A[q.id] = Object.assign({}, A[q.id], { [q.rows[row][0]]: col }); if (!typedIn && !['typed', 'spoken'].includes(how[q.id])) how[q.id] = 'tapped';
-  if (++row < q.rows.length) return ask(); next();
+  if (stepRow(q)) return ask(); next();
 }
 async function next() {
   const q = QUESTIONS[qi]; row = 0; qi++;
@@ -468,7 +476,7 @@ const ACK = {
 function show(id, v) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  if (q.type === 'grid') return q.rows.map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
+  if (q.type === 'grid') return gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
   if (q.type === 'habit') return [v.text, v.choice].filter(Boolean).join(' · ');
   return [].concat(v).map(label).join(', ');
 }

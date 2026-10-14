@@ -14,6 +14,8 @@ const SECTIONS = [
 ];
 const AREA_OPTS = ['Nutrition - how you eat and your everyday food habits', 'Sleep - your sleep and sleep routines', 'Movement - your physical activity and movement', 'Mind - your mental and emotional wellbeing', 'Connection - your relationships and social connections', 'Prevention - everyday choices that protect your health over time, such as alcohol, smoking, check-ups and sun protection', 'I’m not sure yet'];
 const chosen = (A, area) => (A.q1 || []).some(x => x.startsWith(area)) || (A.q1 || []).includes('I’m not sure yet');
+// a grid row is [key, label, options?, show?]. A show function hides that row unless it returns true.
+const gridRows = (q, A) => (q.rows || []).filter(r => !r[3] || r[3](A));
 const QUESTIONS = [
   { id: 'q1', s: 'focus', type: 'multi', max: 2, exclusive: ['I’m not sure yet'], text: 'Which one or two areas would you most like to improve?', hint: "We'll still ask about every area. Your Good Span may also include practices from other areas where your answers show the greatest opportunity. We'll always explain why.", options: AREA_OPTS },
   { id: 'q2', s: 'about', type: 'single', text: 'What is your age?', options: ['18-29', '30-39', '40-49', '50-59', '60-69', '70 or over', 'Prefer not to say'] },
@@ -48,7 +50,8 @@ const QUESTIONS = [
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I'], ['share', 'Share sleep goals or progress with others']] },
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', null, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
   { id: 'q20', s: 'movement', type: 'single', text: 'On average, how many days a week do you do moderate or vigorous exercise, such as a brisk walk, that makes you breathe harder?', options: ['0', '1', '2', '3', '4', '5', '6', '7'] },
@@ -146,11 +149,13 @@ function toFeatures(A) {
   const triedNo = r => g('q17', r) === "I've tried it, but it didn't help";
   const SL2 = Object.assign({}, SL, { phone: ['Bed for sleep'], work: ['Bed for sleep'] });
   p.tried = []; p.tried_txt = [];
-  for (const [r, lab] of (QUESTIONS.find(x => x.id === 'q17').rows)) if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
+  const sleepChosen = (A.q1 || []).some(x => x.startsWith('Sleep'));
+  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
   p.hyg_tried = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].filter(([r]) => triedNo(r)).map(x => x[1]);
-  p.sleep_pro_tried = triedNo('pro');
+  // the CBT-I row is only asked when Sleep was chosen, so a stored answer does not count otherwise
+  p.sleep_pro_tried = sleepChosen && triedNo('pro');
   if (now('phone') && now('work')) p.doing.push('Bed for sleep');
-  p.sleep_pro = now('pro');
+  p.sleep_pro = sleepChosen && now('pro');
   p.sleep_disrupt = [];
   if (has('q19', 'Stress or feeling under pressure')) p.sleep_disrupt.push('Slow breathing to wind down', 'Bedtime to-do list', 'Progressive muscle relaxation');
   if (has('q19', 'Screens or technology')) p.sleep_disrupt.push('Screen-free wind-down');
@@ -267,4 +272,4 @@ function toFeatures(A) {
 
 
 // node: export the question set and the answers-to-features step
-if (typeof module !== "undefined") module.exports = { QUESTIONS, SECTIONS, NONE_WORDS, toFeatures };
+if (typeof module !== "undefined") module.exports = { QUESTIONS, SECTIONS, NONE_WORDS, toFeatures, gridRows };
