@@ -511,7 +511,7 @@ async function askContact(fast) {
   await typing(fast ? 0 : 450);
   bot(c[1](), '', 'q');
   $('txt').placeholder = c[2]; $('txt').setAttribute('inputmode', c[3]); $('txt').setAttribute('autocomplete', c[0] === 'name' ? 'given-name' : c[0] === 'email' ? 'email' : 'tel');
-  composer(true, c[0] === 'name' ? 'Type your first name.' : ''); ready = true; scrollEnd(); if (!fast) $('txt').focus({ preventScroll: true });
+  composer(true, c[0] === 'name' ? 'Talk or type.' : ''); ready = true; scrollEnd(); if (!fast) $('txt').focus({ preventScroll: true });
 }
 async function typedContact(raw) {
   const c = CONTACT[ci];
