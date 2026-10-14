@@ -455,13 +455,13 @@ details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15
 .mapsvg .ml-focus .mt{font-weight:700;fill:#000}.mapsvg .ml-focus .ms{fill:#4D2831}
 .mapsvg{width:min(620px,100%)}
 @media (max-width:520px){.mapsvg .ms{display:none}.mapsvg .mt{font-size:22px}}
-/* "What's included" card in black */
-.incl{background:var(--plum);color:var(--cream);padding:clamp(28px,5vw,44px);gap:16px}
+/* "What's included" card in light blue */
+.incl{background:var(--blue);color:var(--plum);padding:clamp(28px,5vw,44px);gap:16px}
 .incl h3{font-size:clamp(24px,3vw,30px)}
 .incl ul{gap:12px}
 .incl li{font-size:18px;line-height:1.5}
-.incl h3,.incl li,.incl li b{color:var(--cream)}
-.incl li::marker{color:var(--cream)}
+.incl h3,.incl li,.incl li b{color:var(--plum)}
+.incl li::marker{color:var(--plum)}
 /* journey step cards: more room around the pillar tag and text */
 .jsl{gap:12px;margin-top:10px}
 .js{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;padding:18px 20px 18px;border-radius:18px}
@@ -481,14 +481,18 @@ details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15
 .who[hidden]{display:none}
 /* opening: the conclusion first */
 .hero .hlead{font-size:clamp(24px,3.2vw,32px);line-height:1.2;font-weight:300;max-width:24ch;margin-top:6px}
-.hstart{display:grid;gap:8px;margin-top:6px;padding-top:16px;border-top:1px solid rgba(77,40,49,.35)}
-.hstart .kicker{color:var(--plum);margin:0}
-.hst{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;font-size:clamp(19px,2.2vw,22px);font-weight:400;color:var(--plum)}
-.hst i{font-style:normal;opacity:.5}
-.hst span{white-space:nowrap}
 .close .belong{font-size:clamp(20px,2.4vw,24px);font-weight:300;line-height:1.3}
 .pcta2{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:20px}
 .tier .tfoot:empty{display:none}
+/* pillar cards on the plan: white, with no filler colour */
+.bp.g-focus{background:var(--white);color:var(--ink)}
+.bp.g-focus .tag{border-color:var(--plum);color:inherit;background:transparent}
+.fcard,.fcard.a-Sleep{background:var(--white);color:var(--ink)}
+.fcard .chip{color:inherit;box-shadow:inset 0 0 0 1px currentColor}
+.fwell,.a-Connection .fwell,.a-Prevention .fwell,.fcard.a-Sleep .fwell{background:var(--white);color:var(--plum);box-shadow:inset 0 0 0 1px rgba(77,40,49,.22)}
+.pr,.pr.a-Sleep{background:var(--white)}
+.pr .hd,.pr.a-Sleep .hd{background:var(--white);color:var(--ink);border-bottom:1px solid var(--line)}
+.pr .hd .chip{color:inherit;box-shadow:inset 0 0 0 1px currentColor}
 </style>
 
 <div class="shell">
@@ -695,7 +699,6 @@ const S = [
   r => { const op = openingOf(r); return `<div class="hero"><div class="htext">
     <div class="ht"><h1>Your Good Span</h1><p class="kicker hk">${esc(r.name)} · ${esc(r.date || '12 October 2026')}</p><p class="hsub hlead">${esc(op.lead)}</p></div>
     <div class="hls">${op.paras.map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>
-    ${op.starts.length ? `<div class="hstart"><p class="kicker">Your Good Span starts with</p><p class="hst">${op.starts.map(t => `<span>${esc(t)}</span>`).join('<i aria-hidden="true">·</i>')}</p><p class="hl">${esc(op.after || "We'll build from there as you discover what works.")}</p></div>` : ''}
     </div>${(() => { const k = PHOTO[r.name] || r.focus[0]; return IMG[k] ? `<figure class="hfig"><img src="${IMG[k]}" alt="${esc(ALT[k])}"><figcaption><span class="chip p-${r.focus[0]}">${esc(r.focus[0])}</span></figcaption></figure>` : ''; })()}
   </div>
     ${NOTICE[r.name] ? `<div class="check check-top notice"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="#CB863A"/><circle cx="24" cy="24" r="20" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(NOTICE[r.name].title)}</h3><p style="margin-top:6px">${esc(NOTICE[r.name].text)}</p></div></div>` : ''}
