@@ -16,9 +16,9 @@
 html,body{background:var(--blue);color:var(--plum)}
 body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;margin:0}
 .top{border-bottom:1px solid var(--plum);padding-inline:16px}
-.top .in{max-width:1040px;margin:0 auto;padding-block:18px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px 20px;flex-wrap:wrap}
-.top img{height:20px;width:auto;display:block}
-.prog{display:flex;align-items:center;gap:12px}
+.top .in{max-width:1040px;margin:0 auto;padding-block:18px 16px;display:flex;align-items:center;justify-content:center;position:relative}
+.top img{height:calc(20px * 1.15);width:auto;display:block}
+.prog{position:absolute;right:0;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:12px}
 .bar{width:140px;height:3px;border-radius:999px;background:var(--line);overflow:hidden}
 .bar i{display:block;height:100%;width:0;background:var(--plum);transition:width .4s}
 .ui{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0}
@@ -101,6 +101,7 @@ body{font-family:var(--display);font-weight:300;font-size:17px;line-height:1.5;m
 .sum .how{font-family:var(--ui);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-left:8px;white-space:nowrap}
 .stat{display:flex;flex-wrap:wrap;gap:8px}
 .stat span{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+@media (max-width:1100px){.top .in{flex-wrap:wrap}.prog{position:static;transform:none;flex:1 0 100%;justify-content:flex-end}}
 @media (max-width:560px){.sec>.arcs{display:none}.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
 @media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
 #plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--blue);z-index:10}
