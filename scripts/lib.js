@@ -35,7 +35,7 @@ function conversationPage() {
     'const gsProfile = (function () {\n' + fs.readFileSync(ROOT + '/core/profile.js', 'utf8') + '\nreturn profile; })();',
     fs.readFileSync(ROOT + '/core/result.js', 'utf8'),
   ].join('\n');
-  let s = fill(fs.readFileSync(ROOT + '/templates/conversation.tpl.html', 'utf8'), Object.assign(fontMap(), { __SYM__: dataUri(A + 'tgs-symbol-black.png', 'image/png') }));
+  let s = fill(fs.readFileSync(ROOT + '/templates/conversation.tpl.html', 'utf8'), Object.assign(fontMap(), { __LOGO__: dataUri(A + 'tgs-logo-one-line-plum.png', 'image/png'), __SYM__: dataUri(A + 'tgs-symbol-black.png', 'image/png') }));
   s = s.replace('__IMG__', () => JSON.stringify(Object.fromEntries(PILLARS.map(k => [k.toLowerCase(), img(k)]))));
   s = s.replace('__QUESTIONS__', () => fs.readFileSync(ROOT + '/core/questions.js', 'utf8'));
   s = s.replace('__RESULT_JS__', () => js);
