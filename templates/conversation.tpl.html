@@ -1,6 +1,6 @@
 <title>Good Span Conversation</title>
 <style>
-/* Layout: the assessment's own welcome screen, then one calm conversation column. The page sits on light blue with black type (the contrast matrix rates that pair AAA). The wordmark is plum. Each section opens with a card in its pillar colour (white for the non-pillar sections); questions are set large in the display face, the member's answers as plum pills, options as soft chips. Brand: The Good Span identity. */
+/* Layout: the assessment's own welcome screen, then one calm conversation column. The page sits on light blue with black type (the contrast matrix rates that pair AAA). The wordmark is plum. Each section opens with the same white card; questions are set large in the display face, the member's answers as plum pills, options as soft chips. Brand: The Good Span identity. */
 @font-face{font-family:"BST Bazaine";src:url(__F_THIN__) format("opentype");font-weight:200;font-display:swap}
 @font-face{font-family:"BST Bazaine";src:url(__F_LIGHT__) format("opentype");font-weight:300;font-display:swap}
 @font-face{font-family:"BST Bazaine";src:url(__F_REG__) format("opentype");font-weight:400;font-display:swap}
@@ -39,10 +39,8 @@ body{font-family:var(--display);font-weight:300;font-size:15.3px;line-height:1.5
 /* conversation */
 .wrap{max-width:760px;margin:0 auto;padding-block:24px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:18px}
 .thread{display:flex;flex-direction:column;gap:14px;min-width:0}
-.sec{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:center;margin-top:10px;background:var(--sc,var(--white));color:var(--st,var(--black))}
+.sec{position:relative;isolation:isolate;overflow:hidden;border-radius:24px;padding:clamp(22px,4vw,34px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px 24px;align-items:center;margin-top:10px;background:var(--white);color:var(--black)}
 .sec>*{position:relative;z-index:1}
-.sec>.arcs{position:absolute;inset:0;z-index:0;pointer-events:none}
-.sec .arcs svg{position:absolute;right:-70px;top:-80px;width:280px;height:280px}
 .sec h2{margin:0;font-weight:200;font-size:clamp(30px,4.6vw,42px);line-height:1.05}
 .sec p{margin:0;max-width:52ch}
 .sec .stx{display:grid;gap:10px;min-width:0}
@@ -102,7 +100,7 @@ body{font-family:var(--display);font-weight:300;font-size:15.3px;line-height:1.5
 .stat{display:flex;flex-wrap:wrap;gap:8px}
 .stat span{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
 @media (max-width:1100px){.top .in{flex-wrap:wrap}.prog{position:static;transform:none;flex:1 0 100%;justify-content:flex-end}}
-@media (max-width:560px){.sec>.arcs{display:none}.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
+@media (max-width:560px){.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
 @media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
 #plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--blue);z-index:10}
 html.planon,html.planon body{overflow:hidden}
@@ -185,10 +183,7 @@ function progress() {
 }
 function sectionCard(i) {
   const s = SECTIONS[i], p = PILLAR[s.id], d = document.createElement('section'); d.className = 'sec';
-  if (p) d.style.cssText = `--sc:${p[0]};--st:${p[1]}`;
-  if (s.id === 'sleep') d.style.boxShadow = 'inset 0 0 0 1px var(--plum)';
-  d.innerHTML = `${p ? `<div class="arcs" aria-hidden="true"><svg viewBox="0 0 280 280"><circle cx="140" cy="140" r="130" fill="none" stroke="currentColor" stroke-width="1.2"/><circle cx="100" cy="180" r="90" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2 7" stroke-linecap="round"/></svg></div>` : ''}
-    <div class="stx"><p class="ui">${i + 1} of ${SECTIONS.length}${p ? ' · ' + p[2] : ''}</p><h2>${esc(s.title)}</h2>${s.intro ? `<p>${esc(s.intro)}</p>` : ''}</div>${IMG[s.id] ? `<div class="photo"><img src="${IMG[s.id]}" alt="${esc(ALT[s.id])}"></div>` : ''}`;
+  d.innerHTML = `<div class="stx"><p class="ui">${i + 1} of ${SECTIONS.length}${p ? ' · ' + p[2] : ''}</p><h2>${esc(s.title)}</h2>${s.intro ? `<p>${esc(s.intro)}</p>` : ''}</div>${IMG[s.id] ? `<div class="photo"><img src="${IMG[s.id]}" alt="${esc(ALT[s.id])}"></div>` : ''}`;
   T.append(d);
 }
 
