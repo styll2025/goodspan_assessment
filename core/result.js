@@ -8,7 +8,7 @@
 (function (root) {
   const AREAS = ['Nutrition', 'Sleep', 'Movement', 'Mind', 'Connection', 'Prevention'];
   const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
-  const MORE = { Nutrition: 'A small change to how you eat', Sleep: 'Some attention to your sleep', Movement: 'A little more movement', Mind: 'Support for your mental wellbeing', Connection: 'A little more time with others', Prevention: 'Your long-term health habits' };
+  const MORE = { Nutrition: 'Work on how you eat', Sleep: 'Some attention to your sleep', Movement: 'A little more movement', Mind: 'Support for your mental wellbeing', Connection: 'A little more time with others', Prevention: 'Your long-term health habits' };
   const GOALQ = { Nutrition: 'q9', Sleep: 'q18', Movement: 'q27', Mind: 'q33', Connection: 'q38', Prevention: 'q52' };
   const WELL_LABEL = { Nutrition: 'Eating well', Sleep: 'Well supported', Movement: 'Staying active', Mind: 'Habits to protect', Connection: 'Staying connected', Prevention: 'Positive foundations' };
   const LOWER = { '45-60': 45, '1-2h': 60, '2-4h': 120, '4h+': 240, 'varies': 45 };
@@ -49,7 +49,7 @@
   }
   const OO_TXT = { tracking_food: 'tracking what you eat', apps: 'tracking apps', fasting: 'eating windows or fasting', meditation: 'meditation', journalling: 'journalling', early: 'early-morning activities', touch: 'practices involving touch' };
   const OO_AREA = { tracking_food: ['Nutrition'], fasting: ['Nutrition'], meditation: ['Mind', 'Sleep'], journalling: ['Mind', 'Sleep'], early: ['Sleep', 'Movement'], touch: ['Connection'], apps: AREAS };
-  const SMALL = { Nutrition: 'a small change to how you eat', Sleep: 'a little more attention to your sleep', Movement: 'a little more movement', Mind: 'a little more room for your mental wellbeing', Connection: 'a little more time with others', Prevention: 'one of your long-term health habits' };
+  const SMALL = { Nutrition: 'how you eat', Sleep: 'more attention to your sleep', Movement: 'more movement', Mind: 'more room for your mental wellbeing', Connection: 'more time with others', Prevention: 'one of your long-term health habits' };
   // goals in a member's own voice: “You picked ‘managing stress’ as a goal” becomes “You told us managing stress matters to you”
   const voice = t => (t || '').replace(/^You picked “([^”]+)” as a goal, and this is a practical way to work on it\./, 'You told us $1 matters to you, and this is a practical way to work on it.')
     .replace(/^You picked “([^”]+)” and “([^”]+)” as goals\./, 'You told us $1 and $2 matter to you.').replace(/^You picked “([^”]+)” as a goal\./, 'You told us $1 matters to you.');
@@ -87,7 +87,7 @@
       return voice(w) || x.row.why;
     }
     // traced = the reason names something from their answers, not only the library's general reason (a 'you can do it at home' ending doesn't count)
-    const traced = x => { const w = ownWhy(x); return p.wish.includes(x.area) || !(w.startsWith(x.row.why) || /^A small, well-established habit/.test(w)); };
+    const traced = x => { const w = ownWhy(x); return p.wish.includes(x.area) || !(w.startsWith(x.row.why) || /^A well-established habit/.test(w)); };
 
     // a practice can start at an easier level of the same family when the chosen level doesn't fit their time
     // (only a level with no safety exclusions beyond the chosen one's)
@@ -110,18 +110,43 @@
       if (focus.length >= 1) break; if (pools[a] || (held && a === 'Movement')) continue;
       const all = fromArea(a).filter(allowed), pri = all.filter(x => x.role === 'Priority'); if (pri.length) { pools[a] = pri; focus.push(a); }
     }
+    // always two focus pillars: the next pillar with the most opportunity joins (never Movement while a symptom is unchecked)
+    for (const a of AREAS.slice().sort((x, y) => o.combined[y] - o.combined[x])) {
+      if (focus.length >= 2) break; if (focus.includes(a) || blocked.includes(a) || (held && a === 'Movement')) continue;
+      const all = fromArea(a).filter(allowed), pri = all.filter(x => x.role === 'Priority'); if (pri.length) { pools[a] = pri; focus.push(a); }
+    }
     const wishF = focus.filter(a => p.wish.includes(a));
     const q0 = A.q0 || {}, firstAreas = q0.first && THEMES[q0.first] ? THEMES[q0.first].areas : [];
     const startAreas = (wishF.length ? wishF : focus).slice().sort((x, y) => (firstAreas.includes(y) ? 1 : 0) - (firstAreas.includes(x) ? 1 : 0)), moved = focus.filter(a => !startAreas.includes(a));
     let pr = [];
-    if (startAreas.length > 1) pr = [...pools[startAreas[0]].slice(0, 2), ...pools[startAreas[1]].slice(0, 1)];
-    else pr = pools[startAreas[0]].slice(0, wishF.length ? 2 : 3);
+    // two recommended practices: one from each starting pillar, or two from the one they chose
+    if (startAreas.length > 1) pr = [pools[startAreas[0]][0], pools[startAreas[1]][0]].filter(Boolean);
+    else pr = pools[startAreas[0]].slice(0, 2);
     pr = pr.filter((x, i) => i === 0 || traced(x));
     { let t = 0; pr = pr.map(x => { const r = easier(x.area, x.fam, x.row, lower - t); if (!r) return null; if (r !== x.row) { x = Object.assign({}, x, { row: r, ex: minOf(x.fam, r) }); } t += x.ex; return x; }).filter(Boolean); }
-    pr = pr.slice(0, 3);
-    focus = [...startAreas.filter(a => pr.some(x => x.area === a)), ...moved];
+    pr = pr.slice(0, 2);
+    // fewer than two recommended (a pillar with only one priority practice): take the next priority practice from the other focus pillars
+    for (const x0 of [...[...startAreas, ...moved].flatMap(a => pools[a] || []), ...full.filter(x => focus.includes(x.area) && x.pass === 1 && allowed(x))]) {
+      if (pr.length >= 2) break; if (pr.some(y => y.fam === x0.fam) || SAME_JOB.some(gr => gr.includes(x0.fam) && gr.some(h => h !== x0.fam && pr.some(y => y.fam === h)))) continue;
+      const r = easier(x0.area, x0.fam, x0.row, lower - pr.reduce((t, y) => t + y.ex, 0)); if (r) pr.push(r === x0.row ? x0 : Object.assign({}, x0, { row: r, ex: minOf(x0.fam, r) })); }
     const taken = new Set(pr.map(x => x.fam));
     const sameJob = f => SAME_JOB.some(gr => gr.includes(f) && gr.some(h => h !== f && taken.has(h)));
+    // two more practices for the month ahead, optional ("if you have time"): from the starting pillars first, then any pillar waiting.
+    // Each must trace back to an answer; ones that fit the remaining time come first, at an easier level if that helps.
+    const extras = [];
+    { let t = pr.reduce((a, x) => a + x.ex, 0);
+      const cand = [...startAreas.flatMap(a => (pools[a] || [])), ...full.filter(x => startAreas.includes(x.area) && x.pass === 1 && allowed(x)), ...moved.flatMap(a => (pools[a] || []))];
+      const ok = x => !taken.has(x.fam) && !sameJob(x.fam) && !extras.some(y => y.fam === x.fam);
+      // 1) traced to an answer and fits their time; 2) chosen by the rules for that pillar and fits; 3) the rest, at its own time
+      for (const pass of [1, 2, 3]) for (const x0 of cand) {
+        if (extras.length >= 2) break; if (!ok(x0) || (pass === 1 && !traced(x0))) continue;
+        let x = x0; const r = easier(x.area, x.fam, x.row, lower - t);
+        if (r) { if (r !== x.row) x = Object.assign({}, x, { row: r, ex: minOf(x.fam, r) }); }
+        else if (pass < 3) continue;
+        if (!r) x = Object.assign({}, x, { over: true });   // optional and beyond their usual time: shown, but not counted in the plan's time
+        extras.push(x); taken.add(x.fam); if (r) t += x.ex;
+      } }
+    focus = [...startAreas.filter(a => [...pr, ...extras].some(x => x.area === a)), ...moved];
 
     // ---- what comes next in each focus area
     const toItem = x => ({ area: x.area, fam: x.fam, action: x.row.w, freq: x.row.d + (CURRENT.includes(x.fam) && x.ex ? `. That's about ${x.ex} minutes a week more than you do now` : ''), start: x.row.t, min: x.ex, refs: refsOf(x.row), row: x.row, why: x.why });
@@ -154,6 +179,7 @@
     const m2 = [], m3 = [], later = [];
     // month 2 adds two at most, one with small steps or when another focus area is waiting, and never more than month 1 began with
     const n2 = Math.min((p.change === 'small' || movedQ.length) ? 1 : 2, pr.length);
+    total += extras.filter(x => !x.over).reduce((t, x) => t + x.ex, 0);
     const take = (q, into, n) => { while (q.length && into.length < n) { const x = q.shift(), y = fit(x); if (y) { into.push(y); total += y.min; } else later.push(x); } };
     take(startQ, m2, n2);
     if (movedQ.length) take(movedQ, m3, 1); else take(startQ, m3, 1);
@@ -168,7 +194,7 @@
     if (held) {
       const mg = goalsOf('Movement');
       intro1 = [`${p.wish.includes('Movement') ? `You told us you'd like to move more${mg.length ? ` and ${glist(mg)}` : ''}. ` : ''}Before we suggest any increase in activity, there's one important thing to discuss with a doctor first, explained just below.`,
-        `In the meantime, your answers point to ${list(focus.map(low))}, where a small change could make a real difference while movement waits.`];
+        `In the meantime, your answers point to ${list(focus.map(low))}, where focusing now could make a real difference while movement waits.`];
     } else if (wishF.length) {
       const gl = wishF.flatMap(goalsOf);
       let t = `You told us you'd like support with ${list(wishF.map(a => AREA_TXT[a]))}${gl.length ? `, especially ${glist(gl)}` : ''}. That's where your Good Span starts.`;
@@ -176,7 +202,7 @@
       intro1 = [t];
     } else {
       const wishWell = p.wish.filter(a => groups[a] === 'well' && !blocked.includes(a)), wishBlocked = p.wish.filter(a => blocked.includes(a));
-      intro1 = [`${wishBlocked.length ? `You told us you'd like to work on ${list(wishBlocked.map(a => AREA_TXT[a]))}. With what you've told us about your health, the changes we'd usually suggest there need a health professional's input first. ` : ''}${wishWell.length ? `You told us you'd like to work on ${list(wishWell.map(a => AREA_TXT[a]))}, and your answers show ${wishWell.length > 1 ? "they're" : "it's"} already in a good place. ` : groupsWell(groups) ? 'You have already built some good habits across your everyday life. ' : ''}${list(focus)} ${focus.length > 1 ? 'are the areas' : 'is the area'} where a small change could make the biggest difference to your next steps.`];
+      intro1 = [`${wishBlocked.length ? `You told us you'd like to work on ${list(wishBlocked.map(a => AREA_TXT[a]))}. With what you've told us about your health, the changes we'd usually suggest there need a health professional's input first. ` : ''}${wishWell.length ? `You told us you'd like to work on ${list(wishWell.map(a => AREA_TXT[a]))}, and your answers show ${wishWell.length > 1 ? "they're" : "it's"} already in a good place. ` : groupsWell(groups) ? 'You have already built some good habits across your everyday life. ' : ''}${list(focus)} ${focus.length > 1 ? 'are the areas' : 'is the area'} where your effort could make the biggest difference to your next steps.`];
     }
 
     // something worth discussing: anxious or low on more than half the days
@@ -216,24 +242,24 @@
       lead = hi('your answers point somewhere slightly different from where you might expect.');
       paras = [[wishWell.length ? `You told us you'd like to work on ${list(wishWell.map(a => AREA_TXT[a]))}, and you already have strong foundations there.` : '',
         wishBlocked.length ? `You told us you'd like to work on ${list(wishBlocked.map(a => AREA_TXT[a]))}. With what you've told us about your health, the changes we'd usually suggest there need a health professional's input first.` : ''].filter(Boolean).join(' '),
-        `The clearest opportunity we see is ${list(focus.map(low))}. A relatively small change could make a useful difference.`];
+        `The clearest opportunity we see is ${list(focus.map(low))}. That's where your effort will count most.`];
     } else if (wishF.length) {
       situation = 'priority';
       const ownFits = own && (q0.areas || []).includes(startAreas[0]);
       lead = hi(`you told us ${ownFits ? likeOwn : `${list(wishF.map(a => AREA_TXT[a]))} ${wishF.length > 1 ? 'matter' : 'matters'} to you`}, so that's where we're starting.`);
-      paras = [wellAreas.length ? `You already have strong foundations in ${wellTxt}, and we'll build on what already works.` : "We'll build on what already works, one small step at a time."];
+      paras = [wellAreas.length ? `You already have strong foundations in ${wellTxt}, and we'll build on what already works.` : "We'll build on what already works, one step at a time."];
       if (wishWell.length) paras.unshift(`${cap(list(wishWell.map(a => AREA_TXT[a])))} already ${wishWell.length > 1 ? 'have' : 'has'} strong foundations, so we're starting with ${AREA_TXT[startAreas[0]]}.`);
       if (ooLine) paras.push(ooLine);
       if (laterLine) paras.push(laterLine);
     } else if (wellAreas.length >= 3) {
       situation = 'doing-well';
-      const small = pr[0] && CURRENT.slice(0, 2).includes(pr[0].fam) ? 'a little more aerobic movement' : SMALL[focus[0]];
+      const small = pr[0] && CURRENT.slice(0, 2).includes(pr[0].fam) ? 'more aerobic movement' : SMALL[focus[0]];
       lead = hi("you're already doing a lot right.");
-      paras = [`Your answers show strong foundations across much of your everyday life. Rather than giving you more things to do, we think the best place to start is surprisingly small: ${small}.`];
+      paras = [`Your answers show strong foundations across much of your everyday life. Rather than giving you more things to do, we think the best place to start is ${small}.`];
     } else {
       situation = 'start';
       lead = hi("here's where we'd start.");
-      paras = [`The clearest opportunity we see is ${list(focus.map(low))}. A relatively small change could make a useful difference, and we'll build on what already works.`];
+      paras = [`The clearest opportunity we see is ${list(focus.map(low))}. That's where your effort will count most, and we'll build on what already works.`];
     }
     const nPr = pr.length, mTxt = mins1 >= 5 ? `about ${mins1} minutes a week` : mins1 > 0 ? 'a few minutes a week' : 'no extra time set aside';
     const opening = { situation, lead, paras, own,
@@ -261,12 +287,12 @@
       const gl = goalsOf(a);
       if (p.wish.includes(a) && gl.length) rs = [`You'd like support with ${glist(gl)}.`, ...rs.filter(r => !r.startsWith('You picked'))];
       const paras = rs.length > 1 ? [rs[0], rs.slice(1).join(' ')] : rs;
-      if (moved.includes(a) && startAreas.length) { const n = monthOf(a); paras.push(`Because your priority is ${AREA_TXT[startAreas[0]]}, this joins your plan ${n < 4 ? `in month ${n}` : 'later on'}, once your first practices feel settled.`); }
+      if (moved.includes(a) && startAreas.length) { const n = monthOf(a); paras.push(`Because your priority is ${AREA_TXT[startAreas[0]]}, this joins your Good Span ${n < 4 ? `in month ${n}` : 'later on'}, once your first practices feel settled.`); }
       foc[a] = { p: paras, well: wellOf(a, A, p).slice(0, 3) };
     }
 
     // section 4: practice cards
-    const prc = pr.map(x => {
+    const prc = [...pr, ...extras].map(x => {
       const curr = CURRENT.includes(x.fam);
       const d = cap(x.row.d), hasMin = /minute/.test(x.row.d);
       const time = curr && x.ex ? `${d}. That's about ${x.ex} minutes a week more than you do now.`
@@ -284,7 +310,7 @@
     return {
       gen: true, opening, name: name || 'You', date, prof, focus, groups, wish: p.wish, change: p.change, safety, notice, found, themes,
       intro1, spc, foc, prc,
-      practices: pr.map(x => ({ area: x.area, fam: x.fam, action: x.row.w, freq: x.row.d, start: x.row.t, why: ownWhy(x), refs: refsOf(x.row), min: x.ex })),
+      practices: [...pr.map(x => Object.assign(x, { rec: true })), ...extras].map(x => ({ rec: !!x.rec, area: x.area, fam: x.fam, action: x.row.w, freq: x.row.d, start: x.row.t, why: ownWhy(x), refs: refsOf(x.row), min: x.ex, over: !!x.over })),
       lineup: Object.fromEntries(Object.entries(lineup).map(([a, v]) => [a, v.map(strip)])), later: [],
       steps: { m2: m2.map(strip), m3: m3.map(strip), later: later.slice(0, 3).map(strip) }, add2: m2.map(x => x.fam), add3: m3.map(x => x.fam),
       mins: mins1, lower, timeTxt: TIME_TXT[p.time] || 'some time', pace: { small: 'Small, easy steps', mid: 'Something in between', big: 'A bigger challenge' }[p.change],
