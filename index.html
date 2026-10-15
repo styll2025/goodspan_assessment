@@ -64,15 +64,19 @@ body{font-family:var(--display);font-weight:300;font-size:15.3px;line-height:1.5
 .typing .bub i{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
 .typing .bub i:nth-child(2){animation-delay:.15s}.typing .bub i:nth-child(3){animation-delay:.3s}
 @keyframes b{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.choices{display:grid;justify-items:start;gap:16px;padding-left:40px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;padding-left:40px}
+.choices .chips{padding-left:0}
 .chip{font-family:var(--display);font-size:14.4px;font-weight:300;color:var(--black);background:var(--white);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;text-align:left;transition:background .15s,border-color .15s}
 .chip:hover{border-color:var(--plum)}
-.chip[aria-pressed="true"]{background:var(--plum);border-color:var(--plum);color:var(--cream)}
+.chip[aria-pressed="true"],.chip[aria-pressed="true"]:hover{background:var(--pink);border-color:var(--pink);color:var(--plum)}
 .chip.go,.chip.alt{font-family:var(--ui);font-size:12px;letter-spacing:.08em;text-transform:uppercase;padding:10px 18px}
 .chip.go{background:var(--plum);border-color:var(--plum);color:var(--cream)}
 .chip.alt{background:transparent;border-color:var(--plum)}
 .chip.go:disabled{opacity:.3;cursor:default}
-.chip:focus-visible,.send:focus-visible,.mic:focus-visible,#txt:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
+.done{font-family:var(--ui);font-size:13px;letter-spacing:.08em;text-transform:uppercase;padding:12px 28px;border-radius:999px;border:1px solid var(--plum);background:var(--plum);color:var(--cream);cursor:pointer}
+.done:disabled{opacity:.35;cursor:default}
+.chip:focus-visible,.done:focus-visible,.send:focus-visible,.mic:focus-visible,#txt:focus-visible{outline:2px solid var(--plum);outline-offset:2px}
 .comp{position:sticky;bottom:env(safe-area-inset-bottom,0px);background:linear-gradient(to bottom,rgba(209,230,233,0),var(--blue) 30%);padding-block:18px 8px;display:grid;gap:6px}
 .inrow{min-width:0;position:relative;display:flex;gap:8px;align-items:center;background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 6px 6px 20px}
 .inrow:focus-within{border-color:var(--plum)}
@@ -100,7 +104,7 @@ body{font-family:var(--display);font-weight:300;font-size:15.3px;line-height:1.5
 .stat{display:flex;flex-wrap:wrap;gap:8px}
 .stat span{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:5px 11px}
 @media (max-width:1100px){.top .in{flex-wrap:wrap}.prog{position:static;transform:none;flex:1 0 100%;justify-content:flex-end}}
-@media (max-width:560px){.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
+@media (max-width:560px){.sec{grid-template-columns:minmax(0,1fr)}.photo{grid-row:1;width:84px}.chips,.choices{padding-left:0}.sum dl{grid-template-columns:minmax(0,1fr)}.sum dt{border-bottom:0;padding-bottom:0}.sum dd{padding-top:2px}.bar{width:80px}.wnav{justify-content:flex-start}}
 @media (prefers-reduced-motion:reduce){.typing .bub i{animation:none;opacity:.6}.bar i,.chip{transition:none}}
 #plan{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--blue);z-index:10}
 html.planon,html.planon body{overflow:hidden}
@@ -1671,7 +1675,7 @@ function stepRow(q) {
 function bot(html, small, kind) { const d = document.createElement('div'); d.className = 'msg ' + (kind || 'say'); d.innerHTML = `<span class="av"><img src="${SYM}" alt=""></span><div class="bub">${html}${small ? `<small>${small}</small>` : ''}</div>`; T.append(d); return d; }
 function me(text) { const d = document.createElement('div'); d.className = 'msg me'; d.innerHTML = `<div class="bub">${esc(text)}</div>`; T.append(d); scrollEnd(); }
 function typing(ms) { return new Promise(res => { if (reduce || !ms) return res(); const d = document.createElement('div'); d.className = 'msg typing'; d.innerHTML = `<span class="av"><img src="${SYM}" alt=""></span><div class="bub"><i></i><i></i><i></i></div>`; T.append(d); scrollEnd(); setTimeout(() => { d.remove(); res(); }, ms); }); }
-const clearChips = () => T.querySelectorAll('.chips').forEach(e => e.remove());
+const clearChips = () => T.querySelectorAll('.choices,.chips').forEach(e => e.remove());
 function composer(on, hint) { $('inrow').classList.toggle('off', !on); $('txt').disabled = !on; $('send').disabled = !on; $('mic').disabled = !on; $('hint').textContent = hint || ''; }
 function progress() {
   const q = QUESTIONS[qi], i = q ? secIdx(q) : SECTIONS.length;
@@ -1713,6 +1717,25 @@ const list2 = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' a
 
 function options(q, pre) {
   clearChips(); sel = new Set(pre || []);
+  if (q.type === 'multi') {
+    const wrap = document.createElement('div'); wrap.className = 'choices';
+    const box = document.createElement('div'); box.className = 'chips';
+    const go = document.createElement('button'); go.type = 'button'; go.className = 'done'; go.textContent = 'Done';
+    const render = () => {
+      box.innerHTML = q.options.map(o => `<button type="button" class="chip" aria-pressed="${sel.has(o)}" data-o="${esc(o)}">${esc(label(o))}</button>`).join('');
+      go.disabled = !sel.size;
+    };
+    render();
+    box.onclick = e => {
+      const b = e.target.closest('.chip'); if (!b) return;
+      const o = b.dataset.o;
+      if (sel.has(o)) sel.delete(o);
+      else { if (NONE_WORDS.test(o) || o === 'I’m not sure yet') sel.clear(); else [...sel].filter(x => NONE_WORDS.test(x) || x === 'I’m not sure yet').forEach(x => sel.delete(x)); if (q.max && sel.size >= q.max) return; sel.add(o); }
+      render();
+    };
+    go.onclick = () => { if (!sel.size) return; answer(q, [...sel], 'tapped'); };
+    wrap.append(box, go); T.append(wrap); return;
+  }
   const box = document.createElement('div'); box.className = 'chips';
   if (q.type === 'grid') {
     const all = row === 0 && ALLNEVER[q.id];
@@ -1724,17 +1747,6 @@ function options(q, pre) {
   } else if (q.type === 'single') {
     box.innerHTML = q.options.map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(label(o))}</button>`).join('');
     box.onclick = e => { const b = e.target.closest('.chip'); if (b) answer(q, [b.dataset.o], 'tapped'); };
-  } else {
-    const render = () => { box.innerHTML = q.options.map(o => `<button type="button" class="chip" aria-pressed="${sel.has(o)}" data-o="${esc(o)}">${esc(label(o))}</button>`).join('') + `<button type="button" class="chip go" data-go="1" ${sel.size ? '' : 'disabled'}>Done</button>`; };
-    render();
-    box.onclick = e => {
-      const b = e.target.closest('.chip'); if (!b) return;
-      if (b.dataset.go) return answer(q, [...sel], 'tapped');
-      const o = b.dataset.o;
-      if (sel.has(o)) sel.delete(o);
-      else { if (NONE_WORDS.test(o) || o === 'I’m not sure yet') sel.clear(); else [...sel].filter(x => NONE_WORDS.test(x) || x === 'I’m not sure yet').forEach(x => sel.delete(x)); if (q.max && sel.size >= q.max) return; sel.add(o); }
-      render();
-    };
   }
   T.append(box);
 }
@@ -2027,15 +2039,20 @@ const OPEN_CHIPS = ['energy', 'sleep', 'stress', 'mood', 'fitness', 'ease', 'foo
 async function askOpen() {
   stage = 'open'; ready = false; $('prog').hidden = false; await typing(500);
   bot('If the next six months went really well, what would you most like to feel different?', 'Tap any that fit, or say it in your own words', 'q');
-  sel = new Set(); const box = document.createElement('div'); box.className = 'chips';
+  sel = new Set(); const wrap = document.createElement('div'); wrap.className = 'choices';
+  const box = document.createElement('div'); box.className = 'chips';
+  const go = document.createElement('button'); go.type = 'button'; go.className = 'done'; go.textContent = 'Done';
   const TH = buildResult.THEMES;
-  const render = () => { box.innerHTML = OPEN_CHIPS.map(k => `<button type="button" class="chip" aria-pressed="${sel.has(k)}" data-k="${k}">${esc(cap1(TH[k].label))}</button>`).join('') + `<button type="button" class="chip alt" data-ns="1">I'm not sure yet</button><button type="button" class="chip go" data-go="1" ${sel.size ? '' : 'disabled'}>Done</button>`; };
+  const render = () => {
+    box.innerHTML = OPEN_CHIPS.map(k => `<button type="button" class="chip" aria-pressed="${sel.has(k)}" data-k="${k}">${esc(cap1(TH[k].label))}</button>`).join('') + `<button type="button" class="chip alt" data-ns="1">I'm not sure yet</button>`;
+    go.disabled = !sel.size;
+  };
   render();
   box.onclick = e => { const b = e.target.closest('.chip'); if (!b) return;
-    if (b.dataset.ns) { box.remove(); me("I'm not sure yet"); return openAnswered('', []); }
-    if (b.dataset.go) { box.remove(); const ks = [...sel]; const t = cap1(list2(ks.map(k => TH[k].label))); me(t); return openAnswered(t, ks, true); }
+    if (b.dataset.ns) { wrap.remove(); me("I'm not sure yet"); return openAnswered('', []); }
     const k = b.dataset.k; sel.has(k) ? sel.delete(k) : sel.size < 3 && sel.add(k); render(); };
-  T.append(box); composer(true, 'Tap, type or talk.'); ready = true; if (mode === 'talk') listen(); scrollEnd();
+  go.onclick = () => { if (!sel.size) return; wrap.remove(); const ks = [...sel]; const t = cap1(list2(ks.map(k => TH[k].label))); me(t); return openAnswered(t, ks, true); };
+  wrap.append(box, go); T.append(wrap); composer(true, 'Tap, type or talk.'); ready = true; if (mode === 'talk') listen(); scrollEnd();
 }
 const cap1 = t => t ? t.charAt(0).toUpperCase() + t.slice(1) : t;
 async function typedOpen(raw, clip, spoke) {
