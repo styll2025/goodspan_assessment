@@ -508,7 +508,7 @@ function openPlan() {
   let r;
   try { r = buildResult(name, A, { E: makeEngine(GS_DATA), DATA: GS_DATA, toFeatures, profile: gsProfile }); }
   catch (e) { console.error(e); alert("Sorry, we couldn't build your Good Span from these answers."); return; }
-  const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention };
+  const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention, Stretch: IMG.sleep };
   const html = RESULT_TPL.replace('_' + '_IMG__', () => JSON.stringify(img)).replace('_' + '_DATA__', () => JSON.stringify([r]).replace(/</g, '\\u003c'));
   // shown in its own frame over the conversation, so the page runs exactly as the result page does
   const f = document.createElement('iframe'); f.id = 'plan'; f.title = 'Your Good Span';
