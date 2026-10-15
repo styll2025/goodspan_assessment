@@ -1,5 +1,5 @@
 {
- "Inês": {
+ "Maria": {
   "q2": "30-39",
   "q3": "Mostly regular daytime hours",
   "q4": [
@@ -10,13 +10,13 @@
   ],
   "q6": "Neither",
   "q7": {
-   "veg": "3-4 portions",
+   "veg": "1-2 portions",
    "protein": "Two",
    "cooked": "3–5",
-   "grains": "3–5 days a week",
-   "beans": "1–2 days a week",
+   "grains": "1–2 days a week",
+   "beans": "Rarely or never",
    "sugary": "1–2 days a week",
-   "processed": "1–2 days a week",
+   "processed": "3–5 days a week",
    "nuts": "1–2 days a week",
    "salt": "1–2 days a week"
   },
@@ -24,12 +24,13 @@
    "screen": "Sometimes",
    "attention": "Sometimes",
    "slow": "Sometimes",
-   "variety": "Sometimes",
+   "variety": "Rarely",
    "out": "Sometimes",
    "window": "Rarely"
   },
   "q9": [
-   "Nothing in particular"
+   "Eating more plants and fibre",
+   "Reducing highly processed foods"
   ],
   "q11": [
    "Nothing in particular"
@@ -64,7 +65,7 @@
   "q19": [
    "Nothing in particular"
   ],
-  "q20": "3",
+  "q20": "4",
   "q21": "40",
   "q22": "2",
   "q23": "6-8",
@@ -83,7 +84,7 @@
    "Nothing in particular"
   ],
   "q30": "2 to 3 hours",
-  "q31": "30-60 minutes",
+  "q31": "1-2 hours",
   "q32": {
    "anx1": "Not at all",
    "anx2": "Not at all",
@@ -91,11 +92,11 @@
    "dep2": "Not at all"
   },
   "q33": [
-   "Nothing in particular"
+   "Managing stress",
+   "Switching off and relaxing"
   ],
   "q34": [
-   "Time for hobbies or enjoyable activities",
-   "Time away from work"
+   "Time for hobbies or enjoyable activities"
   ],
   "q36": {
    "phone": "Weekly or more",
@@ -125,7 +126,7 @@
   "q52": [
    "Nothing in particular"
   ],
-  "q55": "2-4 hours",
+  "q55": "1-2 hours",
   "q56": "Something in between",
   "q57": [
    "None of these"
@@ -134,7 +135,8 @@
    "None of these"
   ],
   "q1": [
-   "I’m not sure yet"
+   "Nutrition - how you eat and your everyday food habits",
+   "Mind - your mental and emotional wellbeing"
   ]
  },
  "Marta": {

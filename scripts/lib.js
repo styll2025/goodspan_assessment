@@ -11,7 +11,7 @@ const env = { E, DATA, toFeatures, profile };
 
 const dataUri = (f, mime) => `data:${mime};base64,${fs.readFileSync(f).toString('base64')}`;
 const A = ROOT + '/assets/';
-const FONTS = { __F_THIN__: ['BSTBazaineTrial-Thin.otf', 'font/otf'], __F_LIGHT__: ['BSTBazaineTrial-Light.otf', 'font/otf'], __F_REG__: ['BSTBazaineTrial-Regular.otf', 'font/otf'], __F_UI__: ['Archivo-Regular.ttf', 'font/ttf'], __LOGO__: ['tgs-logo-one-line-black.png', 'image/png'] };
+const FONTS = { __F_THIN__: ['BSTBazaineTrial-Thin.otf', 'font/otf'], __F_LIGHT__: ['BSTBazaineTrial-Light.otf', 'font/otf'], __F_REG__: ['BSTBazaineTrial-Regular.otf', 'font/otf'], __F_UI__: ['Archivo-Regular.ttf', 'font/ttf'], __LOGO__: ['tgs-logo-one-line-black.png', 'image/png'], __LOGO_PLUM__: ['tgs-logo-one-line-plum.png', 'image/png'], __SYM_PLUM__: ['tgs-symbol-plum.png', 'image/png'] };
 const PILLARS = ['Nutrition', 'Sleep', 'Movement', 'Mind', 'Connection', 'Prevention'];
 const fill = (s, map) => { for (const k in map) s = s.split(k).join(map[k]); return s; };
 const fontMap = () => Object.fromEntries(Object.entries(FONTS).map(([k, [f, m]]) => [k, dataUri(A + f, m)]));

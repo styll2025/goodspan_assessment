@@ -193,7 +193,7 @@ function makeEngine(DATA) {
 
   function why(p, S, x, wish) {
     let base = whyBase(p, S, x, wish); const f = x.fam;
-    if (x.fill && base === x.row.why) base = 'A small, well-established habit to add alongside your priorities. ' + base;
+    if (x.fill && base === x.row.why) base = 'A well-established habit to add alongside your priorities. ' + base;
     const likes = p.likes || [], keys = [...likes, ...(p.enjoy || []).filter(k => !likes.includes(k))];
     const ej = keys.find(k => (ENJOY[k] || []).includes(f));
     const t = ej && (likes.includes(ej) ? ENJOY_TXT[ej] : (LOC_TXT[ej] || ENJOY_TXT[ej]));   // only say they enjoy it when they told us so
@@ -668,7 +668,7 @@ function makeEngine(DATA) {
       const gl = gs.length ? `You picked ${gs.length > 1 ? gs.slice(0, -1).join(', ') + ' and ' + gs[gs.length - 1] + ' as goals' : gs[0] + ' as a goal'}.` : null;
       let out = wish.includes(a) && gl ? [gl, ...r] : [...r, ...(gl ? [gl] : [])];
       if (!out.length) out = [wish.includes(a) ? "You chose this as an area to focus on, so we've started with practices that are well supported by research."
-        : `Most of your answers here are already in a good place, so we've added one small step that builds on what you do, using a practice that ${DOING_WELL[a] || 'research links with better long-term health'}.`];
+        : `Most of your answers here are already in a good place, so we've added one next step that builds on what you do, using a practice that ${DOING_WELL[a] || 'research links with better long-term health'}.`];
       reasons[a] = out.slice(0, 3);
     });
     const target = ms => ms.reduce((t, x) => t + (x.change === 'DONE' ? 0 : x.row.tg), 0);
