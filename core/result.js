@@ -295,7 +295,7 @@
     const prc = [...pr, ...extras].map(x => {
       const curr = CURRENT.includes(x.fam);
       const d = cap(x.row.d), hasMin = /minute/.test(x.row.d);
-      const time = curr && x.ex ? `${d}. That's about ${x.ex} minutes a week more than you do now.`
+      const time = /once this month|in the first week of this month/.test(x.row.d) ? '' : curr && x.ex ? `${d}. That's about ${x.ex} minutes a week more than you do now.`
         : x.ex >= 5 ? (hasMin ? `${d}. About ${x.ex} minutes a week in all.` : `${d}, about ${x.ex} minutes a week.`)
         : hasMin ? `${d}.` : x.ex ? `${d}. It only takes a few minutes.` : `${d}. It fits into your day without setting extra time aside.`;
       return { t: NAME[x.fam] || x.fam, a: `${x.row.w} ${x.row.d}.`, min: x.ex, time, make: [x.row.t], why: ownWhy(x) };
@@ -310,6 +310,7 @@
     return {
       gen: true, opening, name: name || 'You', date, prof, focus, groups, wish: p.wish, change: p.change, safety, notice, found, themes,
       intro1, spc, foc, prc,
+      own: p.own_habit && p.own_habit[0] ? { text: p.own_habit[0], shared: p.own_habit[1] === 'share' } : null,   // the member's own practice (q54), private or shared
       practices: [...pr.map(x => Object.assign(x, { rec: true })), ...extras].map(x => ({ rec: !!x.rec, area: x.area, fam: x.fam, action: x.row.w, freq: x.row.d, start: x.row.t, why: ownWhy(x), refs: refsOf(x.row), min: x.ex, over: !!x.over })),
       lineup: Object.fromEntries(Object.entries(lineup).map(([a, v]) => [a, v.map(strip)])), later: [],
       steps: { m2: m2.map(strip), m3: m3.map(strip), later: later.slice(0, 3).map(strip) }, add2: m2.map(x => x.fam), add3: m3.map(x => x.fam),

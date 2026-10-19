@@ -19,12 +19,14 @@ const gridRows = (q, A) => (q.rows || []).filter(r => !r[3] || r[3](A));
 const QUESTIONS = [
   { id: 'q1', s: 'focus', type: 'multi', max: 2, exclusive: ['I’m not sure yet'], text: 'Which one or two areas would you most like to improve?', hint: "We'll still ask about every area. Your Good Span may also include practices from other areas where your answers show the greatest opportunity. We'll always explain why.", options: AREA_OPTS },
   { id: 'q2', s: 'about', type: 'single', text: 'What is your age?', options: ['18-29', '30-39', '40-49', '50-59', '60-69', '70 or over', 'Prefer not to say'] },
+  { id: 'q2a', s: 'about', type: 'single', text: 'What was your sex at birth?', hint: 'This helps us show you only the questions that apply to you, and suggest practices that suit your body.', options: ['Female', 'Male', 'Prefer not to say'] },
   { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Prefer not to say'] },
   { id: 'q4', s: 'about', type: 'multi', text: 'Has a doctor or other healthcare professional ever told you that you have any of these?', options: ['A heart condition', 'High blood pressure', 'Diabetes (including if you take insulin or other blood-sugar medicine)', 'Kidney disease', 'A lung condition, such as asthma or COPD', 'Something else', 'None of these', 'Prefer not to say'] },
   { id: 'q5', s: 'about', type: 'multi', text: 'In the past 3 months, have you experienced any of the following?', options: ['Pain, tightness or pressure in your chest', 'Shortness of breath with very little effort', 'Feeling dizzy, light-headed or fainting', 'Your heart racing, fluttering or beating irregularly', 'Swollen ankles', 'Pain in your calves when walking', 'None of these'] },
   { id: 'q5a', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Did any of these happen during or just after physical activity?', options: ['Yes', 'No', 'Not sure'] },
   { id: 'q5b', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Have you talked to a doctor about them?', options: ["Yes, and they're happy for me to be more active", "Yes, but I haven't been told it's OK to be more active yet", 'No, not yet'] },
-  { id: 'q6', s: 'about', type: 'single', text: 'Are you currently pregnant or breastfeeding?', options: ['Pregnant', 'Breastfeeding', 'Neither', 'Prefer not to say'] },
+  // only asked when it could apply: not to men, and not from age 50. 'Prefer not to say' or no answer to sex or age still asks it, so no safety rule is skipped.
+  { id: 'q6', s: 'about', type: 'single', show: A => A.q2a !== 'Male' && !['50-59', '60-69', '70 or over'].includes(A.q2), text: 'Are you currently pregnant or breastfeeding?', options: ['Pregnant', 'Breastfeeding', 'Neither', 'Prefer not to say'] },
   { id: 'q7', s: 'nutrition', type: 'grid', text: 'How does your eating pattern typically look?', rows: [
       ['veg', 'Vegetables and fruit on a typical day', ['None', '1-2 portions', '3-4 portions', '5 or more portions']],
       ['protein', 'Main meals on a typical day that include a source of protein', ['None', 'One', 'Two', 'All of them']],
@@ -54,6 +56,8 @@ const QUESTIONS = [
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
+  // women (or 'prefer not to say') aged 40-69: hot flushes and night sweats around perimenopause and menopause often disturb sleep
+  { id: 'q19a', s: 'sleep', type: 'single', show: A => A.q2a !== 'Male' && ['40-49', '50-59', '60-69'].includes(A.q2), text: 'Do hot flushes or night sweats affect your sleep?', hint: 'These are common around perimenopause and menopause.', options: ['Often', 'Sometimes', 'No', 'Prefer not to say'] },
   { id: 'q20', s: 'movement', type: 'single', text: 'On average, how many days a week do you do moderate or vigorous exercise, such as a brisk walk, that makes you breathe harder?', options: ['0', '1', '2', '3', '4', '5', '6', '7'] },
   { id: 'q21', s: 'movement', type: 'single', show: A => A.q20 && A.q20 !== '0', text: 'On those days, on average, how many minutes do you exercise at this level?', options: ['10', '20', '30', '40', '50', '60', '90', '120', '150 or more'] },
   { id: 'q22', s: 'movement', type: 'single', text: 'On how many days a week do you do strength or resistance exercise, such as weights, bodyweight exercises or resistance bands?', options: ['0', '1', '2', '3 or more'] },
@@ -81,6 +85,7 @@ const QUESTIONS = [
   { id: 'q45', s: 'prevention', type: 'single', show: A => A.q43 && A.q43 !== 'Never', text: 'How often do you have 6 or more drinks on one occasion?', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
   { id: 'q46', s: 'prevention', type: 'single', text: 'When did you last have your blood pressure checked?', options: ['In the past 12 months', '1-2 years ago', 'More than 2 years ago', "Never, or I'm not sure"] },
   { id: 'q48', s: 'prevention', type: 'multi', text: 'Which of these apply to you?', options: ["I've been sunburnt, or used a sunbed, in the past 12 months", 'I often find it hard to follow conversations, or ask people to repeat themselves', 'None of these'] },
+  { id: 'q48a', s: 'prevention', type: 'single', show: A => ['60-69', '70 or over'].includes(A.q2), text: 'Do you already use hearing aids?', options: ['Yes', 'No'] },
   { id: 'q51', s: 'prevention', type: 'single', text: 'How often do you learn something new or practise a mentally challenging hobby, such as a language, an instrument or a craft?', options: ['Rarely or never', 'A few times a month', 'About once a week', 'Several times a week'] },
   { id: 'q52', s: 'prevention', type: 'multi', max: 3, goals: 'Prevention', text: 'What would you most like to improve in this area?', options: ['Drinking less alcohol', 'Stopping smoking or vaping', 'Keeping up with check-ups', 'Knowing which vaccines are due', 'Taking only the supplements I need', 'Protecting my skin from the sun', 'Protecting my hearing', 'Breathing cleaner air at home and outdoors', 'Keeping my mind active by learning new things', 'Nothing in particular'] },
   { id: 'q54', s: 'life', type: 'habit', optional: true, text: "Is there one personal habit or practice you'd particularly like to work on during your Good Span that we haven't covered?", hint: "Optional. Something you'd like to start, strengthen, reduce or stop. It could be health-related or more personal: drinking less, reading again, learning a language, using your phone less, calling family more often, stopping smoking or volunteering.", options: ['Keep this private in my Journal', 'Share this with my Pilot so they can support me'] },
@@ -115,7 +120,9 @@ function toFeatures(A) {
   p.symptoms_active = p.symptoms && A.q5a === 'Yes';   // during or just after activity
   p.symptoms_cleared = p.symptoms && A.q5b === "Yes, and they're happy for me to be more active";   // a doctor has said it's OK to be more active
   p.symptoms_txt = (A.q5 || []).filter(x => x !== 'None of these');
-  p.pregnant = A.q6 === 'Pregnant'; p.breastfeeding = A.q6 === 'Breastfeeding';
+  p.sex = { Female: 'female', Male: 'male' }[A.q2a] || null;   // for questions and, later, practices that differ by sex
+  const q6shown = QUESTIONS.find(x => x.id === 'q6').show(A);
+  p.pregnant = q6shown && A.q6 === 'Pregnant'; p.breastfeeding = q6shown && A.q6 === 'Breastfeeding';
   const veg = g('q7', 'veg'); p.veg = { 'None': 0, '1-2 portions': 1.5, '3-4 portions': 3.5, '5 or more portions': 5 }[veg] ?? 3;
   p.protein_meals = { 'None': 0, 'One': 1, 'Two': 2, 'All of them': 3 }[g('q7', 'protein')] ?? 2;
   const fq = v => ({ 'Rarely or never': 0, '1–2 days a week': 1.5, '3–5 days a week': 4, '6–7 days a week': 6.5 }[v] ?? 0);
@@ -164,7 +171,8 @@ function toFeatures(A) {
   p.hyg_why = {};
   if (has('q19', 'Light in my bedroom') && !now('dark')) { p.hyg.push('Dark bedroom'); p.hyg_why['Dark bedroom'] = 'You said light in your bedroom affects your sleep.'; }
   if (has('q19', 'Noise') && !now('quiet')) { p.hyg.push('Bedroom noise'); p.hyg_why['Bedroom noise'] = 'You said noise affects your sleep.'; }
-  if (has('q19', 'Bedroom temperature') && !now('cool')) { p.hyg.push('Cool bedroom'); p.hyg_why['Cool bedroom'] = 'You said bedroom temperature affects your sleep.'; }
+  p.night_sweats = ['Often', 'Sometimes'].includes(A.q19a) && QUESTIONS.find(x => x.id === 'q19a').show(A);
+  if ((has('q19', 'Bedroom temperature') || p.night_sweats) && !now('cool')) { p.hyg.push('Cool bedroom'); p.hyg_why['Cool bedroom'] = p.night_sweats ? 'You said hot flushes or night sweats affect your sleep. A cooler bedroom and lighter, breathable bedding can make nights more comfortable.' : 'You said bedroom temperature affects your sleep.'; }
   if (p.caffeine_late || has('q19', 'Caffeine')) { p.hyg.push('Caffeine timing'); p.hyg_why['Caffeine timing'] = p.caffeine_late ? `Your last caffeine is usually ${p.caffeine_when}.` : 'You said caffeine affects your sleep.'; }
   if (has('q19', 'Screens or technology') && !now('dim')) { p.hyg.push('Evening light'); p.hyg_why['Evening light'] = 'You said screens affect your sleep.'; }
   p.hyg_done = [];
@@ -222,6 +230,7 @@ function toFeatures(A) {
   p.bp_old = ['More than 2 years ago', "Never, or I'm not sure"].includes(A.q46);
   p.sunburn = has('q48', "I've been sunburnt, or used a sunbed, in the past 12 months");
   p.hearing_diff = has('q48', 'I often find it hard to follow conversations, or ask people to repeat themselves');
+  p.hearing_aid = ['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes';   // asked from 60; no hearing test for someone who already uses hearing aids
   p.learn_rare = A.q51 === 'Rarely or never';
   if (['About once a week', 'Several times a week'].includes(A.q51)) p.doing.push('Learning new skills');   // already learns something new weekly
   p.drinks_rare = ['Monthly or less', '2-4 times a month'].includes(A.q43);
