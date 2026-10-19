@@ -119,17 +119,23 @@ function upsert_(sh, row) {
     for (let i = refs.length - 1; i >= 0; i--) {
       if (String(refs[i][0]) === String(row['Reference'])) {
         sh.getRange(i + 2, 1, 1, headers.length).setValues([values]);
+        writePlanLink_(sh, i + 2, headers, row['Plan link']);
         return i + 2;
       }
     }
   }
   sh.appendRow(values);
   const r = sh.getLastRow();
-  const linkCol = headers.indexOf('Plan link') + 1;
-  if (linkCol && row['Plan link']) {
-    sh.getRange(r, linkCol).setFormula('=HYPERLINK("' + row['Plan link'] + '","Open plan")');
-  }
+  writePlanLink_(sh, r, headers, row['Plan link']);
   return r;
+}
+
+// The cell shows the full plan address, and clicking it opens the page.
+function writePlanLink_(sh, rowNumber, headers, link) {
+  const col = headers.indexOf('Plan link') + 1;
+  if (!col || !link) return;
+  const safe = String(link).replace(/"/g, '');
+  sh.getRange(rowNumber, col).setFormula('=HYPERLINK("' + safe + '","' + safe + '")');
 }
 
 // ---------- serving a plan ----------
