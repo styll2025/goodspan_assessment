@@ -31,9 +31,13 @@ ${body}
 writeFileSync(join(root, 'assessment.html'), html);
 // The public page calls /api/interpret and, when a spoken answer still needs a transcript, /api/transcribe.
 // Keys stay in the Pages secrets ANTHROPIC_API_KEY and OPENAI_API_KEY.
+// Completions go to the Google Apps Script web app in scripts/completions.gs. Paste its /exec URL here
+// (and GS_SHEET_KEY if you set SHARED_KEY in the script). Leave empty to send nothing.
+const GS_SHEET_URL = '';
+const GS_SHEET_KEY = '';
 const conversation = conversationPage().replace(
   '<body>',
-  '<body><script>window.GS_AI_URL="/api/interpret";window.GS_TRANSCRIBE_URL="/api/transcribe";window.GS_SPEECH_LANG="en-GB";</script>'
+  '<body><script>window.GS_AI_URL="/api/interpret";window.GS_TRANSCRIBE_URL="/api/transcribe";window.GS_SPEECH_LANG="en-GB";window.GS_SHEET_URL=' + JSON.stringify(GS_SHEET_URL) + ';window.GS_SHEET_KEY=' + JSON.stringify(GS_SHEET_KEY) + ';</script>'
 );
 writeFileSync(join(root, 'index.html'), conversation);
 console.log('Built index.html (' + Math.round(conversation.length / 1024) + ' KB), assessment.html (' + Math.round(html.length / 1024) + ' KB)');
