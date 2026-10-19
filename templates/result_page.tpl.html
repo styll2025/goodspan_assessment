@@ -577,6 +577,10 @@ details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15
 .rtag{font-family:var(--ui);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--plum)}
 .pr.is-extra .rtag{color:var(--muted)}
 .pr.is-extra{border-style:dashed!important;border-width:1.5px!important}
+/* the member's own practice (q54): their words, private or shared with their Pilot */
+.pr.is-own{--pf:var(--plum)}
+.pr.is-own .act{font-style:normal}
+.pr.is-own .rtag{color:var(--muted)}
 /* download my Good Span */
 .dlbox{margin-top:28px;background:var(--white);border-radius:24px;padding:clamp(22px,4vw,32px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px 24px;align-items:center}
 .dlbox h3{margin:0;font-size:clamp(20px,2.4vw,24px);font-weight:300}
@@ -839,6 +843,12 @@ D.filter(r => r.gen).forEach(r => { INTRO1[r.name] = r.intro1; SPC[r.name] = r.s
   [...r.steps.m2, ...r.steps.m3, ...r.steps.later].forEach(x => { STEPMIN[x.fam] = x.min || 0; }); });
 if (GEN) Object.keys(NXT).forEach(k => delete NXT[k]);
 const ORDER = r => [...(r.gen ? r.focus : []).filter(a => r.groups[a] === 'focus'), ...AREAS.filter(a => r.groups[a] === 'focus' && !(r.gen && r.focus.includes(a))), ...AREAS.filter(a => r.groups[a] === 'improve'), ...AREAS.filter(a => r.groups[a] === 'well')];
+// the member's own practice (q54), when they wrote one: their words, last in the month ahead
+const ownOf = r => r.own && r.own.text && r.own.text.trim() ? r.own : null;
+const ownCard = r => { const o = ownOf(r); if (!o) return ''; const n = String(r.practices.length + 1).padStart(2, '0');
+  return `<article class="pr is-own"><div class="hd"><div class="prtags"><span class="chip">Your own</span><span class="rtag">${o.shared ? 'Shared with your Pilot' : 'Private'}</span></div><span class="pnum">${n} · Your own practice</span>
+      <p class="act">“${esc(o.text.trim())}”</p></div><div class="bd">
+      <dl><dt>Time</dt><dd><p>You decide. It isn't counted in your weekly time.</p></dd><dt>Make it work for you</dt><dd><p>${o.shared ? "You've shared this with your Pilot. In your Good Span Review, they'll help you shape it into a practice that fits your week." : "You're keeping this one private. Use your Practice Journal to note what you'd like to do, when, and how it's going."}</p></dd></dl></div></article>`; };
 const S0 = [
   // opening: their Good Span, a short portrait, and the Starting Position as one strip of six
   r => { const op = openingOf(r); return `<div class="hero"><div class="htext">
@@ -868,11 +878,11 @@ const S0 = [
 
   // section 4: first practices, each with what to do, how to make it work and why
   r => { const nr = r.practices.filter((x, i) => isRec(r, x, i)).length, ne = r.practices.length - nr; return `<h1>Your month ahead</h1>
-    <p class="lead">${cap1(NUMW[nr])} recommended practice${nr === 1 ? '' : 's'} to start with${ne ? `, and ${NUMW[ne]} more you can add if you have time` : ''}. Each one is chosen around what matters to you and the time you have.</p>
-    <div class="prs">${r.practices.map((x, i) => { const rec = isRec(r, x, i), c = (rec || r.gen ? (PRC[r.name] || [])[i] : null) || { t: STEPNAME[x.fam] || x.fam, a: x.action + ' ' + x.freq + '.', time: x.over ? `About ${x.min} minutes a week, more than your usual time, so only if you have room.` : x.min ? `About ${x.min} minutes a week.` : 'No extra time set aside.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area} ${rec ? 'is-rec' : 'is-extra'}"><div class="hd"><div class="prtags"><span class="chip">${esc(x.area)}</span><span class="rtag">${rec ? 'Recommended' : 'If you have time'}</span></div><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
+    <p class="lead">${cap1(NUMW[nr])} recommended practice${nr === 1 ? '' : 's'} to start with${ne ? `, and ${NUMW[ne]} more you can add if you have time` : ''}. Each one is chosen around what matters to you and the time you have.${ownOf(r) ? ' Your own practice is here too.' : ''}</p>
+    <div class="prs">${r.practices.map((x, i) => { const rec = isRec(r, x, i), c = (rec || r.gen ? (PRC[r.name] || [])[i] : null) || { t: STEPNAME[x.fam] || x.fam, a: x.action + ' ' + x.freq + '.', time: /once this month|in the first week of this month/.test(x.freq) ? '' : x.over ? `About ${x.min} minutes a week, more than your usual time, so only if you have room.` : x.min ? `About ${x.min} minutes a week.` : 'No extra time set aside.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area} ${rec ? 'is-rec' : 'is-extra'}"><div class="hd"><div class="prtags"><span class="chip">${esc(x.area)}</span><span class="rtag">${rec ? 'Recommended' : 'If you have time'}</span></div><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
       <p class="act">${esc(c.a)}</p></div><div class="bd">
       <dl>${c.time ? `<dt>Time</dt><dd><p>${esc(c.time)}</p></dd>` : ''}<dt>Make it work for you</dt><dd>${c.make.map(t => `<p>${esc(t)}</p>`).join('')}</dd>${c.why ? `<dt>Why this practice</dt><dd><p>${esc(c.why)}</p></dd>` : ''}</dl>
-      ${(x.refs || []).length ? `<details><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul></details>` : ''}</div></article>`; }).join('')}</div>
+      ${(x.refs || []).length ? `<details><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul></details>` : ''}</div></article>`; }).join('')}${ownCard(r)}</div>
     <!-- "Designed to fit your life" removed from the page; fitBlock(r) still available -->
     ${r.found.length ? `<div class="later"><p class="kicker">Optional everyday habits</p><ul>${r.found.map(f => `<li>${esc(f.text)} <span class="note">${esc(f.why)}</span></li>`).join('')}</ul></div>` : ''}`; },
 

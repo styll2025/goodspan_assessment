@@ -2,7 +2,7 @@
 The workbook is the single source of truth for practices. Run after editing source/Practice_library_and_mapping.xlsx:
     pip install openpyxl
     python scripts/library_to_json.py
-Also writes data/library.json with every column, for reading or importing elsewhere."""
+Also writes data/library.json (the same data, read by the plan generator and the conversation) and data/library_rows.json (every column)."""
 import json, os
 from openpyxl import load_workbook
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -31,5 +31,8 @@ d['lib'] = lib; d['themes'] = themes
 for h in d['hyg']: h['why'] = why.get(h['f'], h.get('why', '')) or ''
 json.dump(d, open(p, 'w'), ensure_ascii=False)
 os.makedirs(os.path.join(ROOT, 'data'), exist_ok=True)
-json.dump(full, open(os.path.join(ROOT, 'data', 'library.json'), 'w'), ensure_ascii=False, indent=1)
-print(len(lib), 'practices written to core/data.json and data/library.json')
+# data/library.json is what the plan generator and the conversation read: the same data as core/data.json
+json.dump(d, open(os.path.join(ROOT, 'data', 'library.json'), 'w'), ensure_ascii=False)
+# every column of the workbook, for reading or importing elsewhere
+json.dump(full, open(os.path.join(ROOT, 'data', 'library_rows.json'), 'w'), ensure_ascii=False, indent=1)
+print(len(lib), 'practices written to core/data.json, data/library.json and data/library_rows.json')
