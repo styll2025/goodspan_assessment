@@ -33,7 +33,7 @@ writeFileSync(join(root, 'assessment.html'), html);
 // Keys stay in the Pages secrets ANTHROPIC_API_KEY and OPENAI_API_KEY.
 // Completions go to the Google Apps Script web app in scripts/completions.gs. Paste its /exec URL here
 // (and GS_SHEET_KEY if you set SHARED_KEY in the script). Leave empty to send nothing.
-const GS_SHEET_URL = 'https://script.google.com/macros/s/AKfycbzlppdnDmGYTtrxuu3-5nqwQ7CvjyLVWn-7pH1zwgxWgRV_rsbN7gBU1rdjjz3rXaGvJw/exec';
+const GS_SHEET_URL = 'https://script.google.com/macros/s/AKfycbwsTkTcLUiZkmDP03b9hm1Wca6qQmrIognVHhAktAauVRjYwZtG7GAHpH3yghF-yYjYNQ/exec';
 const GS_SHEET_KEY = '';
 const conversation = conversationPage().replace(
   '<body>',
