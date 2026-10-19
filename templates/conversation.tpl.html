@@ -162,6 +162,9 @@ let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTime
 // settings: the language the browser listens for, optional AI matching, and Whisper for a spoken answer the rules could not place
 const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
 const AI_URL = window.GS_AI_URL || '';
+// Google Apps Script web app (scripts/completions.gs) that keeps each completion and its plan page. Empty: nothing is sent.
+const SHEET_URL = window.GS_SHEET_URL || '', SHEET_KEY = window.GS_SHEET_KEY || '';
+let sentRef = '';
 const TRANSCRIBE_URL = window.GS_TRANSCRIBE_URL || '';
 let transcribeOn = !!TRANSCRIBE_URL;
 const SILENCE_MS = 800, MAX_LISTEN_MS = 20000;
@@ -497,19 +500,37 @@ function finish() {
   const ids = QUESTIONS.filter(q => A[q.id] !== undefined), typedN = ids.filter(q => ['typed', 'spoken'].includes(how[q.id])).length;
   const d = document.createElement('section'); d.className = 'sum';
   d.innerHTML = `<div class="hd"><p class="ui">Find your Good Span · complete</p><h2>Thank you${name ? ', ' + esc(name) : ''}. Your Good Span is ready.</h2></div>
-    <div class="bd"><p>We've used your answers to map your Starting Position, find where a small change could go a long way, and choose your first practices.</p>
+    <div class="bd"><p>We've used your answers to map your Starting Position, find where your effort will count most, and choose your first practices.</p>
     <div class="nextp"><button type="button" class="chip go" id="see">See my Good Span</button><button type="button" class="chip alt" id="again">Start again</button></div>
     <details><summary>Your answers (${ids.length} questions, ${typedN} in your own words)</summary>
     ${SECTIONS.map(s => { const qs = ids.filter(q => q.s === s.id); return qs.length ? `<details><summary>${esc(s.title)}</summary><dl>${qs.map(q => `<dt>${esc(q.text)}</dt><dd>${esc(show(q.id, A[q.id]))}<span class="how">${how[q.id] === 'spoken' ? 'Spoken' : how[q.id] === 'typed' ? 'In your words' : 'Tapped'}</span></dd>`).join('')}</dl></details>` : ''; }).join('')}</details></div>`;
   T.append(d); $('again').onclick = restart; $('see').onclick = openPlan; progress(); scrollEnd();
+  sendCompletion();
 }
 // the member's Good Span, built from these answers by the same engine and rules as the standard assessment
-function openPlan() {
-  let r;
-  try { r = buildResult(name, A, { E: makeEngine(GS_DATA), DATA: GS_DATA, toFeatures, profile: gsProfile }); }
-  catch (e) { console.error(e); alert("Sorry, we couldn't build your Good Span from these answers."); return; }
+function planNow() {
+  const r = buildResult(name, A, { E: makeEngine(GS_DATA), DATA: GS_DATA, toFeatures, profile: gsProfile });
   const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention, Stretch: IMG.sleep };
   const html = RESULT_TPL.replace('_' + '_IMG__', () => JSON.stringify(img)).replace('_' + '_DATA__', () => JSON.stringify([r]).replace(/</g, '\\u003c'));
+  return { r, html };
+}
+// one completion to the Google Sheet: contact details, every answer as shown to the member, a plan summary and the plan page
+function sendCompletion() {
+  if (!SHEET_URL || sentRef) return;
+  let p; try { p = planNow(); } catch (e) { console.error(e); return; }
+  sentRef = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9]/g, '');
+  const answers = QUESTIONS.filter(q => A[q.id] !== undefined).map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]), how: how[q.id] === 'spoken' ? 'Spoken' : how[q.id] === 'typed' ? 'Typed' : 'Tapped' }));
+  const r = p.r, body = { key: SHEET_KEY, planId: sentRef, submittedAt: new Date().toISOString(), source: 'conversation', version: 'October 2026',
+    name: contact.name || name || '', email: contact.email || '', opening: (A.q0 && A.q0.text) || '', answers,
+    plan: { focus: r.focus, recommended: r.practices.filter(x => x.rec).map(x => x.fam), extras: r.practices.filter(x => !x.rec).map(x => x.fam), own: r.own ? r.own.text + (r.own.shared ? ' (shared with Pilot)' : ' (private)') : '' },
+    planHtml: '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Good Span</title></head><body>' + p.html + '</body></html>' };
+  // text/plain avoids a CORS preflight, which Apps Script doesn't answer; the response can't be read, so the link is made from the id
+  fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).catch(e => console.warn('Completion not sent', e));
+}
+function openPlan() {
+  let r, html;
+  try { ({ r, html } = planNow()); }
+  catch (e) { console.error(e); alert("Sorry, we couldn't build your Good Span from these answers."); return; }
   // shown in its own frame over the conversation, so the page runs exactly as the result page does
   const f = document.createElement('iframe'); f.id = 'plan'; f.title = 'Your Good Span';
   f.srcdoc = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>';
@@ -750,7 +771,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; sentRef = ''; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }
