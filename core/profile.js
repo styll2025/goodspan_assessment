@@ -22,7 +22,7 @@ function profile(A, p) {
   const health = [];
   if ((A.q4 || []).some(x => !['None of these', 'Prefer not to say'].includes(x))) health.push('a health condition');
   if ((A.q5 || []).some(x => x !== 'None of these')) health.push('a symptom we\'d like you to check with a doctor');
-  if (A.q6 === 'Pregnant' || A.q6 === 'Breastfeeding') health.push(A.q6 === 'Pregnant' ? 'your pregnancy' : 'that you\'re breastfeeding');
+  if (A.q2a !== 'Male' && !['50-59', '60-69', '70 or over'].includes(A.q2) && (A.q6 === 'Pregnant' || A.q6 === 'Breastfeeding')) health.push(A.q6 === 'Pregnant' ? 'your pregnancy' : 'that you\'re breastfeeding');
   if ((A.q29 || []).some(x => !['Nothing in particular', 'Prefer not to say'].includes(x))) health.push('what affects how you move');
   if (health.length) out.intro += ` You've also told us about ${list(health)}, and your Good Span takes ${health.length > 1 ? 'these' : 'this'} into account.`;
 
@@ -56,6 +56,7 @@ function profile(A, p) {
     if (caf) s.push(`${caf}${eat ? `, and you finish eating ${eat} before bed` : ''}.`);
     const aff = (A.q19 || []).filter(x => x !== 'Nothing in particular');
     if (aff.length) s.push(`${cap(list(aff.map(lc)))} can affect your sleep.`);
+    if (A.q2a !== 'Male' && ['40-49', '50-59', '60-69'].includes(A.q2) && ['Often', 'Sometimes'].includes(A.q19a)) s.push(`Hot flushes or night sweats ${A.q19a === 'Often' ? 'often' : 'sometimes'} affect your sleep.`);
     const goals = (A.q18 || []).filter(x => x !== 'Nothing in particular');
     if (goals.length) s.push(`You'd most like to work on ${list(goals.map(lc))}.`);
     out.pillars.Sleep = s.join(' '); }
@@ -113,6 +114,7 @@ function profile(A, p) {
     if (lrn) s.push(lrn + '.');
     if (has(A, 'q48', "I've been sunburnt, or used a sunbed, in the past 12 months")) s.push("You've been sunburnt or used a sunbed in the past year.");
     if (has(A, 'q48', 'I often find it hard to follow conversations, or ask people to repeat themselves')) s.push('You often find it hard to follow conversations.');
+    if (['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes') s.push('You already use hearing aids.');
     const goals = (A.q52 || []).filter(x => x !== 'Nothing in particular');
     if (goals.length) s.push(`You'd like to focus on ${list(goals.map(lc))}.`);
     out.pillars.Prevention = s.join(' '); }
