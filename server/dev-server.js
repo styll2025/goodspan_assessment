@@ -4,7 +4,14 @@
 // Without a key that part stays off and the page uses the built-in rules.
 // Options: PORT, GS_AI_MODEL, OPENAI_TRANSCRIBE_MODEL, GS_SPEECH_LANG (e.g. pt-PT).
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const { conversationPage } = require('../scripts/lib.js');
+const ICONS = {
+  '/favicon.svg': 'image/svg+xml',
+  '/favicon.ico': 'image/x-icon',
+  '/apple-touch-icon.png': 'image/png',
+};
 const { handleInterpret } = require('./ai-interpret.js');
 const { handleTranscribe } = require('./transcribe.js');
 const PORT = +process.env.PORT || 8787;
@@ -33,6 +40,13 @@ http.createServer(async (req, res) => {
     const t0 = Date.now(), out = await handleTranscribe(body);
     console.log(`[transcribe] ${body && body.questionId} ${out.json.text ? JSON.stringify(out.json.text) : out.json.error} (${Date.now() - t0} ms)`);
     res.writeHead(out.status, { 'content-type': 'application/json' }); res.end(JSON.stringify(out.json));
+    return;
+  }
+  const iconPath = req.url && req.url.split('?')[0];
+  if ((req.method === 'GET' || req.method === 'HEAD') && ICONS[iconPath]) {
+    const file = path.join(__dirname, '..', iconPath.slice(1));
+    res.writeHead(200, { 'content-type': ICONS[iconPath], 'cache-control': 'no-cache' });
+    res.end(req.method === 'HEAD' ? undefined : fs.readFileSync(file));
     return;
   }
   if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) {
