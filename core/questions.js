@@ -43,7 +43,7 @@ const QUESTIONS = [
       ['sugary', 'Sugary drinks, such as soft drinks, energy drinks or sweetened coffee or tea', FREQ4],
       ['processed', 'Processed foods, such as ready meals, crisps, biscuits, sugary cereals, sausages, ham or bacon', FREQ4],
       ['nuts', 'A handful of unsalted nuts', FREQ4],
-      ['salt', 'Adding salt to your food, at the table or when cooking', FREQ4]] },
+      ['salt', 'Consuming more than 5 g of salt per day, including salt added during cooking and at the table.', FREQ4]] },
   { id: 'q8', s: 'nutrition', type: 'grid', text: 'How often do you do these at meals?', cols: ['Rarely', 'Sometimes', 'Most days'], rows: [
       ['screen', 'Eat without a screen'], ['attention', 'Pay attention to the taste and smell of my food'], ['slow', 'Eat slowly, putting my fork down between bites'],
       ['variety', 'Eat a wide variety of plant foods'], ['out', "Have a plan for eating well when I'm out or travelling"], ['window', 'Eat within a set daily time window']] },

@@ -39,8 +39,8 @@ function profile(A, p) {
     if (['3–5 days a week', '6–7 days a week'].includes(g('grains'))) good.push(`whole grains ${FQ[g('grains')]}`); else if (g('grains')) less.push(`whole grains ${FQ[g('grains')]}`);
     if (['3–5 days a week', '6–7 days a week'].includes(g('beans'))) good.push(`beans or lentils ${FQ[g('beans')]}`); else if (g('beans')) less.push(`beans or lentils ${FQ[g('beans')]}`);
     if (good.length) s.push(`You have ${list(good)}${less.length ? `, and ${list(less)}` : ''}.`); else if (less.length) s.push(`You have ${list(less)}.`);
-    const low = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['added salt', 'salt']].filter(([, k]) => ['Rarely or never', '1–2 days a week'].includes(g(k))).map(x => x[0]);
-    const hi = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['added salt', 'salt']].filter(([, k]) => ['3–5 days a week', '6–7 days a week'].includes(g(k))).map(([n, k]) => `${n} ${FQ[g(k)]}`);
+    const low = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['more than 5 g of salt a day', 'salt']].filter(([, k]) => ['Rarely or never', '1–2 days a week'].includes(g(k))).map(x => x[0]);
+    const hi = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['more than 5 g of salt a day', 'salt']].filter(([, k]) => ['3–5 days a week', '6–7 days a week'].includes(g(k))).map(([n, k]) => `${n} ${FQ[g(k)]}`);
     if (low.length) s.push(`${cap(list(low))} ${low.length > 1 ? 'are' : 'is'} only an occasional part of your week${hi.length ? `, while you have ${list(hi)}` : ''}.`); else if (hi.length) s.push(`You have ${list(hi)}.`);
     const goals = (A.q9 || []).filter(x => x !== 'Nothing in particular');
     if (goals.length) s.push(`You'd like to work on ${list(goals.map(lc))}.`);

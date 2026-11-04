@@ -132,7 +132,7 @@ function makeEngine(DATA) {
     if (p.wholegrain_rare) add('Nutrition', 'M', 'You rarely eat whole grains. They add fibre, and eating more of them is linked with better heart and gut health.', 'Whole grains');
     if (p.beans_rare) add('Nutrition', 'M', 'You rarely eat beans, lentils or chickpeas. They are a good source of fibre and protein, and eating them more often is linked with better heart health.', 'Beans and lentils');
     if ((p.protein_meals ?? 3) <= 1) add('Nutrition', 'M', "Most of your main meals don't include a source of protein. Spreading protein across your meals helps you feel full and supports your muscles.", 'Protein at meals');
-    if (p.salt_daily) add('Nutrition', 'M', 'You add salt to your food most days. Many adults eat more salt than recommended, and cutting down helps keep blood pressure healthy.', 'Salt');
+    if (p.salt_daily) add('Nutrition', 'M', 'You have more than 5 g of salt a day on most days. Many adults eat more salt than recommended, and cutting down helps keep blood pressure healthy.', 'Salt');
     const m = p.mvpa;
     if (m < 60) add('Movement', 'H', `You do about ${m} minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes, and even small increases are linked with better health.`, 'Building up cardio');
     else if (m < 150) add('Movement', 'M', `You do about ${m} minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend. Being more active is linked with better long-term health.`, m < 100 ? 'Building up cardio' : 'Weekly cardio');

@@ -711,7 +711,7 @@
       if (['3–5', 'More than 5'].includes(g('q7', 'cooked'))) W.push(`Cooking ${g('q7', 'cooked') === '3–5' ? '3 to 5' : 'more than 5'} main meals a week at home.`);
       if (['Two', 'All of them'].includes(g('q7', 'protein'))) W.push(`Including protein in ${g('q7', 'protein') === 'Two' ? 'two' : 'all'} of your main meals.`);
       if (['3–5 days a week', '6–7 days a week'].includes(g('q7', 'grains'))) W.push('Eating whole grains on most days.');
-      const occ = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['added salt', 'salt']].filter(([, k]) => ['Rarely or never', '1–2 days a week'].includes(g('q7', k))).map(x => x[0]);
+      const occ = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['more than 5 g of salt a day', 'salt']].filter(([, k]) => ['Rarely or never', '1–2 days a week'].includes(g('q7', k))).map(x => x[0]);
       if (occ.length) W.push(`Keeping ${list(occ)} occasional.`);
     }
     if (a === 'Sleep') {
