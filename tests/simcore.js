@@ -49,7 +49,7 @@ function check(f, o) {
   for (const x of all) if ((f.nofit || []).includes(x.fam)) issues.push('Not practical right now, still offered: ' + x.fam);
   for (const h of (o.foundations || [])) if ((f.hyg_nofit || []).includes(h.f)) issues.push('Not practical foundation still offered: ' + h.f);
   if ((f.nofit_txt || []).length && !(o.pilot || []).some(n => n[0] === 'Not practical right now')) issues.push('Missing Pilot note: Not practical right now');
-  if (f.work_other && (f.not_working || f.shift || f.irregular)) issues.push('Something else working pattern treated as a known pattern');
+  if (f.work_other && (f.not_working || f.shift || f.irregular)) issues.push('Other working pattern treated as a known pattern');
   if (f.work_other && !(o.pilot || []).some(n => n[0] === 'Working pattern')) issues.push('Missing Pilot note: Working pattern');
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive');

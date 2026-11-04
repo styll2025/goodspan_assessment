@@ -1,5 +1,11 @@
 // Assessment spec (v7). Each question: id, section, type, text, options; grids have rows and cols (or per-row options).
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
+// Options that invite a few optional words. The words stay with the answer; they do not change the plan.
+const DETAIL_OPTS = ['Something else', 'Other'];
+function pickedDetail(options, v) {
+  const opts = options || [];
+  return DETAIL_OPTS.find(o => opts.includes(o) && (v === o || (Array.isArray(v) && v.includes(o)))) || '';
+}
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
 const HABIT4 = ['I do this now', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
 const SECTIONS = [
@@ -21,7 +27,7 @@ const QUESTIONS = [
   { id: 'q1', s: 'focus', type: 'multi', max: 2, exclusive: ['I’m not sure yet'], text: 'Which one or two areas would you most like to improve?', hint: "We'll still ask about every area. Your Good Span may also include practices from other areas where your answers show the greatest opportunity. We'll always explain why.", options: AREA_OPTS },
   { id: 'q2', s: 'about', type: 'single', text: 'What is your age?', options: ['18-29', '30-39', '40-49', '50-59', '60-69', '70 or over', 'Prefer not to say'] },
   { id: 'q2a', s: 'about', type: 'single', text: 'What was your sex at birth?', hint: 'This helps us show you only the questions that apply to you, and suggest practices that suit your body.', options: ['Female', 'Male', 'Prefer not to say'] },
-  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Something else', 'Prefer not to say'] },
+  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Other', 'Prefer not to say'] },
   { id: 'q4', s: 'about', type: 'multi', text: 'Has a doctor or other healthcare professional ever told you that you have any of these?', options: ['A heart condition', 'High blood pressure', 'Diabetes (including if you take insulin or other blood-sugar medicine)', 'Kidney disease', 'A lung condition, such as asthma or COPD', 'Something else', 'None of these', 'Prefer not to say'] },
   { id: 'q5', s: 'about', type: 'multi', text: 'In the past 3 months, have you experienced any of the following?', options: ['Pain, tightness or pressure in your chest', 'Shortness of breath with very little effort', 'Feeling dizzy, light-headed or fainting', 'Your heart racing, fluttering or beating irregularly', 'Swollen ankles', 'Pain in your calves when walking', 'Something else', 'None of these'] },
   { id: 'q5a', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Did any of these happen during or just after physical activity?', options: ['Yes', 'No', 'Not sure'] },
@@ -113,7 +119,7 @@ function toFeatures(A) {
   p.wish = AREAS.filter(a => (A.q1 || []).some(x => x.startsWith(a)));
   p.age = A.q2; p.shift = A.q3 === 'Shift work, including nights';
   p.not_working = A.q3 === 'Not currently working'; p.irregular = A.q3 === 'Irregular or changing hours';
-  p.work_other = A.q3 === 'Something else';
+  p.work_other = A.q3 === 'Other';
   p.else_txt = {};
   for (const id of ['q3', 'q4', 'q5', 'q11', 'q13', 'q29']) {
     const on = id === 'q3' ? p.work_other : (A[id] || []).includes('Something else');

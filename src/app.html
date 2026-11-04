@@ -142,7 +142,7 @@ function qHTML(q, n) {
     body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
   }
   const lim = q.type === 'multi' ? (q.max ? `Select up to ${q.max}.` : 'Select all that apply.') : q.type === 'grid' ? 'Select one for each row.' : q.type === 'single' ? 'Select one.' : '';
-  const elseOn = (q.options || []).includes('Something else') && (v === 'Something else' || (Array.isArray(v) && v.includes('Something else')));
+  const elseOn = !!pickedDetail(q.options, v);
   const elseBox = elseOn ? `<label class="elsebox"><span>Tell us a little more, if you'd like.</span><textarea id="${q.id}_more" name="${q.id}.more" maxlength="300" placeholder="A few words is enough">${esc(((A.more || {})[q.id] || ''))}</textarea></label>` : '';
   return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}${elseBox}</fieldset>`;
 }
@@ -198,7 +198,7 @@ function onInput(e) {
     A[qid] = sel;
   } else if (q.type === 'grid') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
   else if (q.type === 'habit') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
-  const onElse = A[qid] === 'Something else' || (Array.isArray(A[qid]) && A[qid].includes('Something else'));
+  const onElse = !!pickedDetail(q.options, A[qid]);
   if (!onElse && A.more) delete A.more[qid];
   save();
   if (e.type === 'change' && el.type !== 'textarea') {

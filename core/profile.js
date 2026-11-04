@@ -11,12 +11,13 @@ function profile(A, p) {
   const out = { intro: '', pillars: {} };
   // ---- opening: who they are right now, what they want, how they'd like to go about it
   const workNote = ((A.more || {}).q3 || '').replace(/\s+/g, ' ').trim();
-  const work = A.q3 === 'Something else' ? '' : { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
+  const workOther = A.q3 === 'Other';
+  const work = workOther ? '' : { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
   const AREA = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
   const time = { 'About 45–60 minutes': 'about 45–60 minutes', '1-2 hours': '1–2 hours', '2-4 hours': '2–4 hours', 'More than 4 hours': 'more than 4 hours', 'It varies': 'a varying amount of time' }[A.q55];
   const pace = { small: 'small, easy steps', mid: 'something in between: steady, but not too gentle', big: 'a bigger challenge' }[p.change];
   const want = p.wish.length ? `You'd like to work on ${list(p.wish.map(a => AREA[a]))}.` : "You weren't sure which area to start with, so we've let your answers lead.";
-  const s1 = A.q3 === 'Something else' && workNote ? `You described your working pattern as “${workNote}”, and you can give ${time} a week to your Good Span.` : work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
+  const s1 = workOther && workNote ? `You described your working pattern as “${workNote}”, and you can give ${time} a week to your Good Span.` : work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
   const s2 = p.change === 'big' ? `You're ready for ${pace}.` : `You'd like ${pace}.`;
   const caring = p.carer ? ' Caring or family responsibilities also shape your days, so short practices suit you best.' : '';
   out.intro = `${want} ${s1} ${s2}${caring}`;
