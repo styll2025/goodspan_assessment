@@ -630,6 +630,49 @@ details .srcs{margin:8px 0 0;padding-left:18px;display:grid;gap:4px;font-size:15
 .road .srcs li::before,.road.vroad .srcs li::before{display:none!important;content:none}
 .road.vroad li.js .jref{grid-column:1/-1!important}
 .srcs a{color:inherit;word-break:normal!important;overflow-wrap:anywhere}
+/* "About you" story: a quiet reading block under the opening card */
+.story{background:var(--white);border:1.5px solid var(--plum);border-radius:24px;padding:clamp(24px,4vw,40px);display:grid;gap:14px}
+.story h2{margin:0;font-weight:300;font-size:clamp(26px,3vw,34px);line-height:1.15;text-wrap:balance}
+.story .kicker{font-family:var(--ui);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
+.story p:not(.kicker){margin:0;max-width:62ch;font-size:clamp(19px,2vw,22px);line-height:1.5;font-weight:300}
+/* "Interested in practising your Good Span?" card and its form */
+.intr{margin-top:28px;background:var(--white);border:1.5px solid var(--plum);border-radius:32px;padding:clamp(36px,7vw,72px) clamp(20px,5vw,48px);display:grid;justify-items:center;text-align:center;gap:18px}
+.intr-pill{margin:0;background:var(--orange);color:#000;border-radius:999px;padding:6px 14px;font-family:var(--ui);font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.intr h2{margin:0;font-weight:300;font-size:clamp(32px,5vw,56px);line-height:1.08;letter-spacing:-.02em;max-width:16ch;text-wrap:balance}
+.intr p:not(.intr-pill){margin:0;font-size:clamp(17px,2vw,20px);line-height:1.45}
+.intr .pbtn{margin-top:6px}
+.idlg{position:fixed;inset:0;z-index:50;background:rgba(40,30,34,.62);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow:auto}
+.idlg[hidden]{display:none}
+html.idlg-on{overflow:hidden}
+.idlg-card{position:relative;background:var(--cream);color:var(--plum);border-radius:32px;width:min(560px,100%);padding:clamp(24px,5vw,44px);box-shadow:0 24px 60px rgba(0,0,0,.25);box-sizing:border-box}
+.idlg-x{position:absolute;top:18px;right:18px;width:40px;height:40px;border-radius:999px;border:1px solid var(--plum);background:transparent;color:var(--plum);font-size:20px;line-height:1;cursor:pointer}
+.idlg-form,.idlg-done{display:grid;gap:14px}
+.idlg-form[hidden],.idlg-done[hidden]{display:none}
+.idlg .kicker{margin:0 48px 0 0;font-family:var(--ui);font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--plum)}
+.idlg h2{margin:0 40px 6px 0;font-weight:300;font-size:clamp(24px,3.4vw,32px);line-height:1.15}
+.idlg-opts{border:0;margin:0;padding:0;display:grid;gap:10px;min-width:0}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.idlg-opt{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:14px;background:var(--white);border:1px solid rgba(77,40,49,.25);border-radius:22px;padding:14px 18px;cursor:pointer}
+.idlg-opt:has(input:checked){background:var(--blue);border:2px solid var(--plum);padding:13px 17px}
+.idlg-opt input{width:22px;height:22px;margin:0;accent-color:var(--plum)}
+.idlg-txt{display:grid;gap:2px;min-width:0}
+.idlg-t{font-family:var(--ui);font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.idlg-l{font-size:17px;line-height:1.3}
+.idlg-p{font-size:17px;white-space:nowrap}
+.idlg-lab{margin-top:6px;font-family:var(--ui);font-size:12px;letter-spacing:.09em;text-transform:uppercase}
+.idlg-in{height:52px;border-radius:999px;border:1px solid var(--plum);background:var(--white);color:var(--plum);padding:0 20px;font:inherit;font-size:17px;width:100%;box-sizing:border-box}
+.idlg-in:focus,.idlg-opt:focus-within,.idlg-consent input:focus{outline:2px solid var(--plum);outline-offset:2px}
+.idlg-in[aria-invalid="true"]{border:2px solid var(--orange)}
+.idlg-consent{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;font-family:var(--ui);font-size:13px;line-height:1.5}
+.idlg-consent input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--plum)}
+.idlg-err{margin:0;color:#B4430A;font-family:var(--ui);font-size:13px}
+.idlg-err[hidden]{display:none}
+.idlg-go{justify-self:start;margin-top:6px;background:var(--plum);color:var(--cream)}
+.idlg-done{justify-items:start}
+.idlg-done p{margin:0;font-size:18px;line-height:1.45}
+.idlg-done h2{margin:6px 40px 0 0}
+@media (max-width:560px){.idlg{align-items:flex-end;padding:0}.idlg-card{border-radius:28px 28px 0 0;width:100%;padding-bottom:max(24px,env(safe-area-inset-bottom,0px))}.idlg-go{justify-self:stretch}}
+.jwhy{display:block;font-style:normal;font-size:.9em;opacity:.8;margin-top:2px}
 </style>
 
 <div class="shell">
@@ -759,7 +802,8 @@ const PRC = {
     { t: 'Protect your sleep window', a: 'Allow 7 hours or more for sleep on at least 6 nights a week.', min: 0, time: 'No extra activity time. It may mean going to bed a little earlier.', make: ['Work back from the time you need to get up, and set a time to start winding down.', 'Keep a simple sleep diary, or use a wearable, and notice how rested you feel during the day.'], why: 'You usually sleep 6–7 hours. Sleep experts recommend 7 or more hours a night for adults, and you already keep a regular bedtime and wake time, so this adjusts a routine you have.' },
     { t: 'More vegetables and fruit', a: 'Add vegetables or fruit to one more meal every day.', min: 0, time: 'No extra time: it changes what goes into meals you already cook.', make: ['Start with one extra portion. Once that feels normal, add another.', 'You enjoy cooking, so this can be a chance to try a new vegetable or recipe each week.'], why: 'You eat around 1–2 portions of vegetables and fruit a day, and 5 is the general guideline. Large reviews link eating more of them with a lower risk of heart disease.' }]
 };
-const pmins = r => (PRC[r.name] || []).reduce((t, c) => t + (c.min || 0), 0) || r.mins;
+// generated plans: the recommended (core) practices only; optional ones are shown separately (r.minsOpt)
+const pmins = r => r.gen ? (r.mins || 0) : ((PRC[r.name] || []).reduce((t, c) => t + (c.min || 0), 0) || r.mins);
 // designed to fit your life: one compact block under the practices
 function fitBlock(r) {
   const n = r.practices.length, cap = { 45: '45 minutes', 60: 'one hour', 120: 'two hours', 240: 'four hours' }[r.lower] || r.lower + ' minutes';
@@ -840,7 +884,7 @@ function ring(a, g, mini) {
 D.filter(r => r.planned).forEach(r => [...r.steps.m2, ...r.steps.m3, ...r.steps.later].forEach(x => { if (STEPMIN[x.fam] === undefined) STEPMIN[x.fam] = x.min || 0; }));
 D.filter(r => r.gen).forEach(r => { INTRO1[r.name] = r.intro1; SPC[r.name] = r.spc; FOC[r.name] = r.foc; PRC[r.name] = r.prc;
   if (r.notice) NOTICE[r.name] = r.notice; else delete NOTICE[r.name]; delete PHOTO[r.name];
-  [...r.steps.m2, ...r.steps.m3, ...r.steps.later].forEach(x => { STEPMIN[x.fam] = x.min || 0; }); });
+  [...r.steps.m2, ...r.steps.m3, ...r.steps.later].forEach(x => { STEPMIN[x.fam] = x.wk ?? x.min ?? 0; }); });
 if (GEN) Object.keys(NXT).forEach(k => delete NXT[k]);
 const ORDER = r => [...(r.gen ? r.focus : []).filter(a => r.groups[a] === 'focus'), ...AREAS.filter(a => r.groups[a] === 'focus' && !(r.gen && r.focus.includes(a))), ...AREAS.filter(a => r.groups[a] === 'improve'), ...AREAS.filter(a => r.groups[a] === 'well')];
 // the member's own practice (q54), when they wrote one: their words, last in the month ahead
@@ -849,20 +893,97 @@ const ownCard = r => { const o = ownOf(r); if (!o) return ''; const n = String(r
   return `<article class="pr is-own"><div class="hd"><div class="prtags"><span class="chip">Your own</span><span class="rtag">${o.shared ? 'Shared with your Pilot' : 'Private'}</span></div><span class="pnum">${n} · Your own practice</span>
       <p class="act">“${esc(o.text.trim())}”</p></div><div class="bd">
       <dl><dt>Time</dt><dd><p>You decide. It isn't counted in your weekly time.</p></dd><dt>Make it work for you</dt><dd><p>${o.shared ? "You've shared this with your Pilot. In your Good Span Review, they'll help you shape it into a practice that fits your week." : "You're keeping this one private. Use your Practice Journal to note what you'd like to do, when, and how it's going."}</p></dd></dl></div></article>`; };
+// "About you": the member's profile told back to them as a short story (rule-based, or AI-written when available)
+const storyBlock = r => r.story && (r.story.paras || []).length ? `<section class="story" aria-labelledby="story-h"><p class="kicker">About you</p>${r.story.heading ? `<h2 id="story-h">${esc(r.story.heading)}</h2>` : ''}${r.story.paras.map(t => `<p>${esc(t)}</p>`).join('')}</section>` : '';
+// "Interested in practising your Good Span?": memberships open in January 2027. The card opens a short form
+// (level of support, email, consent). r.interest = { url, ref, email, name } is set by the conversation; without a url
+// the form still runs every step but sends nothing (preview mode).
+const IN_OPEN = 'January 2027';
+const IN_LEVELS = [['Self', 'Continue independently'], ['Core', 'Stay on track with regular Pilot guidance'], ['Concierge', 'Let us guide you'], ['Not sure', 'I’m not sure yet']];
+const priceOf = t => { const el = document.querySelector(`.tier[data-t="${t}"] .price`); return el ? el.childNodes[0].textContent.trim() + '/month' : ''; };
+const interestBlock = r => `<section class="intr" aria-labelledby="intr-h">
+    <p class="intr-pill">${IN_OPEN}</p>
+    <h2 id="intr-h">Interested in practising your Good Span?</h2>
+    <p>Memberships open in ${IN_OPEN}.<br>Tell us if you’d like to be among the first to join.</p>
+    <button class="btn pbtn" type="button" data-intr="open">I’m interested</button>
+  </section>`;
+function interestDialog() {
+  let d = document.getElementById('intr-dlg'); if (d) return d;
+  d = document.createElement('div'); d.id = 'intr-dlg'; d.className = 'idlg'; d.hidden = true;
+  d.innerHTML = `<div class="idlg-card" role="dialog" aria-modal="true" aria-labelledby="idlg-h">
+    <button class="idlg-x" type="button" data-intr="close" aria-label="Close">×</button>
+    <form class="idlg-form" novalidate>
+      <p class="kicker">Memberships open in ${IN_OPEN}</p>
+      <h2 id="idlg-h">Which level of support would you be most likely to consider?</h2>
+      <fieldset class="idlg-opts"><legend class="sr">Level of support</legend>
+        ${IN_LEVELS.map(([t, l], i) => `<label class="idlg-opt"><input type="radio" name="intr-level" value="${t}"${i === 1 ? ' checked' : ''}>
+          <span class="idlg-txt">${t === 'Not sure' ? '' : `<span class="idlg-t">${t}</span>`}<span class="idlg-l">${esc(l)}</span></span>${t === 'Not sure' ? '' : `<span class="idlg-p">${esc(priceOf(t))}</span>`}</label>`).join('')}
+      </fieldset>
+      <label class="idlg-lab" for="intr-email">Email address</label>
+      <input class="idlg-in" id="intr-email" type="email" autocomplete="email" inputmode="email" placeholder="name@example.com">
+      <p class="idlg-err" id="intr-email-err" hidden>Please enter a valid email address.</p>
+      <label class="idlg-consent"><input type="checkbox" id="intr-consent"><span>I agree to The Good Span emailing me when memberships open. You can unsubscribe at any time.</span></label>
+      <p class="idlg-err" id="intr-consent-err" hidden>Please tick the box so we can email you.</p>
+      <p class="idlg-err" id="intr-send-err" hidden>Something went wrong. Please check your connection and try again.</p>
+      <button class="btn pbtn idlg-go" type="submit">Keep me informed when memberships open</button>
+    </form>
+    <div class="idlg-done" hidden tabindex="-1">
+      <svg viewBox="0 0 48 48" width="48" height="48" aria-hidden="true"><circle cx="24" cy="24" r="22" fill="none" stroke="#4D2831" stroke-width="1.2"/><circle cx="24" cy="24" r="16" fill="none" stroke="#4D2831" stroke-width="1" stroke-dasharray="1.5 3"/><path d="M17 24.5l5 5 9-10" fill="none" stroke="#4D2831" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <h2>Thank you. You’re on the list.</h2>
+      <p>We’ll let you know at <b id="intr-echo"></b> as soon as memberships open in ${IN_OPEN}.</p>
+      <button class="btn" type="button" data-intr="close">Close</button>
+    </div></div>`;
+  document.body.append(d);
+  d.addEventListener('click', e => { if (e.target === d) closeInterest(); });
+  d.addEventListener('keydown', e => { if (e.key === 'Escape') closeInterest(); });
+  d.querySelector('form').addEventListener('submit', e => { e.preventDefault(); sendInterest(); });
+  return d;
+}
+let intrBack = null;
+function openInterest() {
+  const d = interestDialog(), r = D[who] || {}, i = r.interest || {};
+  d.querySelector('.idlg-form').hidden = false; d.querySelector('.idlg-done').hidden = true;
+  const em = d.querySelector('#intr-email'); if (!em.value && i.email) em.value = i.email;
+  intrBack = document.activeElement; d.hidden = false; document.documentElement.classList.add('idlg-on');
+  setTimeout(() => d.querySelector('input[name="intr-level"]:checked').focus(), 30);
+}
+function closeInterest() {
+  const d = document.getElementById('intr-dlg'); if (!d) return;
+  d.hidden = true; document.documentElement.classList.remove('idlg-on'); if (intrBack) intrBack.focus();
+}
+async function sendInterest() {
+  const d = interestDialog(), r = D[who] || {}, i = r.interest || {};
+  const email = d.querySelector('#intr-email').value.trim(), consent = d.querySelector('#intr-consent').checked;
+  const level = (d.querySelector('input[name="intr-level"]:checked') || {}).value || '';
+  const okEmail = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  d.querySelector('#intr-email-err').hidden = okEmail; d.querySelector('#intr-email').setAttribute('aria-invalid', okEmail ? 'false' : 'true');
+  d.querySelector('#intr-consent-err').hidden = consent; d.querySelector('#intr-send-err').hidden = true;
+  if (!okEmail) { d.querySelector('#intr-email').focus(); return; }
+  if (!consent) { d.querySelector('#intr-consent').focus(); return; }
+  const btn = d.querySelector('.idlg-go'); btn.disabled = true;
+  try {
+    if (i.url) await fetch(i.url, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ type: 'interest', planId: i.ref || '', name: i.name || r.name || '', email, level, consent: true, submittedAt: new Date().toISOString(), source: 'plan' }) });
+  } catch (e) { btn.disabled = false; d.querySelector('#intr-send-err').hidden = false; return; }
+  btn.disabled = false;
+  d.querySelector('#intr-echo').textContent = email;
+  d.querySelector('.idlg-form').hidden = true; const done = d.querySelector('.idlg-done'); done.hidden = false; done.focus();
+}
 const S0 = [
   // opening: their Good Span, a short portrait, and the Starting Position as one strip of six
   r => { const op = openingOf(r); return `<div class="hero"><div class="htext">
     <div class="ht"><h1>Your Good Span</h1><p class="kicker hk">${esc(r.name)} · ${esc(r.date || '12 October 2026')}</p><p class="hsub hlead">${esc(op.lead)}</p></div>
-    <div class="hls">${op.paras.map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>
+    ${r.story && (r.story.paras || []).length ? '' : `<div class="hls">${op.paras.map(t => `<p class="hl">${esc(t)}</p>`).join('')}</div>`}
     </div>${(() => { const k = PHOTO[r.name] || r.focus[0]; return IMG[k] ? `<figure class="hfig"><img src="${IMG[k]}" alt="${esc(ALT[k])}"><figcaption><span class="chip p-${r.focus[0]}">${esc(r.focus[0])}</span></figcaption></figure>` : ''; })()}
   </div>
+    ${storyBlock(r)}
     ${NOTICE[r.name] ? `<div class="check check-top notice"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15" fill="#CB863A"/><circle cx="24" cy="24" r="20" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(NOTICE[r.name].title)}</h3><p style="margin-top:6px">${esc(NOTICE[r.name].text)}</p></div></div>` : ''}
     ${r.safety ? `<div class="check check-top"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="20" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2"/><circle cx="28" cy="24" r="14" fill="none" stroke="#4D2831" stroke-width="1.2" stroke-dasharray="2 3"/></svg><div><h3>${esc(r.safety.title)}</h3><p style="margin-top:6px">${esc(r.safety.text)}</p></div></div>` : ''}`; },
 
   // Your Starting Position: one label and a short reading per pillar, in the order of the strip
   r => `<h1>Your Starting Position</h1>
     <p class="secsub">A clear picture of where you are today across six connected dimensions</p>
-    <p class="lead">Here is what is already supporting your wellbeing, and where focusing your effort could help you move forward most.</p>
+    <p class="lead">${r.gen && r.maintain ? 'Here is what is already supporting your wellbeing across the six dimensions.' : `Here is what is already supporting your wellbeing, and where focusing your effort could help you move forward most.`}</p>
     <figure class="map" aria-label="Your Starting Position across the six pillars">
       ${mapSvg(r)}
       <ul class="sr-only">${AREAS.map(a => `<li>${a}: ${GL[r.groups[a]]}</li>`).join('')}</ul>
@@ -870,16 +991,16 @@ const S0 = [
     </figure>
     <div class="brief">${ORDER(r).map(a => { const [lab, txt] = (SPC[r.name] || {})[a] || [GL[r.groups[a]], r.prof.pillars[a]]; return `<div class="bp a-${a} g-${r.groups[a]}"><div class="bh"><h3>${a}</h3><span class="tag t-${r.groups[a]}">${esc(lab)}</span></div><p>${esc(txt)}</p></div>`; }).join('')}</div>`,
 
-  r => `<h1>Where your effort will count most</h1>
+  r => `<h1>${r.gen && r.focus.every(a => r.groups[a] === 'well') ? 'Where you could add something, if you want' : 'Where your effort will count most'}</h1>
     <div class="fstack">${r.focus.map(a => { const f = (FOC[r.name] || {})[a] || (r.foc || {})[a] || { p: r.reasons[a] || [], well: [] }; return `<div class="fcard fwide a-${a}">
-      <div class="fmain"><span class="chip">Your focus</span><span class="fh">${a}</span>${f.p.map(t => `<p>${esc(t)}</p>`).join('')}</div>
+      <div class="fmain"><span class="chip">${r.gen && r.groups[a] === 'well' ? 'Optional' : r.gen && r.unsure ? 'Suggested' : r.gen && !(r.wish || []).includes(a) ? 'From your answers' : 'Your focus'}</span><span class="fh">${a}</span>${f.p.map(t => `<p>${esc(t)}</p>`).join('')}</div>
       ${f.well.length ? `<div class="fwell"><h3>What you're already doing well</h3><ul>${f.well.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>` : ''}</div>`; }).join('')}</div>
     <p class="lead">We'll build on these habits instead of asking you to start from scratch.</p>`,
 
   // section 4: first practices, each with what to do, how to make it work and why
-  r => { const nr = r.practices.filter((x, i) => isRec(r, x, i)).length, ne = r.practices.length - nr; return `<h1>Your month ahead</h1>
-    <p class="lead">${cap1(NUMW[nr])} recommended practice${nr === 1 ? '' : 's'} to start with${ne ? `, and ${NUMW[ne]} more you can add if you have time` : ''}. Each one is chosen around what matters to you and the time you have.${ownOf(r) ? ' Your own practice is here too.' : ''}</p>
-    <div class="prs">${r.practices.map((x, i) => { const rec = isRec(r, x, i), c = (rec || r.gen ? (PRC[r.name] || [])[i] : null) || { t: STEPNAME[x.fam] || x.fam, a: x.action + ' ' + x.freq + '.', time: /once this month|in the first week of this month/.test(x.freq) ? '' : x.over ? `About ${x.min} minutes a week, more than your usual time, so only if you have room.` : x.min ? `About ${x.min} minutes a week.` : 'No extra time set aside.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area} ${rec ? 'is-rec' : 'is-extra'}"><div class="hd"><div class="prtags"><span class="chip">${esc(x.area)}</span><span class="rtag">${rec ? 'Recommended' : 'If you have time'}</span></div><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
+  r => { const nr = r.gen && r.maintain ? r.practices.length : r.practices.filter((x, i) => isRec(r, x, i)).length, ne = r.practices.length - nr; return `<h1>Your month ahead</h1>
+    <p class="lead">${r.gen && r.practices.every(x => r.groups[x.area] === 'well') ? `${cap1(NUMW[nr])} practice${nr === 1 ? '' : 's'} you could try${ne ? `, and ${NUMW[ne]} more if you have time` : ''}. All of them are optional: your answers show these areas are already going well, so they're a way to add variety or keep your habits going.` : r.gen && r.unsure ? `${cap1(NUMW[nr])} practice${nr === 1 ? '' : 's'} we'd suggest, based on your answers${ne ? `, and ${NUMW[ne]} more you can add if you have time` : ''}. You weren't sure where to start, so ${nr === 1 ? 'it is' : 'they are'} a suggestion rather than a priority: start only if ${nr === 1 ? 'it suits' : 'they suit'} you.` : `${cap1(NUMW[nr])} recommended practice${nr === 1 ? '' : 's'} to start with${ne ? `, and ${NUMW[ne]} optional ${ne === 1 ? 'one' : 'ones'} you can add if you have time` : ''}. Each one is chosen around what matters to you and the time you have.`}${ownOf(r) ? ' Your own practice is here too.' : ''}</p>
+    <div class="prs">${r.practices.map((x, i) => { const rec = isRec(r, x, i), c = (rec || r.gen ? (PRC[r.name] || [])[i] : null) || { t: STEPNAME[x.fam] || x.fam, a: x.action + ' ' + x.freq + '.', time: /once this month|in the first week of this month/.test(x.freq) ? '' : x.over ? `About ${x.min} minutes a week, more than your usual time, so only if you have room.` : x.min ? `About ${x.min} minutes a week.` : 'No extra time set aside.', make: [x.start], why: x.why }; return `<article class="pr a-${x.area} ${rec ? 'is-rec' : 'is-extra'}"><div class="hd"><div class="prtags"><span class="chip">${esc(x.area)}</span><span class="rtag">${rec ? (r.gen && r.groups[x.area] === 'well' && !(r.wish || []).includes(x.area) ? 'Optional' : r.gen && r.unsure ? 'Suggested' : 'Recommended') : r.gen ? 'Optional' : 'If you have time'}</span></div><span class="pnum">${String(i + 1).padStart(2, '0')} · ${esc(c.t)}</span>
       <p class="act">${esc(c.a)}</p></div><div class="bd">
       <dl>${c.time ? `<dt>Time</dt><dd><p>${esc(c.time)}</p></dd>` : ''}<dt>Make it work for you</dt><dd>${c.make.map(t => `<p>${esc(t)}</p>`).join('')}</dd>${c.why ? `<dt>Why this practice</dt><dd><p>${esc(c.why)}</p></dd>` : ''}</dl>
       ${(x.refs || []).length ? `<details><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul></details>` : ''}</div></article>`; }).join('')}${ownCard(r)}</div>
@@ -887,21 +1008,24 @@ const S0 = [
     ${r.found.length ? `<div class="later"><p class="kicker">Optional everyday habits</p><ul>${r.found.map(f => `<li>${esc(f.text)} <span class="note">${esc(f.why)}</span></li>`).join('')}</ul></div>` : ''}`; },
 
   // the six-month journey, with the next practices and the weekly time at each step
-  r => { const st = r.steps || { m2: [], m3: [], later: [] }; const add = a => a.reduce((t, x) => t + (STEPMIN[x.fam] || 0), 0);
-    const t1 = pmins(r), t2 = t1 + add(st.m2), t3 = t2 + add(st.m3), mins = v => v ? `About ${v} minutes a week in all` : 'Still no extra activity time';
-    const item = x => `<li class="js"><span class="chip p-${x.area}">${esc(x.area)}</span><b>${esc(STEPNAME[x.fam] || x.fam)}</b><span>${esc(NXT[x.fam] || (x.action + ' ' + x.freq + '.'))}</span>${(x.refs || []).length ? `<details class="jref"><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul></details>` : ''}</li>`;
+  r => { const st = r.steps || { m2: [], m3: [], later: [] }; const add = a => a.reduce((t, x) => t + (x.opt ? 0 : (STEPMIN[x.fam] || 0)), 0);
+    const t1 = pmins(r), t2 = t1 + add(st.m2), t3 = t2 + add(st.m3), opt = r.gen && (r.minsOpt || [...st.m2, ...st.m3].some(x => x.opt)) ? ', not counting the optional ones' : '', mins = v => v ? `About ${v} additional minutes a week in all${opt}` : 'Still no additional time';
+    const nOpt = r.practices.length - r.practices.filter((x, i) => isRec(r, x, i)).length, whose = r.maintain ? 'first practices' : (r.unsure ? 'suggested practice' : 'recommended practice') + (r.practices.length - nOpt > 1 ? 's' : '');
+    const actTxt = r.act ? (r.act.build ? `, on top of the ${r.act.base} minutes of activity you already do: about ${r.act.total} minutes a week in total at first, and ${r.act.total2} by the end of the month` : `, on top of the ${r.act.base} minutes of activity you already do (about ${r.act.total} in total)`) : '';
+    const t1txt = r.gen && r.maintain ? (r.minsOpt ? `About ${r.minsOpt} minutes a week if you try ${r.practices.length > 1 ? (r.practices.length === 2 ? 'both' : 'all of them') : 'it'}; all optional` : 'No additional time, and all optional') : r.gen ? `${t1 ? `${r.act && r.act.build ? `About ${Math.round(r.act.extra / 5) * 5} additional minutes a week at first, building to about ${t1} by the end of the month,` : `About ${t1} additional minutes a week`} for your ${whose}${actTxt}` : `No additional time for your ${whose}`}${r.minsOpt ? `, or about ${t1 + r.minsOpt} additional with the optional ${nOpt > 1 ? 'ones' : 'one'}` : ''}` : (t1 ? `About ${t1} minutes a week` : 'No extra activity time');
+    const item = x => `<li class="js"><span class="chip p-${x.area}">${esc(x.area)}</span><b>${esc(STEPNAME[x.fam] || x.fam)}${x.opt ? ' (optional)' : ''}</b><span>${esc(NXT[x.fam] || (x.action + ' ' + x.freq + '.'))}</span>${x.goal && x.why ? `<em class="jwhy">${esc(x.why)}</em>` : ''}${x.sep ? `<em class="jwhy">${esc(x.sep)}</em>` : ''}${(x.refs || []).length ? `<details class="jref"><summary>What supports this</summary><ul class="srcs">${x.refs.map(t => `<li>${linkDoi(t)}</li>`).join('')}</ul></details>` : ''}</li>`;
     const t = r.themes.length;
     return `<h1>Your six-month journey</h1>
-    <p class="lead">Your Good Span is a starting point, not a fixed prescription. Each month, you'll reflect on what's working, adapt what isn't and decide what comes next. New practices join one at a time, once the earlier ones feel familiar.</p>
+    <p class="lead">Your Good Span is a starting point, not a fixed prescription. Each month, you'll reflect on what's working, adapt what isn't and decide what comes next. New practices join gradually, once the earlier ones feel familiar.</p>
     <div class="roadwrap">${ARC([['104%', '-22%', 150, '#4D2831', 'solid', 1.5], ['-3%', '112%', 110, '#FFFFFF', 'dot', 2]])}<ol class="road vroad">
-      <li class="now"><span class="pt"></span><span class="what">Month 1 · Begin</span><p>${(() => { const nr = r.practices.filter((x, i) => isRec(r, x, i)).length, ne = r.practices.length - nr; return `Get familiar with your ${nr === 1 ? 'recommended practice' : NUMW[nr] + ' recommended practices'} and find ways to make ${nr === 1 ? 'it' : 'them'} part of your week${ne ? `. If you have time, add ${ne === 1 ? 'the other one' : 'one or both of the other two'}` : ''}.`; })()}</p><p class="jt">${t1 ? `About ${t1} minutes a week` : 'No extra activity time'}</p></li>
+      <li class="now"><span class="pt"></span><span class="what">Month 1 · Begin</span><p>${(() => { const nr = r.gen && r.maintain ? r.practices.length : r.practices.filter((x, i) => isRec(r, x, i)).length, ne = r.practices.length - nr; const opt = r.gen && r.practices.every(x => r.groups[x.area] === 'well'); const sug = r.gen && r.unsure && !opt; return `${opt || sug ? 'If you choose to, try' : 'Get familiar with'} your ${nr === 1 ? (opt ? 'first practice' : sug ? 'suggested practice' : 'recommended practice') : NUMW[nr] + (opt ? ' first practices' : sug ? ' suggested practices' : ' recommended practices')} and find ways to make ${nr === 1 ? 'it' : 'them'} part of your week${ne ? `. If you have time, add ${ne === 1 ? 'the other one' : ne === 2 ? 'one or both of the other two' : `any of the other ${NUMW[ne]}`}` : ''}.`; })()}</p><p class="jt">${t1txt}</p></li>
       <li class="mid"><span class="pt"></span><span class="what">Month 2 · Build</span><p>Keep the practices that are working${st.m2.length ? ' and, when you feel ready, add:' : '.'}</p>${st.m2.length ? `<ul class="jsl">${st.m2.map(item).join('')}</ul><p class="jt">${mins(t2)}</p>` : ''}</li>
-      <li class="mid"><span class="pt"></span><span class="what">Month 3 · Refine</span><p>Review your progress and adjust your practices to fit your routines, priorities and experience${st.m3.length ? '. If it feels right, add:' : '.'}</p>${st.m3.length ? `<ul class="jsl">${st.m3.map(item).join('')}</ul><p class="jt">${mins(t3)}, within the ${esc(r.timeTxt)} you told us you have</p>` : ''}</li>
-      <li><span class="pt"></span><span class="what">Months 4–5 · Deepen</span><p>Explore the next practices in your focus areas, building on what you've learned so far${st.later.length ? `, such as ${list(st.later.map(x => `<b>${esc(STEPNAME[x.fam] || x.fam)}</b>`))}. Where time is tight, a new practice can replace one that is already a habit` : ''}.</p></li>
+      <li class="mid"><span class="pt"></span><span class="what">Month 3 · Refine</span><p>Review your progress and adjust your practices to fit your routines, priorities and experience${st.m3.length ? '. If it feels right, add:' : '.'}</p>${st.m3.length ? `<ul class="jsl">${st.m3.map(item).join('')}</ul><p class="jt">${mins(t3)}${!r.gen || (t3 && r.upper && t3 <= r.upper) ? `, within the ${esc(r.timeTxt.replace(/^about /, ''))} you told us you have` : ''}</p>` : ''}</li>
+      <li><span class="pt"></span><span class="what">Months 4–5 · Deepen</span><p>${r.gen && r.maintain ? 'If you would like more variety, explore other practices that build on what you already enjoy' : r.gen && r.unsure ? 'If the first practice suits you, explore what could come next with your Pilot' : (r.gen ? 'Explore further practices, building on what you\'ve learned so far' : 'Explore the next practices in your focus areas, building on what you\'ve learned so far')}${st.later.length ? `, such as ${list(st.later.map(x => `<b>${esc(STEPNAME[x.fam] || x.fam)}</b>${x.sepShort ? ` (${esc(x.sepShort)})` : ''}`))}. Where time is tight, a new practice can replace one that is already a habit` : ''}.</p></li>
       <li><span class="pt"></span><span class="what">Month 6 · Consolidate</span><p>Identify the habits that matter most to you and make them easier to sustain beyond the programme.</p></li>
       <li class="end"><span class="pt"></span><span class="what">After six months: Your New Position</span><p>Revisit the six dimensions to see how your habits and priorities have evolved since your Starting Position. Review your New Position with your Pilot and decide what you want to focus on next.</p></li>
     </ol>
-    <div class="later"><p class="kicker">${t === 1 ? 'One possible next direction' : NUMW[t].charAt(0).toUpperCase() + NUMW[t].slice(1) + ' possible next directions'}</p>${r.themes.map(x => `<p>${esc(DIR[x[1]] || x[1] + '. ' + x[2])}</p>`).join('')}<p>Or you can keep going with what's working. Maintaining a habit that supports your wellbeing is progress too.</p></div></div>`; },
+    <div class="later">${t ? `<p class="kicker">${t === 1 ? 'One possible next direction' : NUMW[t].charAt(0).toUpperCase() + NUMW[t].slice(1) + ' possible next directions'}</p>` : ''}${r.themes.map(x => `<p>${esc(DIR[x[1]] || (x[2] ? `${cap1(x[1].replace(/ & /g, ' and ').toLowerCase())} could help with ${x[2].charAt(0).toLowerCase() + x[2].slice(1)}` : x[1]))}</p>`).join('')}<p>Or you can keep going with what's working. Maintaining a habit that supports your wellbeing is progress too.</p></div></div>`; },
 
   // section 8: belonging, then the next step: meet your Pilot (before any choice of support)
   r => `<div class="close">
@@ -917,7 +1041,7 @@ const S0 = [
           <ul><li><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 11.3l3 3 6-6.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Review your Starting Position together</li><li><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 11.3l3 3 6-6.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Adjust anything that doesn't fit</li><li><svg viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M6.5 11.3l3 3 6-6.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Decide on the support that suits you</li></ul>
           <div class="nfoot"><p class="nmeta">20 minutes · Online · No preparation needed</p><button class="btn pbtn" type="button">Book my Welcome Call</button></div></article>
         <article class="nopt nopt-2"><p class="nnum">02 · Membership</p><h3>Choose Your Membership</h3>
-          <ul class="mprices"><li><b>Self</b><span>€19 a month</span><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></li><li><b>Core</b><span>€129 a month</span></li><li><b>Concierge</b><span>€249 a month</span></li></ul>
+          <ul class="mprices"><li><b>Self</b><span>€19 a month</span><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></li><li><b>Core</b><span>€99 a month</span></li><li><b>Concierge</b><span>€249 a month</span></li></ul>
           <div class="nfoot"><button class="btn obtn" type="button" data-go="5">See the memberships</button></div></article>
       </div></div>`,
 
@@ -931,9 +1055,9 @@ const S0 = [
         <p>Follow your Good Span independently, with a Pilot welcome conversation to review your Starting Position and refine your practices.</p>
         <p>Over your six months, use the Member App and Practice Journal to follow your practices and reflect on your progress.</p>
         <div class="tfoot"><button class="btn tchoose" type="button">Choose Self</button><p class="trial">Prefer to try it first? A one-month trial is available for €25, without Pilot support.</p></div></div>
-      <div class="tier t-Core" data-t="Core"><span class="ui">Core</span><span class="price">€129<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">Personal guidance to keep you moving forward.</p>
+      <div class="tier t-Core" data-t="Core"><span class="ui">Core</span><span class="price">€99<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">Personal guidance to keep you moving forward.</p>
         <p>Take the lead day to day, with a Pilot who follows your progress, helps you work through challenges and adapts your Good Span with you.</p>
-        <p>Your membership includes regular Pilot reviews, WhatsApp support between reviews and a quarterly €50 Refuel.</p>
+        <p>Your membership includes regular Pilot reviews and WhatsApp support between reviews.</p>
         <div class="tfoot"><button class="btn tchoose" type="button">Choose Core</button></div></div>
       <div class="tier t-Concierge" data-t="Concierge"><span class="ui">Concierge</span><span class="price">€249<small>/month</small></span><span class="pterm" aria-hidden="true">&nbsp;</span><p class="tl">More individual attention, coordinated around you.</p>
         <p>Work closely with a Pilot who understands your goals, helps you adapt your Good Span and coordinates additional expertise when you need it.</p>
@@ -941,6 +1065,7 @@ const S0 = [
         <div class="tfoot"><button class="btn tchoose" type="button">Choose Concierge</button></div></div>
     </div>
     <div class="pcta pcta2"><button class="btn pbtn" type="button">Book my Welcome Call</button><p class="pmeta">Decide with your Pilot · 20 minutes · online</p></div>
+    ${interestBlock(r)}
     <div class="dlbox"><div><h3>Keep your Good Span</h3><p>Download your plan to read again, print or share with your Pilot.</p></div><button class="btn dlbtn" type="button" data-dl="1"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4.5-4.5M12 15l4.5-4.5M5 19h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Download my Good Span</button><p class="dlmsg" role="status"></p></div>`
 ];
 // the opening and the Starting Position share the first screen
@@ -1011,6 +1136,7 @@ async function downloadPlan(btn) {
 }
 document.addEventListener('click', e => {
   const dlb = e.target.closest('[data-dl]'); if (dlb) { downloadPlan(dlb); return; }
+  const ib = e.target.closest('[data-intr]'); if (ib) { if (ib.dataset.intr === 'open') openInterest(); else closeInterest(); return; }
   const refs = open => { const m = document.getElementById('refmore'), b = document.querySelector('.reft'); if (!m || !b) return; m.hidden = !open; b.setAttribute('aria-expanded', open); b.textContent = open ? 'Show fewer references' : 'Show all references'; };
   if (e.target.closest('a[href="#references"]')) { e.preventDefault(); back = step; show(S.length - 1); refs(true); return; }
   const rt = e.target.closest('.reft'); if (rt) refs(rt.getAttribute('aria-expanded') !== 'true');

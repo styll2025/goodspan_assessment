@@ -150,3 +150,15 @@ Health and safety questions (q4, q5, q5a, q5b, q6, q29, q32) can be spoken. The 
 - The acknowledgement lines and the opening wording are fixed copy; review them with the team like any other copy.
 - Practice cards use library names (e.g. "Reframing") and library minute values; the hand-written titles and timings in the reviewed pages are not in the library yet.
 - Keep `ANTHROPIC_API_KEY` and `OPENAI_API_KEY` on the server. A spoken health answer is sent the same way as any other spoken answer, and it is only saved after the member confirms it. The Google Sheet still receives the assessment answers.
+
+## "About you": the Personal Assessment Summary
+
+The first screen of the plan opens with a short heading and two paragraphs that reflect the member's answers back to them: their lifestyle today, then what matters to them and where their Good Span starts. The brief it is written to is the `SYSTEM` prompt in `server/ai-story.js`.
+
+- `buildResult` always writes a rule-based version (`record.story = { heading, paras }`), so the section never depends on AI.
+- When the conversation finishes, it sends `record.storyFacts` and the member's answers to `/api/story` (`functions/api/story.js`). Claude writes the summary; the page waits up to 12 seconds, otherwise it keeps the rule-based version.
+- Sent: question and answer text and a few plan facts. Not sent: the email address, or a personal habit the member chose to keep private. Health answers are sent so the summary doesn't overlook them, but the brief forbids naming conditions, symptoms, mood answers or pregnancy.
+- The server rejects a summary with the wrong shape or length (85–165 words), a heading over 9 words, medical or stock wording, or any number that isn't in the member's answers. The page then keeps the rule-based version.
+- Uses the same `ANTHROPIC_API_KEY` secret as `/api/interpret`. Model: `GS_STORY_MODEL` (default `claude-sonnet-4-5`).
+- The summary is saved in the Completions sheet ("About you"), marked "(rule-based)" when the AI version wasn't used.
+- `node test/ai-story.test.js` checks the guard rails without a key.

@@ -7,6 +7,7 @@ const http = require('http');
 const { conversationPage } = require('../scripts/lib.js');
 const { handleInterpret } = require('./ai-interpret.js');
 const { handleTranscribe } = require('./transcribe.js');
+const { handleStory } = require('./ai-story.js');
 const PORT = +process.env.PORT || 8787;
 
 function readBody(req, limit) {
@@ -27,6 +28,14 @@ http.createServer(async (req, res) => {
     res.writeHead(out.status, { 'content-type': 'application/json' }); res.end(JSON.stringify(out.json));
     return;
   }
+  if (req.method === 'POST' && req.url === '/api/story') {
+    let raw = ''; try { raw = await readBody(req, 20000); } catch (e) { res.writeHead(413); res.end(); return; }
+    let body; try { body = JSON.parse(raw); } catch (e) { body = null; }
+    const t0 = Date.now(), out = await handleStory(body);
+    console.log(`[story] ${out.status} ${out.json.error || ''}${out.json.reason ? ' (' + out.json.reason + ')' : ''} (${Date.now() - t0} ms)`);
+    res.writeHead(out.status, { 'content-type': 'application/json' }); res.end(JSON.stringify(out.json));
+    return;
+  }
   if (req.method === 'POST' && req.url === '/api/transcribe') {
     let raw = ''; try { raw = await readBody(req, 4500000); } catch (e) { res.writeHead(413, { 'content-type': 'application/json' }); res.end(JSON.stringify({ error: 'too_large' })); return; }
     let body; try { body = JSON.parse(raw); } catch (e) { body = null; }
@@ -36,7 +45,7 @@ http.createServer(async (req, res) => {
     return;
   }
   if (req.method === 'GET' && (req.url === '/' || req.url.startsWith('/?'))) {
-    const settings = `<script>window.GS_AI_URL = ${process.env.ANTHROPIC_API_KEY ? "'/api/interpret'" : "''"}; window.GS_TRANSCRIBE_URL = ${process.env.OPENAI_API_KEY ? "'/api/transcribe'" : "''"}; window.GS_SPEECH_LANG = ${JSON.stringify(process.env.GS_SPEECH_LANG || 'en-GB')};</script>`;
+    const settings = `<script>window.GS_AI_URL = ${process.env.ANTHROPIC_API_KEY ? "'/api/interpret'" : "''"}; window.GS_TRANSCRIBE_URL = ${process.env.OPENAI_API_KEY ? "'/api/transcribe'" : "''"}; window.GS_SPEECH_LANG = ${JSON.stringify(process.env.GS_SPEECH_LANG || 'en-GB')}; window.GS_STORY_URL = ${process.env.ANTHROPIC_API_KEY ? "'/api/story'" : "''"};</script>`;
     const html = conversationPage().replace('<body>', '<body>' + settings);   // rebuilt on each load, so template edits show on refresh
     res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }); res.end(html); return;
   }

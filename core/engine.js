@@ -136,12 +136,12 @@ function makeEngine(DATA) {
     const m = p.mvpa;
     if (m < 60) add('Movement', 'H', `You do about ${m} minutes of moderate or vigorous activity a week. Guidelines recommend 150-300 minutes, and even small increases are linked with better health.`, 'Building up cardio');
     else if (m < 150) add('Movement', 'M', `You do about ${m} minutes of moderate or vigorous activity a week, a little under the 150 minutes guidelines recommend. Being more active is linked with better long-term health.`, m < 100 ? 'Building up cardio' : 'Weekly cardio');
-    if (p.strength <= 1) add('Movement', 'M', `You do strength exercise on ${p.strength} ${p.strength === 1 ? 'day' : 'days'} a week. Guidelines recommend 2 or more, to help keep your muscles and bones strong.`, 'Strength sessions');
+    if (p.strength <= 1 && !p.strength_unknown) add('Movement', 'M', `You do strength exercise on ${p.strength} ${p.strength === 1 ? 'day' : 'days'} a week. Guidelines recommend 2 or more, to help keep your muscles and bones strong.`, 'Strength sessions');
     if (p.fall) add('Movement', 'M', "You've had a fall in the past 12 months. Balance practice can help you stay steady on your feet.", 'Balance');
     if (p.sit8) add('Movement', 'M', 'You sit for 8 or more hours on a typical day. Breaking up long periods of sitting is linked with better health, even for people who exercise.', 'Breaking up sitting');
     if (p.steps_low) add('Movement', 'M', 'You take fewer than 5,000 steps on a typical day. Walking more is linked with better health, and even small increases count.', 'Daily steps');
     if (p.phq4_pos) add('Mind', 'H', `You've been feeling anxious or low on ${p.phq4_often ? 'more than half the days' : 'several days'} recently. Small, regular practices can help support how you feel day to day.`, 'Self-compassion');
-    if (p.nature_low) add('Mind', 'M', 'You spend less than 2 hours a week in nature. People who spend at least 2 hours a week tend to report better health and wellbeing.', 'Time in nature');
+    if (p.nature_low) add('Mind', 'M', 'You spend less than 30 minutes a week in nature. In large population studies, people who spend about 2 hours a week in nature report better health and wellbeing on average, although that is an association rather than a guarantee for any one person.', 'Time in nature');
     if (p.sm_high) add('Mind', 'M', 'You spend more than 2 hours a day on social media. In several studies, cutting back was linked with better mood and sleep.', 'Social media limits');
     if (p.mind_none) add('Mind', 'M', 'None of the mind practices we asked about are part of your routine yet. Short, regular practices can help you manage everyday stress and feel more settled.', 'Slow breathing');
     if (p.isolated) add('Connection', 'H', 'You rarely see or speak to friends or family. Regular contact with people who matter to you is linked with better health and wellbeing.', 'Reaching out');
@@ -155,7 +155,7 @@ function makeEngine(DATA) {
     const au = p.audit || 0;
     if (au >= 8) add('Prevention', 'H', 'Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems.', 'Alcohol intake');
     else if (au >= 5) add('Prevention', 'M', 'Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health.', 'Alcohol intake');
-    if (p.bp_old) add('Prevention', 'M', "Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly.", 'Routine check-ups');
+    if (p.bp_old) add('Prevention', 'M', p.bp_unsure ? "You're not sure your blood pressure has been checked. All adults are advised to have it checked regularly." : "Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly.", 'Routine check-ups');
     if (p.sunburn) add('Prevention', 'M', "You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time.", 'Avoiding sunburn');
     if (p.hearing_diff && !p.hearing_aid) add('Prevention', 'M', 'You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected.', 'Hearing check');
     if (p.learn_rare) add('Prevention', 'M', 'You rarely learn new things or practise a challenging hobby, which helps keep the mind active.', 'Learning new skills');
