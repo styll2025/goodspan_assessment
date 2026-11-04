@@ -182,6 +182,7 @@ function toFeatures(A) {
   const days = +(A.q20 || 0), mins = days ? (A.q21 === '150 or more' ? 150 : +(A.q21 || 0)) : 0;
   p.mvpa = days * mins;
   p.strength = { '0': 0, '1': 1, '2': 2, '3 or more': 3 }[A.q22] ?? 0;
+  p.strength_unknown = !(A.q22 in { '0': 1, '1': 1, '2': 1, '3 or more': 1 });   // skipped: no strength gap is inferred
   if (p.strength >= 3) p.doing.push('Strength volume');   // already does strength 3 or more days a week
   p.sit8 = ['8-10', 'More than 10'].includes(A.q23);
   p.steps_low = A.q24 === 'Fewer than 5,000';
@@ -200,7 +201,7 @@ function toFeatures(A) {
   p.pain = ['Ongoing pain', 'A recent injury', 'A joint or mobility limitation'].some(o => has('q29', o));
   p.fall = has('q29', 'A fall in the past 12 months');
   if (has('q29', 'A health condition that affects movement or exercise') || has('q29', 'Something else')) p.health_other = true;
-  p.nature_low = ['Less than 30 minutes', '30 minutes to 2 hours'].includes(A.q30);
+  p.nature_low = A.q30 === 'Less than 30 minutes';   // '30 minutes to 2 hours' may already reach 2 hours: no gap inferred from a range
   if (['2 to 3 hours', 'More than 3 hours'].includes(A.q30)) p.doing.push('Time in nature');   // already meets the 2 hours a week: not offered as 'more of'
   p.sm_high = A.q31 === 'More than 2 hours'; p.no_sm = A.q31 === "I don't use social media";
   p.mind_shown = !!QUESTIONS.find(q => q.id === 'q32').show(A);
@@ -228,6 +229,7 @@ function toFeatures(A) {
   if (A.q43 === 'Never') { p.drinks = 0; p.audit = 0; }
   else if (A.q43) { p.drinks = 1; const opts = id => QUESTIONS.find(x => x.id === id).options; p.audit = i3('q43', opts('q43')) + i3('q44', opts('q44')) + i3('q45', opts('q45')); }
   p.bp_old = ['More than 2 years ago', "Never, or I'm not sure"].includes(A.q46);
+  p.bp_unsure = A.q46 === "Never, or I'm not sure";
   p.sunburn = has('q48', "I've been sunburnt, or used a sunbed, in the past 12 months");
   p.hearing_diff = has('q48', 'I often find it hard to follow conversations, or ask people to repeat themselves');
   p.hearing_aid = ['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes';   // asked from 60; no hearing test for someone who already uses hearing aids
@@ -244,7 +246,7 @@ function toFeatures(A) {
   const F4 = (v, map) => map[[...FREQ4].indexOf(v)];
   const bl = {};
   bl['Daily steps'] = { 'Fewer than 5,000': 'Learning', '5,000-7,999': 'Developing', '8,000-9,999': 'skip', '10,000 or more': 'skip' }[A.q24];
-  bl['Time in nature'] = { 'Less than 30 minutes': 'Learning', '30 minutes to 2 hours': 'Developing', '2 to 3 hours': 'Mastering', 'More than 3 hours': 'skip' }[A.q30];
+  bl['Time in nature'] = { 'Less than 30 minutes': 'Learning', '30 minutes to 2 hours': 'skip', '2 to 3 hours': 'Mastering', 'More than 3 hours': 'skip' }[A.q30];   // a range that may already meet the 120-minute level: no target they may already reach
   bl['Social media limits'] = { 'More than 2 hours': 'Learning', '1-2 hours': 'Developing', '30-60 minutes': 'Mastering', 'Less than 30 minutes': 'skip' }[A.q31];
   bl['Learning new skills'] = { 'Rarely or never': 'Learning', 'A few times a month': 'Developing' }[A.q51];
   bl['Whole grains'] = F4(g('q7', 'grains'), ['Learning', 'Learning', 'Developing', 'Mastering']);

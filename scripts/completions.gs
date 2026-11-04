@@ -32,6 +32,7 @@
 
 const CONFIG = {
   SHEET_NAME: 'Completions',
+  INTEREST_SHEET: 'Membership interest',
   FOLDER_NAME: 'Good Span plans',
   MAX_HTML_BYTES: 15 * 1024 * 1024,   // a plan page is about 1 MB
   // Optional: set the same text in the page (window.GS_SHEET_KEY) to ignore posts from anywhere else.
@@ -41,7 +42,7 @@ const CONFIG = {
 
 // Columns that always come first, in this order. Question columns follow.
 const FIXED_COLUMNS = ['Submitted', 'Reference', 'Name', 'Email', 'Plan link', 'Focus areas',
-  'Recommended practices', 'Other practices', 'Own practice', 'Opening words', 'Version', 'Source'];
+  'Recommended practices', 'Other practices', 'Own practice', 'Opening words', 'About you', 'Version', 'Source'];
 
 function setup() {
   sheet_();
@@ -58,6 +59,7 @@ function doPost(e) {
   if (!data || typeof data !== 'object') return json_({ ok: false, error: 'No data' });
   if (CONFIG.SHARED_KEY && data.key !== CONFIG.SHARED_KEY) return json_({ ok: false, error: 'Not allowed' });
 
+  if (data.type === 'interest') return interest_(data);
   const id = cleanId_(data.planId) || Utilities.getUuid().replace(/-/g, '');
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
@@ -89,6 +91,7 @@ function rowFrom_(d, id, planLink) {
     'Other practices': list_(plan.extras),
     'Own practice': text_(plan.own),
     'Opening words': text_(d.opening),
+    'About you': text_(d.story) + (d.story && d.storySource === 'rules' ? ' (rule-based)' : ''),
     'Version': text_(d.version),
     'Source': text_(d.source)
   };
@@ -157,6 +160,44 @@ function savePlan_(id, html) {
   const old = f.getFilesByName(id + '.html');
   while (old.hasNext()) old.next().setTrashed(true);
   f.createFile(id + '.html', html, MimeType.HTML);
+}
+
+// ---------- membership interest (from the plan page) ----------
+
+// One row per sign-up in the "Membership interest" tab. When it comes from a finished assessment, the matching
+// Completions row also gets the level and email in its "Membership interest" column.
+function interest_(d) {
+  const email = text_(d.email).trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || d.consent !== true) return json_({ ok: false, error: 'Missing email or consent' });
+  const ref = cleanId_(d.planId), level = text_(d.level).slice(0, 40);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    let sh = ss.getSheetByName(CONFIG.INTEREST_SHEET);
+    if (!sh) {
+      sh = ss.insertSheet(CONFIG.INTEREST_SHEET);
+      sh.getRange(1, 1, 1, 7).setValues([['Submitted', 'Reference', 'Name', 'Email', 'Level of support', 'Consent', 'Source']]).setFontWeight('bold');
+      sh.setFrozenRows(1);
+    }
+    sh.appendRow([d.submittedAt ? new Date(d.submittedAt) : new Date(), ref, text_(d.name).slice(0, 120), email, level, 'Yes', text_(d.source).slice(0, 40)]);
+    if (ref) markCompletion_(ref, level + ' · ' + email);
+    return json_({ ok: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function markCompletion_(ref, value) {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(CONFIG.SHEET_NAME);
+  if (!sh || sh.getLastRow() < 2) return;
+  let headers = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+  const refCol = headers.indexOf('Reference') + 1;
+  if (!refCol) return;
+  let col = headers.indexOf('Membership interest') + 1;
+  if (!col) { col = headers.length + 1; sh.getRange(1, col).setValue('Membership interest').setFontWeight('bold'); }
+  const refs = sh.getRange(2, refCol, sh.getLastRow() - 1, 1).getValues();
+  for (let i = refs.length - 1; i >= 0; i--) if (String(refs[i][0]) === ref) { sh.getRange(i + 2, col).setValue(value); return; }
 }
 
 // ---------- helpers ----------

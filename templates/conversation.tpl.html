@@ -125,7 +125,7 @@ html.planon,html.planon body{overflow:hidden}
   <section class="welcome" id="welcome" aria-labelledby="wh">
     <p class="kick">Welcome</p>
     <h1 id="wh">Let's find your Good Span.</h1>
-    <p class="lead">This evaluation helps us understand where you are today across six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention. You can type your answers or simply talk to us. It should take around 15 minutes.</p>
+    <p class="lead">This assessment helps us understand where you are today across six pillars of longevity: Nutrition, Sleep, Movement, Mind, Connection and Prevention. You can type your answers or simply talk to us. It should take around 15 minutes.</p>
   </section>
 
   <div class="wrap" id="chat">
@@ -166,7 +166,11 @@ const SPEECH_LANG = window.GS_SPEECH_LANG || 'en-GB';
 const AI_URL = window.GS_AI_URL || '';
 // Google Apps Script web app (scripts/completions.gs) that keeps each completion and its plan page. Empty: nothing is sent.
 const SHEET_URL = window.GS_SHEET_URL || '', SHEET_KEY = window.GS_SHEET_KEY || '';
-let sentRef = '';
+// /api/story writes the "About you" story from facts with no health information. Empty: the rule-based story is used.
+const STORY_URL = window.GS_STORY_URL || '';
+let planCache = null, storyWait = null;
+let sentRef = '', planRef = '';
+const newRef = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9]/g, '');
 const TRANSCRIBE_URL = window.GS_TRANSCRIBE_URL || '';
 let transcribeOn = !!TRANSCRIBE_URL;
 const SILENCE_MS = 800, MAX_LISTEN_MS = 20000;
@@ -499,6 +503,7 @@ function show(id, v) {
 }
 function finish() {
   composer(false, ''); clearChips(); $('comp').hidden = true;
+  improveStory();
   const planLink = sendCompletion();
   const ids = QUESTIONS.filter(q => A[q.id] !== undefined), typedN = ids.filter(q => ['typed', 'spoken'].includes(how[q.id])).length;
   const d = document.createElement('section'); d.className = 'sum';
@@ -512,7 +517,35 @@ function finish() {
 }
 // the member's Good Span, built from these answers by the same engine and rules as the standard assessment
 function planNow() {
+  if (planCache) return planCache;
   const r = buildResult(name, A, { E: makeEngine(GS_DATA), DATA: GS_DATA, toFeatures, profile: gsProfile });
+  if (!planRef) planRef = newRef();
+  r.interest = { url: SHEET_URL, ref: planRef, email: contact.email || '', name: contact.name || name || '' };
+  planCache = renderPlan(r);
+  return planCache;
+}
+// asks for the AI-written story (at most 12 seconds); keeps the rule-based one if anything goes wrong
+function improveStory() {
+  if (storyWait) return storyWait;
+  storyWait = (async () => {
+    let p; try { p = planNow(); } catch (e) { return null; }
+    if (!STORY_URL || !p.r.storyFacts) return p;
+    const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 12000);
+    try {
+      const res = await fetch(STORY_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: ctl.signal, body: JSON.stringify({ facts: Object.assign({}, p.r.storyFacts, { answers: storyAnswers() }) }) });
+      const d = res.ok ? await res.json() : null;
+      if (d && d.heading && Array.isArray(d.paragraphs) && d.paragraphs.length === 2) { p.r.story = { heading: d.heading, paras: d.paragraphs, source: 'ai' }; planCache = renderPlan(p.r); }
+    } catch (e) { console.warn('Story not written', e); } finally { clearTimeout(t); }
+    return planCache;
+  })();
+  return storyWait;
+}
+// the member's answers as they saw them, for the summary: no contact details, and a personal habit kept private stays out
+function storyAnswers() {
+  return QUESTIONS.filter(q => A[q.id] !== undefined && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
+    .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]) }));
+}
+function renderPlan(r) {
   const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention, Stretch: IMG.sleep };
   const html = RESULT_TPL.replace('_' + '_IMG__', () => JSON.stringify(img)).replace('_' + '_DATA__', () => JSON.stringify([r]).replace(/</g, '\\u003c'));
   return { r, html };
@@ -524,23 +557,28 @@ function planPageLink(id) {
 // one completion to the Google Sheet: contact details, every answer as shown to the member, a plan summary, the plan page and its link
 function sendCompletion() {
   if (!SHEET_URL || sentRef) return '';
-  let p; try { p = planNow(); } catch (e) { console.error(e); return ''; }
-  sentRef = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(36).slice(2)).replace(/[^a-zA-Z0-9]/g, '');
+  try { planNow(); } catch (e) { console.error(e); return ''; }
+  sentRef = planRef || newRef();
   const planLink = planPageLink(sentRef);
   const answers = QUESTIONS.filter(q => A[q.id] !== undefined).map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]), how: how[q.id] === 'spoken' ? 'Spoken' : how[q.id] === 'typed' ? 'Typed' : 'Tapped' }));
   if (planLink) answers.push({ section: '', question: 'Plan page', answer: planLink, how: 'Tapped' });
-  const r = p.r, body = { key: SHEET_KEY, planId: sentRef, submittedAt: new Date().toISOString(), source: 'conversation', version: 'October 2026',
+  const ref = sentRef;
+  improveStory().then(p => { if (!p) return;
+  const r = p.r, body = { key: SHEET_KEY, planId: ref, story: [r.story && r.story.heading, ...(r.story && r.story.paras || [])].filter(Boolean).join('\n\n'), storySource: (r.story && r.story.source) || '', submittedAt: new Date().toISOString(), source: 'conversation', version: 'October 2026',
     name: contact.name || name || '', email: contact.email || '', opening: (A.q0 && A.q0.text) || '', answers,
     plan: { focus: r.focus, recommended: r.practices.filter(x => x.rec).map(x => x.fam), extras: r.practices.filter(x => !x.rec).map(x => x.fam), own: r.own ? r.own.text + (r.own.shared ? ' (shared with Pilot)' : ' (private)') : '' },
     planHtml: '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Your Good Span</title></head><body>' + p.html + '</body></html>' };
   // text/plain avoids a CORS preflight, which Apps Script doesn't answer; the response can't be read, so the link is made from the id
   fetch(SHEET_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) }).catch(e => console.warn('Completion not sent', e));
+  });
   return planLink;
 }
-function openPlan() {
+async function openPlan() {
+  const btn = $('see'); if (btn) { btn.disabled = true; btn.textContent = 'Preparing your Good Span…'; }
   let r, html;
-  try { ({ r, html } = planNow()); }
-  catch (e) { console.error(e); alert("Sorry, we couldn't build your Good Span from these answers."); return; }
+  try { ({ r, html } = (await improveStory()) || planNow()); }
+  catch (e) { console.error(e); if (btn) { btn.disabled = false; btn.textContent = 'See my Good Span'; } alert("Sorry, we couldn't build your Good Span from these answers."); return; }
+  if (btn) { btn.disabled = false; btn.textContent = 'See my Good Span'; }
   // shown in its own frame over the conversation, so the page runs exactly as the result page does
   const f = document.createElement('iframe'); f.id = 'plan'; f.title = 'Your Good Span';
   f.srcdoc = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>' + html + '</body></html>';
@@ -781,7 +819,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; sentRef = ''; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; sentRef = ''; planRef = ''; planCache = null; storyWait = null; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }

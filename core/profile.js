@@ -124,6 +124,9 @@ function profile(A, p) {
   const OO = { 'Tracking or counting what I eat': 'tracking what you eat', 'Using apps or devices to track things': 'tracking apps or devices', 'Eating windows or fasting': 'eating windows or fasting', Meditation: 'meditation', 'Journalling or writing': 'journalling', 'Early-morning activities': 'early-morning activities', 'Practices involving physical affection or touch': 'practices involving touch' };
   const en = (A.q58 || []).map(x => EN[x]).filter(Boolean), oo = (A.q57 || []).map(x => OO[x]).filter(Boolean);
   out.suits = [en.length ? `You enjoy ${list(en)}` : '', oo.length ? `${en.length ? ', and you' : 'You'}'d rather not do ${list(oo)}` : ''].join('') + (en.length || oo.length ? '. We\'ve kept that in mind.' : '');
+  // answer options are written in the member's voice ("I want", "my"): turn them round so the profile speaks to them
+  const you = t => String(t || '').replace(/\bmyself\b/g, 'yourself').replace(/\bmy\b/g, 'your').replace(/\bI want\b/g, 'you want').replace(/\bI'm\b/g, "you're").replace(/\bI\b/g, 'you');
+  out.intro = you(out.intro); for (const a in out.pillars) out.pillars[a] = you(out.pillars[a]);
   return out;
 }
 if (typeof module !== "undefined") module.exports = { profile };
