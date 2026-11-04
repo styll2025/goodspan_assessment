@@ -252,6 +252,7 @@ function makeEngine(DATA) {
     if (p.diabetes_med) N.push(['Medication', 'Blood-sugar medicine: check with their doctor before changing meal timing.']);
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
     if (p.work_other) N.push(['Working pattern', plusWords('q3', 'They chose Other for their working pattern. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
+    if (p.eat_goal_else) N.push(['Eating goals', plusWords('q9', 'They chose Something else about how they eat. Ask what they mean. Do not add a new practice from these words.')]);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
     if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);

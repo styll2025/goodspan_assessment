@@ -42,8 +42,9 @@ function profile(A, p) {
     const low = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['more than 5 g of salt a day', 'salt']].filter(([, k]) => ['Rarely or never', '1–2 days a week'].includes(g(k))).map(x => x[0]);
     const hi = [['sugary drinks', 'sugary'], ['processed foods', 'processed'], ['more than 5 g of salt a day', 'salt']].filter(([, k]) => ['3–5 days a week', '6–7 days a week'].includes(g(k))).map(([n, k]) => `${n} ${FQ[g(k)]}`);
     if (low.length) s.push(`${cap(list(low))} ${low.length > 1 ? 'are' : 'is'} only an occasional part of your week${hi.length ? `, while you have ${list(hi)}` : ''}.`); else if (hi.length) s.push(`You have ${list(hi)}.`);
-    const goals = (A.q9 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like to work on ${list(goals.map(lc))}.`);
+    const eatElse = ((A.more || {}).q9 || '').replace(/\s+/g, ' ').trim();
+    const goals = (A.q9 || []).filter(x => x !== 'Nothing in particular').map(x => x === 'Something else' ? (eatElse ? `something else: ${eatElse}` : 'something else') : lc(x));
+    if (goals.length) s.push(`You'd like to work on ${list(goals)}.`);
     out.pillars.Nutrition = s.join(' '); }
 
   // ---- Sleep

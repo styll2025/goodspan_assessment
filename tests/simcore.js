@@ -50,6 +50,10 @@ function check(f, o) {
   for (const h of (o.foundations || [])) if ((f.hyg_nofit || []).includes(h.f)) issues.push('Not practical foundation still offered: ' + h.f);
   if ((f.nofit_txt || []).length && !(o.pilot || []).some(n => n[0] === 'Not practical right now')) issues.push('Missing Pilot note: Not practical right now');
   if (f.work_other && (f.not_working || f.shift || f.irregular)) issues.push('Other working pattern treated as a known pattern');
+  const NUTR_GOALS = ['protein', 'plants', 'processed', 'sugar', 'heart', 'planning', 'out', 'timing', 'mindful'];
+  if ((f.goals.Nutrition || []).some(g => !NUTR_GOALS.includes(g))) issues.push('Something else about eating became a practice goal');
+  if (f.eat_goal_else && !(o.pilot || []).some(n => n[0] === 'Eating goals')) issues.push('Missing Pilot note: Eating goals');
+  if ((f.else_txt || {}).q9 && !(o.pilot || []).some(n => n[0] === 'Eating goals' && n[1].includes(f.else_txt.q9))) issues.push('Eating goal words missing from the Pilot note');
   if (f.work_other && !(o.pilot || []).some(n => n[0] === 'Working pattern')) issues.push('Missing Pilot note: Working pattern');
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive');

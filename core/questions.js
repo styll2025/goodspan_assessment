@@ -47,7 +47,7 @@ const QUESTIONS = [
   { id: 'q8', s: 'nutrition', type: 'grid', text: 'How often do you do these at meals?', cols: ['Rarely', 'Sometimes', 'Most days'], rows: [
       ['screen', 'Eat without a screen'], ['attention', 'Pay attention to the taste and smell of my food'], ['slow', 'Eat slowly, putting my fork down between bites'],
       ['variety', 'Eat a wide variety of plant foods'], ['out', "Have a plan for eating well when I'm out or travelling"], ['window', 'Eat within a set daily time window']] },
-  { id: 'q9', s: 'nutrition', type: 'multi', max: 3, goals: 'Nutrition', text: 'What would you most like to improve about how you eat?', options: ['Getting enough protein', 'Eating more plants and fibre', 'Reducing highly processed foods', 'Reducing sugar', 'Heart health: less salt and more nuts', 'Meal planning and home cooking', "Eating well when I'm out or travelling", 'When I eat, such as late-evening eating', 'Eating more mindfully, with fewer distractions', 'Nothing in particular'] },
+  { id: 'q9', s: 'nutrition', type: 'multi', max: 3, goals: 'Nutrition', text: 'What would you most like to improve about how you eat?', options: ['Getting enough protein', 'Eating more plants and fibre', 'Reducing highly processed foods', 'Reducing sugar', 'Heart health: less salt and more nuts', 'Meal planning and home cooking', "Eating well when I'm out or travelling", 'When I eat, such as late-evening eating', 'Eating more mindfully, with fewer distractions', 'Something else', 'Nothing in particular'] },
   { id: 'q11', s: 'nutrition', type: 'multi', text: 'Are there any health, dietary or other considerations we should take into account?', options: ['Nothing in particular', 'Nut allergy', 'Other food allergy or intolerance', 'Dietary restriction or preference (for example vegetarian, vegan, halal or kosher)', 'A health condition that affects what or how I eat', 'A difficult relationship with food', 'Something else', 'Prefer not to say'] },
   { id: 'q12', s: 'sleep', type: 'single', text: 'On a typical night, how many hours of actual sleep do you get?', options: ['Less than 5', '5-6', '6-7', '7-8', '8-9', 'More than 9'] },
   { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'Something else', 'None of these'] },
@@ -121,7 +121,7 @@ function toFeatures(A) {
   p.not_working = A.q3 === 'Not currently working'; p.irregular = A.q3 === 'Irregular or changing hours';
   p.work_other = A.q3 === 'Other';
   p.else_txt = {};
-  for (const id of ['q3', 'q4', 'q5', 'q11', 'q13', 'q29']) {
+  for (const id of ['q3', 'q4', 'q5', 'q9', 'q11', 'q13', 'q29']) {
     const on = id === 'q3' ? p.work_other : (A[id] || []).includes('Something else');
     const t = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim().slice(0, 300);
     if (on && t) p.else_txt[id] = t;
@@ -257,6 +257,7 @@ function toFeatures(A) {
   if (['About once a week', 'Several times a week'].includes(A.q51)) p.doing.push('Learning new skills');   // already learns something new weekly
   p.drinks_rare = ['Monthly or less', '2-4 times a month'].includes(A.q43);
   for (const q of QUESTIONS) if (q.goals) p.goals[q.goals] = (A[q.id] || []).map(o => GOAL_KEYS[q.goals][q.options.indexOf(o)]).filter(Boolean);
+  p.eat_goal_else = has('q9', 'Something else');   // their words are for the Pilot, not a new practice
   const mg = p.goals.Mind || [], vg = p.goals.Movement || [];
   if ((mg.includes('focus') || mg.includes('phone')) && !has('q34', 'Keeping notifications turned off')) { p.hyg.push('Notifications'); p.hyg_why['Notifications'] = mg.includes('focus') ? 'You picked focus and concentration as a goal.' : 'You picked less phone time as a goal.'; }
   if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) { p.hyg.push('Recovery'); p.hyg_why['Recovery'] = vg.includes('performance') ? 'You picked improving performance as a goal.' : "You already do 150 minutes or more of activity a week."; }
