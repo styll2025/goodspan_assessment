@@ -207,8 +207,8 @@ const QUESTIONS = [
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
       ['pro', 'Work with a professional or a sleep programme such as CBT-I', HABIT4, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
-  { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
-  { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
+  { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Something else', 'Nothing in particular'] },
+  { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Something else', 'Nothing in particular'] },
   // women (or 'prefer not to say') aged 40-69: hot flushes and night sweats around perimenopause and menopause often disturb sleep
   { id: 'q19a', s: 'sleep', type: 'single', show: A => A.q2a !== 'Male' && ['40-49', '50-59', '60-69'].includes(A.q2), text: 'Do hot flushes or night sweats affect your sleep?', hint: 'These are common around perimenopause and menopause.', options: ['Often', 'Sometimes', 'No', 'Prefer not to say'] },
   { id: 'q20', s: 'movement', type: 'single', text: 'On average, how many days a week do you do moderate or vigorous exercise, such as a brisk walk, that makes you breathe harder?', options: ['0', '1', '2', '3', '4', '5', '6', '7'] },
@@ -216,20 +216,20 @@ const QUESTIONS = [
   { id: 'q22', s: 'movement', type: 'single', text: 'On how many days a week do you do strength or resistance exercise, such as weights, bodyweight exercises or resistance bands?', options: ['0', '1', '2', '3 or more'] },
   { id: 'q23', s: 'movement', type: 'single', text: 'On a typical day, how many hours do you spend sitting, including at work, travelling and watching TV?', options: ['Less than 6', '6-8', '8-10', 'More than 10'] },
   { id: 'q24', s: 'movement', type: 'single', text: 'If you track your steps, roughly how many do you take on a typical day?', options: ['Fewer than 5,000', '5,000-7,999', '8,000-9,999', '10,000 or more', "I don't track my steps"] },
-  { id: 'q25', s: 'movement', type: 'multi', text: 'Which of these do you already do regularly?', options: ['Warm up before exercise', 'Stretching or mobility work', 'Balance exercises', 'Take breaks from sitting', 'Walk after meals', 'Short bursts of vigorous activity, such as taking stairs fast', 'Interval training', 'Exercise with others or in a group', 'Take part in activity challenges', 'Listen to music while exercising', 'Plan rest or lighter days', 'Walk or cycle to get places', 'Yoga or Pilates', 'None of these'] },
+  { id: 'q25', s: 'movement', type: 'multi', text: 'Which of these do you already do regularly?', options: ['Warm up before exercise', 'Stretching or mobility work', 'Balance exercises', 'Take breaks from sitting', 'Walk after meals', 'Short bursts of vigorous activity, such as taking stairs fast', 'Interval training', 'Exercise with others or in a group', 'Take part in activity challenges', 'Listen to music while exercising', 'Plan rest or lighter days', 'Walk or cycle to get places', 'Yoga or Pilates', 'Something else', 'None of these'] },
   { id: 'q26', s: 'movement', type: 'multi', text: 'Where do you usually do your movement or exercise?', options: ['Outdoors', 'At home', 'Gym or studio', 'Sports facility or club', 'At work', 'Other'] },
-  { id: 'q27', s: 'movement', type: 'multi', max: 3, goals: 'Movement', text: 'What would you most like to improve?', options: ['Build general fitness', 'Build strength', 'Improve cardiovascular fitness', 'Improve mobility and flexibility', 'Improve balance and coordination', 'Increase everyday movement', 'Become more consistent with exercise', 'Improve performance', 'Nothing in particular'] },
+  { id: 'q27', s: 'movement', type: 'multi', max: 3, goals: 'Movement', text: 'What would you most like to improve?', options: ['Build general fitness', 'Build strength', 'Improve cardiovascular fitness', 'Improve mobility and flexibility', 'Improve balance and coordination', 'Increase everyday movement', 'Become more consistent with exercise', 'Improve performance', 'Something else', 'Nothing in particular'] },
   { id: 'q29', s: 'movement', type: 'multi', text: 'Is there anything we should take into account when suggesting movement or exercise?', options: ['Nothing in particular', 'Ongoing pain', 'A recent injury', 'A joint or mobility limitation', 'A fall in the past 12 months', 'A health condition that affects movement or exercise', 'Something else', 'Prefer not to say'] },
   { id: 'q30', s: 'mind', type: 'single', text: 'How much time a week do you spend in green spaces or nature, such as parks, woodland, gardens or beaches?', options: ['Less than 30 minutes', '30 minutes to 2 hours', '2 to 3 hours', 'More than 3 hours'] },
   { id: 'q31', s: 'mind', type: 'single', text: 'On a typical day, how much time do you spend on social media?', options: ['Less than 30 minutes', '30-60 minutes', '1-2 hours', 'More than 2 hours', "I don't use social media"] },
   { id: 'q32', s: 'mind', type: 'grid', show: A => chosen(A, 'Mind'), hint: "These four questions help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", text: 'Over the last 2 weeks, how often have you been bothered by the following?', cols: ['Not at all', 'Several days', 'More than half the days', 'Nearly every day'], rows: [
       ['anx1', 'Feeling nervous, anxious or on edge'], ['anx2', 'Not being able to stop or control worrying'], ['dep1', 'Little interest or pleasure in doing things'], ['dep2', 'Feeling down, depressed or hopeless']] },
-  { id: 'q33', s: 'mind', type: 'multi', max: 3, goals: 'Mind', text: 'What would you most like to improve in this area?', options: ['Managing stress', 'Switching off and relaxing', 'Focus and concentration', 'Managing difficult emotions', 'Spending less time on my phone or social media', 'Making more time for myself', 'Enjoyment and positive experiences', 'Rest and recovery', 'A greater sense of purpose', 'Building routines that stick', 'Nothing in particular'] },
-  { id: 'q34', s: 'mind', type: 'multi', text: 'Which of these are currently part of your routine?', options: ['Meditation or mindfulness', 'Journalling or reflection', 'Breathing or relaxation practices', 'Time for hobbies or enjoyable activities', 'Limits on social media use', 'A gratitude practice', 'Reframing stressful thoughts', 'Naming my feelings', 'Setting aside focused work time', 'Keeping notifications turned off', 'Time away from work', 'Working towards goals that matter to me', 'Tools for building habits, such as if-then plans', 'Yoga or Pilates', 'Listening to music to relax', 'Creative hobbies, such as drawing, crafts or playing an instrument', 'Short breaks during the day', 'None of these'] },
+  { id: 'q33', s: 'mind', type: 'multi', max: 3, goals: 'Mind', text: 'What would you most like to improve in this area?', options: ['Managing stress', 'Switching off and relaxing', 'Focus and concentration', 'Managing difficult emotions', 'Spending less time on my phone or social media', 'Making more time for myself', 'Enjoyment and positive experiences', 'Rest and recovery', 'A greater sense of purpose', 'Building routines that stick', 'Something else', 'Nothing in particular'] },
+  { id: 'q34', s: 'mind', type: 'multi', text: 'Which of these are currently part of your routine?', options: ['Meditation or mindfulness', 'Journalling or reflection', 'Breathing or relaxation practices', 'Time for hobbies or enjoyable activities', 'Limits on social media use', 'A gratitude practice', 'Reframing stressful thoughts', 'Naming my feelings', 'Setting aside focused work time', 'Keeping notifications turned off', 'Time away from work', 'Working towards goals that matter to me', 'Tools for building habits, such as if-then plans', 'Yoga or Pilates', 'Listening to music to relax', 'Creative hobbies, such as drawing, crafts or playing an instrument', 'Short breaks during the day', 'Something else', 'None of these'] },
   { id: 'q36', s: 'connection', type: 'grid', text: 'In a typical month, how often do you…', cols: ['Never', 'Once', '2-3 times', 'Weekly or more'], rows: [
       ['phone', 'Talk to friends or family by phone or video'], ['meet', 'Meet friends or family in person'], ['group', 'Take part in a group, club or class'], ['volunteer', 'Volunteer']] },
-  { id: 'q37', s: 'connection', type: 'multi', text: 'Which of these do you already do in a typical week?', options: ['Do small acts of kindness for others', 'Tell people what I appreciate about them', 'Respond with enthusiasm when others share good news', 'Ask follow-up questions and really listen', 'Share how I’m really feeling with someone I trust', 'Get in touch with people I haven’t seen for a while', 'Chat with people I don’t know well, such as neighbours', 'Share meals with others', 'Cook or share food traditions with others', 'Hug or share affection with people close to me', 'None of these'] },
-  { id: 'q38', s: 'connection', type: 'multi', max: 3, goals: 'Connection', text: 'What, if anything, would you like from your connections with other people?', options: ['More meaningful relationships', 'Meeting new people', 'More shared activities', 'A stronger sense of belonging', 'More time with friends or family', 'Staying in touch with people who live far away', 'Sharing meals with others', 'Helping others or contributing to my community', 'Nothing in particular'] },
+  { id: 'q37', s: 'connection', type: 'multi', text: 'Which of these do you already do in a typical week?', options: ['Do small acts of kindness for others', 'Tell people what I appreciate about them', 'Respond with enthusiasm when others share good news', 'Ask follow-up questions and really listen', 'Share how I’m really feeling with someone I trust', 'Get in touch with people I haven’t seen for a while', 'Chat with people I don’t know well, such as neighbours', 'Share meals with others', 'Cook or share food traditions with others', 'Hug or share affection with people close to me', 'Something else', 'None of these'] },
+  { id: 'q38', s: 'connection', type: 'multi', max: 3, goals: 'Connection', text: 'What, if anything, would you like from your connections with other people?', options: ['More meaningful relationships', 'Meeting new people', 'More shared activities', 'A stronger sense of belonging', 'More time with friends or family', 'Staying in touch with people who live far away', 'Sharing meals with others', 'Helping others or contributing to my community', 'Something else', 'Nothing in particular'] },
   { id: 'q40', s: 'prevention', type: 'grid', text: 'Do you currently smoke or vape?', cols: ['Never', "I used to, but I've stopped", 'Occasionally', 'Daily'], rows: [['tobacco', 'Cigarettes, cigars, rolling tobacco or other tobacco'], ['vape', 'Vapes or e-cigarettes']] },
   { id: 'q41', s: 'prevention', type: 'single', show: A => ['Occasionally', 'Daily'].includes((A.q40 || {}).tobacco) || ['Occasionally', 'Daily'].includes((A.q40 || {}).vape), text: 'Would you like to stop smoking or vaping?', options: ['Yes, in the next month', 'Yes, but not right now', 'Not at the moment', "I'm not sure"] },
   { id: 'q42', s: 'prevention', type: 'single', show: A => (A.q41 || '').startsWith('Yes') && QUESTIONS.find(x => x.id === 'q41').show(A), text: 'Have you tried to stop smoking or vaping before?', options: ['Yes', 'No'] },
@@ -238,13 +238,14 @@ const QUESTIONS = [
   { id: 'q45', s: 'prevention', type: 'single', show: A => A.q43 && A.q43 !== 'Never', text: 'How often do you have 6 or more drinks on one occasion?', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
   { id: 'q46', s: 'prevention', type: 'single', text: 'When did you last have your blood pressure checked?', options: ['In the past 12 months', '1-2 years ago', 'More than 2 years ago', "Never, or I'm not sure"] },
   { id: 'q48a', s: 'prevention', type: 'single', show: A => ['60-69', '70 or over'].includes(A.q2), text: 'Do you already use hearing aids?', options: ['Yes', 'No'] },
-  { id: 'q51', s: 'prevention', type: 'single', text: 'How often do you learn something new or practise a mentally challenging hobby, such as a language, an instrument or a craft?', options: ['Rarely or never', 'A few times a month', 'About once a week', 'Several times a week'] },
-  { id: 'q52', s: 'prevention', type: 'multi', max: 3, goals: 'Prevention', text: 'What would you most like to improve in this area?', options: ['Drinking less alcohol', 'Stopping smoking or vaping', 'Keeping up with check-ups', 'Knowing which vaccines are due', 'Taking only the supplements I need', 'Protecting my skin from the sun', 'Protecting my hearing', 'Breathing cleaner air at home and outdoors', 'Keeping my mind active by learning new things', 'Nothing in particular'] },
+  { id: 'q51', s: 'prevention', type: 'single', text: 'How often do you learn something new or practise a mentally challenging hobby, such as a language, an instrument or a craft?', options: ['Rarely or never', 'About once a month', 'A few times a month', 'About once a week', 'Several times a week'] },
+  { id: 'q52', s: 'prevention', type: 'multi', max: 3, goals: 'Prevention', text: 'What would you most like to improve in this area?', options: ['Drinking less alcohol', 'Stopping smoking or vaping', 'Keeping up with check-ups', 'Knowing which vaccines are due', 'Taking only the supplements I need', 'Protecting my skin from the sun', 'Protecting my hearing', 'Breathing cleaner air at home and outdoors', 'Keeping my mind active by learning new things', 'Something else', 'Nothing in particular'] },
   { id: 'q54', s: 'life', type: 'habit', optional: true, text: "Is there one personal habit or practice you'd particularly like to work on during your Good Span that we haven't covered?", hint: "Optional. Something you'd like to start, strengthen, reduce or stop. It could be health-related or more personal: drinking less, reading again, learning a language, using your phone less, calling family more often, stopping smoking or volunteering.", options: ['Keep this private in my Journal', 'Share this with my Pilot so they can support me'] },
-  { id: 'q58', s: 'life', type: 'multi', text: 'Which of these do you enjoy?', hint: "Select all that apply. We'll use this to suggest practices you're more likely to enjoy.", options: ['Being outdoors', 'Listening to music', 'Making or creating things', 'Writing', 'Being active with other people', 'Quiet time on my own', 'Stretching, yoga or Pilates', 'Sport', 'Cooking', 'None of these'] },
+  { id: 'q58', s: 'life', type: 'multi', text: 'Which of these do you enjoy?', hint: "Select all that apply. We'll use this to suggest practices you're more likely to enjoy.", options: ['Being outdoors', 'Listening to music', 'Making or creating things', 'Writing', 'Being active with other people', 'Quiet time on my own', 'Stretching, yoga or Pilates', 'Sport', 'Cooking', 'Something else', 'None of these'] },
   { id: 'q55', s: 'life', type: 'single', text: 'The Good Span asks for about 45-60 minutes a week. How much time could you realistically give to your practices in a typical week?', hint: "Your Good Span will never ask for more new time than this. Things you already do don't count.", options: ['About 45–60 minutes', '1-2 hours', '2-4 hours', 'More than 4 hours', 'It varies'] },
   { id: 'q56', s: 'life', type: 'single', text: 'How big a change feels right for you to start with?', options: ["Small, easy steps. I'm not sure how much I can manage right now", 'Something in between', "I'm ready for a bigger challenge"] },
-  { id: 'q57', s: 'life', type: 'multi', text: "Are there any types of practice you'd rather not do?", hint: "We'll never suggest these.", options: ['Tracking or counting what I eat', 'Using apps or devices to track things', 'Eating windows or fasting', 'Meditation', 'Journalling or writing', 'Early-morning activities', 'Practices involving physical affection or touch', 'None of these'] },
+  { id: 'q57', s: 'life', type: 'multi', text: "Are there any types of practice you'd rather not do?", hint: "We'll never suggest these.", options: ['Tracking or counting what I eat', 'Using apps or devices to track things', 'Eating windows or fasting', 'Meditation', 'Journalling or writing', 'Early-morning activities', 'Practices involving physical affection or touch', 'Something else', 'None of these'] },
+  { id: 'q59', s: 'life', type: 'text', optional: true, text: 'Is there anything else you think we should know or consider when creating your personalised plan?', hint: 'Optional: Share any preferences, circumstances, challenges or other considerations that might help us tailor your plan to you.' },
 ];
 const GOAL_KEYS = {
   Nutrition: ['protein', 'plants', 'processed', 'sugar', 'heart', 'planning', 'out', 'timing', 'mindful'],
@@ -266,8 +267,11 @@ function toFeatures(A) {
   p.not_working = A.q3 === 'Not currently working'; p.irregular = A.q3 === 'Irregular or changing hours';
   p.work_other = A.q3 === 'Other';
   p.else_txt = {};
-  for (const id of ['q3', 'q4', 'q5', 'q9', 'q11', 'q13', 'q29']) {
+  const ELSE_IDS = ['q3', 'q4', 'q5', 'q9', 'q11', 'q13', 'q18', 'q19', 'q25', 'q27', 'q29', 'q33', 'q34', 'q37', 'q38', 'q52', 'q57', 'q58'];
+  p.else_on = {};
+  for (const id of ELSE_IDS) {
     const on = id === 'q3' ? p.work_other : (A[id] || []).includes('Something else');
+    if (on && ['q18', 'q19', 'q25', 'q27', 'q33', 'q34', 'q37', 'q38', 'q52', 'q57', 'q58'].includes(id)) p.else_on[id] = true;
     const t = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim().slice(0, 300);
     if (on && t) p.else_txt[id] = t;
   }
@@ -397,10 +401,12 @@ function toFeatures(A) {
   p.bp_unsure = A.q46 === "Never, or I'm not sure";
   p.hearing_aid = ['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes';   // asked from 60; no hearing test for someone who already uses hearing aids
   p.learn_rare = A.q51 === 'Rarely or never';
+  p.learn_once_month = A.q51 === 'About once a month';   // not rare, and not already a weekly habit
   if (['About once a week', 'Several times a week'].includes(A.q51)) p.doing.push('Learning new skills');   // already learns something new weekly
   p.drinks_rare = ['Monthly or less', '2-4 times a month'].includes(A.q43);
   for (const q of QUESTIONS) if (q.goals) p.goals[q.goals] = (A[q.id] || []).map(o => GOAL_KEYS[q.goals][q.options.indexOf(o)]).filter(Boolean);
   p.eat_goal_else = has('q9', 'Something else');   // their words are for the Pilot, not a new practice
+  p.also = String(A.q59 || '').replace(/\s+/g, ' ').trim().slice(0, 600);   // final optional note; not a practice
   const mg = p.goals.Mind || [], vg = p.goals.Movement || [];
   if ((mg.includes('focus') || mg.includes('phone')) && !has('q34', 'Keeping notifications turned off')) { p.hyg.push('Notifications'); p.hyg_why['Notifications'] = mg.includes('focus') ? 'You picked focus and concentration as a goal.' : 'You picked less phone time as a goal.'; }
   if (p.mvpa >= 150 || vg.includes('performance')) if (!has('q25', 'Plan rest or lighter days')) { p.hyg.push('Recovery'); p.hyg_why['Recovery'] = vg.includes('performance') ? 'You picked improving performance as a goal.' : "You already do 150 minutes or more of activity a week."; }
@@ -412,7 +418,7 @@ function toFeatures(A) {
   bl['Daily steps'] = { 'Fewer than 5,000': 'Learning', '5,000-7,999': 'Developing', '8,000-9,999': 'skip', '10,000 or more': 'skip' }[A.q24];
   bl['Time in nature'] = { 'Less than 30 minutes': 'Learning', '30 minutes to 2 hours': 'skip', '2 to 3 hours': 'Mastering', 'More than 3 hours': 'skip' }[A.q30];   // a range that may already meet the 120-minute level: no target they may already reach
   bl['Social media limits'] = { 'More than 2 hours': 'Learning', '1-2 hours': 'Developing', '30-60 minutes': 'Mastering', 'Less than 30 minutes': 'skip' }[A.q31];
-  bl['Learning new skills'] = { 'Rarely or never': 'Learning', 'A few times a month': 'Developing' }[A.q51];
+  bl['Learning new skills'] = { 'Rarely or never': 'Learning', 'About once a month': 'Learning', 'A few times a month': 'Developing' }[A.q51];
   bl['Whole grains'] = F4(g('q7', 'grains'), ['Learning', 'Learning', 'Developing', 'Mastering']);
   bl['Beans and lentils'] = F4(g('q7', 'beans'), ['Learning', 'Learning', 'Developing', 'Mastering']);
   bl['Nuts'] = F4(g('q7', 'nuts'), ['Learning', 'Developing', 'Mastering', 'skip']);
@@ -703,6 +709,21 @@ function makeEngine(DATA) {
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
     if (p.work_other) N.push(['Working pattern', plusWords('q3', 'They chose Other for their working pattern. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
     if (p.eat_goal_else) N.push(['Eating goals', plusWords('q9', 'They chose Something else about how they eat. Ask what they mean. Do not add a new practice from these words.')]);
+    const ELSE_NOTE = [
+      ['q18', 'Sleep goals', 'They chose Something else about the sleep they would like to improve. Ask what they mean. Do not add a new practice from these words.'],
+      ['q19', 'What affects sleep', 'They chose Something else about what affects their sleep. Ask what they mean. Do not add a new practice from these words.'],
+      ['q25', 'Movement already in place', 'They chose Something else about movement they already do. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q27', 'Movement goals', 'They chose Something else about the movement they would like to improve. Ask what they mean. Do not add a new practice from these words.'],
+      ['q33', 'Mind goals', 'They chose Something else about what they would like to improve for their mind. Ask what they mean. Do not add a new practice from these words.'],
+      ['q34', 'Mind routine', 'They chose Something else about a mind habit already in their routine. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q37', 'Connection habits', 'They chose Something else about a connection habit they already do. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q38', 'Connection goals', 'They chose Something else about what they would like from their connections. Ask what they mean. Do not add a new practice from these words.'],
+      ['q52', 'Prevention goals', 'They chose Something else about what they would like to improve for prevention. Ask what they mean. Do not add a new practice from these words.'],
+      ['q57', 'Rather not', 'They chose Something else about a practice they would rather not do. Ask what they mean. Do not add a new opt-out from these words, and do not add a new practice.'],
+      ['q58', 'What you enjoy', 'They chose Something else about what they enjoy. Ask what they mean. Do not add a new practice from these words.']
+    ];
+    for (const [id, title, msg] of ELSE_NOTE) if ((p.else_on || {})[id]) N.push([title, plusWords(id, msg)]);
+    if (p.also) N.push(['Anything else', 'They added something else to consider for their plan. Ask about it. Do not treat it as a diagnosis or as a new practice. In their words: ' + p.also + '.']);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
     if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);
@@ -1208,6 +1229,9 @@ const FQ = { 'Rarely or never': 'rarely', '1–2 days a week': 'on 1–2 days a 
 const GRID = (A, q, r) => (A[q] || {})[r];
 const has = (A, q, o) => (A[q] || []).includes(o);
 const lc = s => s.charAt(0).toLowerCase() + s.slice(1);
+const noteOf = (A, id) => ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
+const said = (A, id, xs, drop, turn) => (xs || []).filter(x => x !== drop).map(x => x === 'Something else' ? (noteOf(A, id) ? `something else: ${noteOf(A, id)}` : 'something else') : (turn ? turn(lc(x)) : lc(x)));
+const brief = (items, n) => { if (items.length <= n) return items; const extra = items.find(x => x.startsWith('something else')); const rest = items.filter(x => x !== extra).slice(0, extra ? n - 1 : n); return extra ? rest.concat(extra) : rest; };
 
 function profile(A, p) {
   const out = { intro: '', pillars: {} };
@@ -1229,6 +1253,7 @@ function profile(A, p) {
   if (A.q2a !== 'Male' && !['50-59', '60-69', '70 or over'].includes(A.q2) && (A.q6 === 'Pregnant' || A.q6 === 'Breastfeeding')) health.push(A.q6 === 'Pregnant' ? 'your pregnancy' : 'that you\'re breastfeeding');
   if ((A.q29 || []).some(x => !['Nothing in particular', 'Prefer not to say'].includes(x))) health.push('what affects how you move');
   if (health.length) out.intro += ` You've also told us about ${list(health)}, and your Good Span takes ${health.length > 1 ? 'these' : 'this'} into account.`;
+  if (p.also) out.intro += ` You also asked us to keep this in mind: “${p.also}”.`;
 
   // ---- Nutrition
   { const g = r => GRID(A, 'q7', r), s = [];
@@ -1265,11 +1290,11 @@ function profile(A, p) {
     const caf = { "I don't have caffeine": "You don't have caffeine", 'Before 12pm': 'Your last caffeine is before midday', '12-3pm': 'Your last caffeine is usually in the early afternoon', '3-6pm': 'Your last caffeine is usually between 3pm and 6pm', 'After 6pm': 'Your last caffeine is usually after 6pm' }[A.q15];
     const eat = { 'Less than 1 hour': 'less than an hour', '1-2 hours': '1 to 2 hours', '2-3 hours': '2 to 3 hours', '3 hours or more': '3 hours or more' }[A.q16];
     if (caf) s.push(`${caf}${eat ? `, and you finish eating ${eat} before bed` : ''}.`);
-    const aff = (A.q19 || []).filter(x => x !== 'Nothing in particular');
-    if (aff.length) s.push(`${cap(list(aff.map(lc)))} can affect your sleep.`);
+    const aff = said(A, 'q19', A.q19, 'Nothing in particular');
+    if (aff.length) s.push(`${cap(list(aff))} can affect your sleep.`);
     if (A.q2a !== 'Male' && ['40-49', '50-59', '60-69'].includes(A.q2) && ['Often', 'Sometimes'].includes(A.q19a)) s.push(`Hot flushes or night sweats ${A.q19a === 'Often' ? 'often' : 'sometimes'} affect your sleep.`);
-    const goals = (A.q18 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd most like to work on ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q18', A.q18, 'Nothing in particular');
+    if (goals.length) s.push(`You'd most like to work on ${list(goals)}.`);
     out.pillars.Sleep = s.join(' '); }
 
   // ---- Movement
@@ -1280,11 +1305,11 @@ function profile(A, p) {
     if (st) s.push(`${st}${sit ? `, and you sit for ${sit} hours on a typical day` : ''}.`);
     const steps = { 'Fewer than 5,000': 'fewer than 5,000', '5,000-7,999': '5,000 to 8,000', '8,000-9,999': '8,000 to 10,000', '10,000 or more': '10,000 or more' }[A.q24];
     if (steps) s.push(`You take ${steps} steps a day.`);
-    const doNow = (A.q25 || []).filter(x => x !== 'None of these');
+    const doNow = brief(said(A, 'q25', A.q25, 'None of these'), 3);
     const where = (A.q26 || []).filter(x => x !== 'Other').map(lc);
     if (doNow.length) s.push(`You already ${list(doNow.slice(0, 3).map(lc))}${where.length ? `, mostly ${list(where)}` : ''}.`); else if (where.length) s.push(`You usually move ${list(where.map(w => w.replace('gym or studio', 'at a gym or studio').replace('sports facility or club', 'at a sports club')))}.`);
-    const goals = (A.q27 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like to ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q27', A.q27, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like to ${list(goals)}.`);
     out.pillars.Movement = s.join(' '); }
 
   // ---- Mind
@@ -1297,10 +1322,10 @@ function profile(A, p) {
       const mx = Math.max(sc('anx1'), sc('anx2'), sc('dep1'), sc('dep2'));
       s.push(mx === 0 ? "Over the last two weeks, you haven't felt anxious or low." : `Over the last two weeks, you've felt anxious or low ${['', 'on several days', 'on more than half the days', 'nearly every day'][mx]}.`);
     }
-    const prac = (A.q34 || []).filter(x => x !== 'None of these');
-    if (prac.length) s.push(`Already part of your routine: ${list(prac.slice(0, 3).map(lc))}.`);
-    const goals = (A.q33 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like help with ${list(goals.map(lc))}.`);
+    const prac = brief(said(A, 'q34', A.q34, 'None of these'), 3);
+    if (prac.length) s.push(`Already part of your routine: ${list(prac)}.`);
+    const goals = said(A, 'q33', A.q33, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like help with ${list(goals)}.`);
     out.pillars.Mind = s.join(' '); }
 
   // ---- Connection
@@ -1308,10 +1333,10 @@ function profile(A, p) {
     const meet = GRID(A, 'q36', 'meet'), ph = GRID(A, 'q36', 'phone'), grp = GRID(A, 'q36', 'group'), vol = GRID(A, 'q36', 'volunteer');
     if (meet) s.push(`You see friends or family in person ${F[meet]}${ph ? ` and talk to them by phone or video ${F[ph]}` : ''}.`);
     if (grp) s.push(grp === 'Never' ? `You're not part of a group, club or class at the moment${vol && vol !== 'Never' ? `, though you volunteer ${F[vol]}` : ''}.` : `You take part in a group, club or class ${F[grp]}${vol && vol !== 'Never' ? ` and volunteer ${F[vol]}` : ''}.`);
-    const hab = (A.q37 || []).filter(x => x !== 'None of these').map(x => lc(x).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your').replace("I’m", "you're").replace('i’m', "you're"));
-    if (hab.length) s.push(`In a typical week you ${list(hab.slice(0, 3))}.`);
-    const goals = (A.q38 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like ${list(goals.map(lc))}.`);
+    const hab = brief(said(A, 'q37', A.q37, 'None of these', x => x.replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your').replace("I’m", "you're").replace('i’m', "you're")), 3);
+    if (hab.length) s.push(`In a typical week you ${list(hab)}.`);
+    const goals = said(A, 'q38', A.q38, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like ${list(goals)}.`);
     out.pillars.Connection = s.join(' '); }
 
   // ---- Prevention
@@ -1321,17 +1346,18 @@ function profile(A, p) {
     s.push(`${smoke}${alc ? `, and ${alc}${A.q43 !== 'Never' && A.q44 ? `, usually ${A.q44.replace('-', ' to ')} drinks at a time` : ''}` : ''}.`);
     const bp = { 'In the past 12 months': 'in the past year', '1-2 years ago': '1 to 2 years ago', 'More than 2 years ago': 'more than 2 years ago', "Never, or I'm not sure": null }[A.q46];
     s.push(bp ? `Your blood pressure was last checked ${bp}.` : "You're not sure when your blood pressure was last checked.");
-    const lrn = { 'Rarely or never': 'You rarely learn something new or take on a challenging hobby', 'A few times a month': 'You learn something new or practise a challenging hobby a few times a month', 'About once a week': 'You learn something new about once a week', 'Several times a week': 'You learn something new several times a week' }[A.q51];
+    const lrn = { 'Rarely or never': 'You rarely learn something new or take on a challenging hobby', 'About once a month': 'You learn something new or practise a challenging hobby about once a month', 'A few times a month': 'You learn something new or practise a challenging hobby a few times a month', 'About once a week': 'You learn something new about once a week', 'Several times a week': 'You learn something new several times a week' }[A.q51];
     if (lrn) s.push(lrn + '.');
     if (['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes') s.push('You already use hearing aids.');
-    const goals = (A.q52 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like to focus on ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q52', A.q52, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like to focus on ${list(goals)}.`);
     out.pillars.Prevention = s.join(' '); }
 
   // ---- what suits them
   const EN = { 'Being outdoors': 'being outdoors', 'Listening to music': 'music', 'Making or creating things': 'making things', Writing: 'writing', 'Being active with other people': 'being active with others', 'Quiet time on my own': 'quiet time on your own', 'Stretching, yoga or Pilates': 'stretching, yoga or Pilates', Sport: 'sport', Cooking: 'cooking' };
   const OO = { 'Tracking or counting what I eat': 'tracking what you eat', 'Using apps or devices to track things': 'tracking apps or devices', 'Eating windows or fasting': 'eating windows or fasting', Meditation: 'meditation', 'Journalling or writing': 'journalling', 'Early-morning activities': 'early-morning activities', 'Practices involving physical affection or touch': 'practices involving touch' };
-  const en = (A.q58 || []).map(x => EN[x]).filter(Boolean), oo = (A.q57 || []).map(x => OO[x]).filter(Boolean);
+  const en = (A.q58 || []).map(x => x === 'Something else' ? (noteOf(A, 'q58') ? `something else: ${noteOf(A, 'q58')}` : 'something else') : EN[x]).filter(Boolean);
+  const oo = (A.q57 || []).map(x => x === 'Something else' ? (noteOf(A, 'q57') ? `something else: ${noteOf(A, 'q57')}` : 'something else') : OO[x]).filter(Boolean);
   out.suits = [en.length ? `You enjoy ${list(en)}` : '', oo.length ? `${en.length ? ', and you' : 'You'}'d rather not do ${list(oo)}` : ''].join('') + (en.length || oo.length ? '. We\'ve kept that in mind.' : '');
   // answer options are written in the member's voice ("I want", "my"): turn them round so the profile speaks to them
   const you = t => String(t || '').replace(/\bmyself\b/g, 'yourself').replace(/\bmy\b/g, 'your').replace(/\bI want\b/g, 'you want').replace(/\bI'm\b/g, "you're").replace(/\bI\b/g, 'you');
@@ -1359,7 +1385,7 @@ return profile; })();
   const NAME = { 'Weekly cardio': 'Aerobic activity', 'Building up cardio': 'Aerobic activity' };
   const CURRENT = ['Weekly cardio', 'Building up cardio', 'Strength sessions'];   // minutes counted on top of what they already do
   const SAME_JOB = [['Slow breathing', 'Slow breathing to wind down', 'Progressive muscle relaxation'], ['Building up cardio', 'Weekly cardio', 'Activity for better sleep'], ['Balanced plate', 'Protein at meals'], ['Strength sessions', 'Strength volume']];
-  const NONE = /^(Nothing in particular|None of these|Prefer not to say)$/;
+  const NONE = /^(Nothing in particular|None of these|Prefer not to say|Something else)$/;
   const list = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -1414,8 +1440,8 @@ return profile; })();
     return {
       name: name || '', situation: (r.opening && r.opening.situation) || 'start',
       time: r.timeTxt, pace: PACE[p.change] || '',
-      enjoys: (A.q58 || []).filter(x => x !== 'None of these').map(x => lcFirst(x).replace(/\bmy\b/g, 'your')),
-      avoid: (A.q57 || []).filter(x => x !== 'None of these').map(lcFirst),
+      enjoys: (A.q58 || []).filter(x => x !== 'None of these' && x !== 'Something else').map(x => lcFirst(x).replace(/\bmy\b/g, 'your')),
+      avoid: (A.q57 || []).filter(x => x !== 'None of these' && x !== 'Something else').map(lcFirst),
       wants: (p.wish || []).map(a => AREA_TXT[a]),
       wellAreas: AREAS.filter(a => r.groups[a] === 'well'), improveAreas: AREAS.filter(a => r.groups[a] === 'improve'),
       goingWell: [...new Set(well)].slice(0, 5),
@@ -2175,6 +2201,7 @@ async function ask(fast) {
   options(q); ready = true;
   if (FIXED.has(q.id)) composer(true, q.type === 'multi' ? 'Tap what applies, or say it. I will check it with you.' : 'Tap an option, or say it. I will check it with you.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
+  else if (q.type === 'text') composer(true, 'Type a few words, or skip.');
   else composer(true, q.type === 'multi' ? 'Talk or tap the options.' : 'Tap an option, or type it your way.');
   if (mode === 'talk') listen();
   scrollEnd();
@@ -2209,6 +2236,9 @@ function options(q, pre) {
   } else if (q.type === 'habit') {
     box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this one</button>`;
     box.onclick = e => { if (e.target.closest('[data-skip]')) { A[q.id] = null; me('Skip'); next(); } };
+  } else if (q.type === 'text') {
+    box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this</button>`;
+    box.onclick = e => { if (e.target.closest('[data-skip]')) { A[q.id] = ''; me('Skip'); next(); } };
   } else if (q.type === 'single') {
     box.innerHTML = q.options.map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(label(o))}</button>`).join('');
     box.onclick = e => { const b = e.target.closest('.chip'); if (b) answer(q, [b.dataset.o], 'tapped'); };
@@ -2374,6 +2404,7 @@ async function typed() {
   }
   if (pending) { pending = null; clearChips(); }
   me(said);
+  if (q0.type === 'text') { A[q0.id] = said.replace(/\s+/g, ' ').trim().slice(0, 600); how[q0.id] = src; return next(); }
   if (q.type === 'habit') { A[q.id] = { text: said }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
   const browserAlts = alts.filter(a => a && a !== raw); alts = [];
   let v = null, fromAi = false, used = said;
@@ -2465,13 +2496,13 @@ const ACK = {
   q36: A => G('q36', 'meet') === 'Weekly or more' ? 'Seeing people you care about every week matters more than most people think.' : '',
   q55: A => !A.q55 ? '' : A.q55 === 'It varies' ? "That's fine. We'll keep your Good Span light enough to fit the weeks that are busier." : `${label(A.q55)} a week. We'll plan for the lower end, so it stays realistic.`,
   q56: A => /^Small/.test(A.q56 || '') ? 'Small, easy steps it is.' : /^A bigger/.test(A.q56 || '') ? "A bigger challenge it is, at a pace that's still safe for you." : '',
-  q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x)); return o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; },
+  q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x) && x !== 'Something else'); const extra = (A.q57 || []).includes('Something else') ? "We'll keep what you added in mind." : ''; const named = o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; return [named, extra].filter(Boolean).join(' '); },
 };
 
 function show(id, v, withNote) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  const text = q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
+  const text = q.type === 'text' ? String(v || '').trim() : q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
   if (withNote === false) return text;
   const note = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
   const detail = pickedDetail(q.options, v);
@@ -2518,7 +2549,7 @@ function improveStory() {
 }
 // the member's answers as they saw them, for the summary: no contact details, and a personal habit kept private stays out
 function storyAnswers() {
-  return QUESTIONS.filter(q => A[q.id] !== undefined && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
+  return QUESTIONS.filter(q => A[q.id] !== undefined && q.type !== 'text' && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
     .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id], !['q4', 'q5', 'q11', 'q13', 'q29'].includes(q.id)) }));
 }
 function renderPlan(r) {

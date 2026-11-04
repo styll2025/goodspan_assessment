@@ -250,6 +250,21 @@ function makeEngine(DATA) {
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
     if (p.work_other) N.push(['Working pattern', plusWords('q3', 'They chose Other for their working pattern. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
     if (p.eat_goal_else) N.push(['Eating goals', plusWords('q9', 'They chose Something else about how they eat. Ask what they mean. Do not add a new practice from these words.')]);
+    const ELSE_NOTE = [
+      ['q18', 'Sleep goals', 'They chose Something else about the sleep they would like to improve. Ask what they mean. Do not add a new practice from these words.'],
+      ['q19', 'What affects sleep', 'They chose Something else about what affects their sleep. Ask what they mean. Do not add a new practice from these words.'],
+      ['q25', 'Movement already in place', 'They chose Something else about movement they already do. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q27', 'Movement goals', 'They chose Something else about the movement they would like to improve. Ask what they mean. Do not add a new practice from these words.'],
+      ['q33', 'Mind goals', 'They chose Something else about what they would like to improve for their mind. Ask what they mean. Do not add a new practice from these words.'],
+      ['q34', 'Mind routine', 'They chose Something else about a mind habit already in their routine. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q37', 'Connection habits', 'They chose Something else about a connection habit they already do. Ask what they mean. Do not treat it as a listed practice, and do not add a new practice from these words.'],
+      ['q38', 'Connection goals', 'They chose Something else about what they would like from their connections. Ask what they mean. Do not add a new practice from these words.'],
+      ['q52', 'Prevention goals', 'They chose Something else about what they would like to improve for prevention. Ask what they mean. Do not add a new practice from these words.'],
+      ['q57', 'Rather not', 'They chose Something else about a practice they would rather not do. Ask what they mean. Do not add a new opt-out from these words, and do not add a new practice.'],
+      ['q58', 'What you enjoy', 'They chose Something else about what they enjoy. Ask what they mean. Do not add a new practice from these words.']
+    ];
+    for (const [id, title, msg] of ELSE_NOTE) if ((p.else_on || {})[id]) N.push([title, plusWords(id, msg)]);
+    if (p.also) N.push(['Anything else', 'They added something else to consider for their plan. Ask about it. Do not treat it as a diagnosis or as a new practice. In their words: ' + p.also + '.']);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
     if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);

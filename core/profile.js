@@ -6,6 +6,9 @@ const FQ = { 'Rarely or never': 'rarely', '1–2 days a week': 'on 1–2 days a 
 const GRID = (A, q, r) => (A[q] || {})[r];
 const has = (A, q, o) => (A[q] || []).includes(o);
 const lc = s => s.charAt(0).toLowerCase() + s.slice(1);
+const noteOf = (A, id) => ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
+const said = (A, id, xs, drop, turn) => (xs || []).filter(x => x !== drop).map(x => x === 'Something else' ? (noteOf(A, id) ? `something else: ${noteOf(A, id)}` : 'something else') : (turn ? turn(lc(x)) : lc(x)));
+const brief = (items, n) => { if (items.length <= n) return items; const extra = items.find(x => x.startsWith('something else')); const rest = items.filter(x => x !== extra).slice(0, extra ? n - 1 : n); return extra ? rest.concat(extra) : rest; };
 
 function profile(A, p) {
   const out = { intro: '', pillars: {} };
@@ -27,6 +30,7 @@ function profile(A, p) {
   if (A.q2a !== 'Male' && !['50-59', '60-69', '70 or over'].includes(A.q2) && (A.q6 === 'Pregnant' || A.q6 === 'Breastfeeding')) health.push(A.q6 === 'Pregnant' ? 'your pregnancy' : 'that you\'re breastfeeding');
   if ((A.q29 || []).some(x => !['Nothing in particular', 'Prefer not to say'].includes(x))) health.push('what affects how you move');
   if (health.length) out.intro += ` You've also told us about ${list(health)}, and your Good Span takes ${health.length > 1 ? 'these' : 'this'} into account.`;
+  if (p.also) out.intro += ` You also asked us to keep this in mind: “${p.also}”.`;
 
   // ---- Nutrition
   { const g = r => GRID(A, 'q7', r), s = [];
@@ -63,11 +67,11 @@ function profile(A, p) {
     const caf = { "I don't have caffeine": "You don't have caffeine", 'Before 12pm': 'Your last caffeine is before midday', '12-3pm': 'Your last caffeine is usually in the early afternoon', '3-6pm': 'Your last caffeine is usually between 3pm and 6pm', 'After 6pm': 'Your last caffeine is usually after 6pm' }[A.q15];
     const eat = { 'Less than 1 hour': 'less than an hour', '1-2 hours': '1 to 2 hours', '2-3 hours': '2 to 3 hours', '3 hours or more': '3 hours or more' }[A.q16];
     if (caf) s.push(`${caf}${eat ? `, and you finish eating ${eat} before bed` : ''}.`);
-    const aff = (A.q19 || []).filter(x => x !== 'Nothing in particular');
-    if (aff.length) s.push(`${cap(list(aff.map(lc)))} can affect your sleep.`);
+    const aff = said(A, 'q19', A.q19, 'Nothing in particular');
+    if (aff.length) s.push(`${cap(list(aff))} can affect your sleep.`);
     if (A.q2a !== 'Male' && ['40-49', '50-59', '60-69'].includes(A.q2) && ['Often', 'Sometimes'].includes(A.q19a)) s.push(`Hot flushes or night sweats ${A.q19a === 'Often' ? 'often' : 'sometimes'} affect your sleep.`);
-    const goals = (A.q18 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd most like to work on ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q18', A.q18, 'Nothing in particular');
+    if (goals.length) s.push(`You'd most like to work on ${list(goals)}.`);
     out.pillars.Sleep = s.join(' '); }
 
   // ---- Movement
@@ -78,11 +82,11 @@ function profile(A, p) {
     if (st) s.push(`${st}${sit ? `, and you sit for ${sit} hours on a typical day` : ''}.`);
     const steps = { 'Fewer than 5,000': 'fewer than 5,000', '5,000-7,999': '5,000 to 8,000', '8,000-9,999': '8,000 to 10,000', '10,000 or more': '10,000 or more' }[A.q24];
     if (steps) s.push(`You take ${steps} steps a day.`);
-    const doNow = (A.q25 || []).filter(x => x !== 'None of these');
+    const doNow = brief(said(A, 'q25', A.q25, 'None of these'), 3);
     const where = (A.q26 || []).filter(x => x !== 'Other').map(lc);
     if (doNow.length) s.push(`You already ${list(doNow.slice(0, 3).map(lc))}${where.length ? `, mostly ${list(where)}` : ''}.`); else if (where.length) s.push(`You usually move ${list(where.map(w => w.replace('gym or studio', 'at a gym or studio').replace('sports facility or club', 'at a sports club')))}.`);
-    const goals = (A.q27 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like to ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q27', A.q27, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like to ${list(goals)}.`);
     out.pillars.Movement = s.join(' '); }
 
   // ---- Mind
@@ -95,10 +99,10 @@ function profile(A, p) {
       const mx = Math.max(sc('anx1'), sc('anx2'), sc('dep1'), sc('dep2'));
       s.push(mx === 0 ? "Over the last two weeks, you haven't felt anxious or low." : `Over the last two weeks, you've felt anxious or low ${['', 'on several days', 'on more than half the days', 'nearly every day'][mx]}.`);
     }
-    const prac = (A.q34 || []).filter(x => x !== 'None of these');
-    if (prac.length) s.push(`Already part of your routine: ${list(prac.slice(0, 3).map(lc))}.`);
-    const goals = (A.q33 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like help with ${list(goals.map(lc))}.`);
+    const prac = brief(said(A, 'q34', A.q34, 'None of these'), 3);
+    if (prac.length) s.push(`Already part of your routine: ${list(prac)}.`);
+    const goals = said(A, 'q33', A.q33, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like help with ${list(goals)}.`);
     out.pillars.Mind = s.join(' '); }
 
   // ---- Connection
@@ -106,10 +110,10 @@ function profile(A, p) {
     const meet = GRID(A, 'q36', 'meet'), ph = GRID(A, 'q36', 'phone'), grp = GRID(A, 'q36', 'group'), vol = GRID(A, 'q36', 'volunteer');
     if (meet) s.push(`You see friends or family in person ${F[meet]}${ph ? ` and talk to them by phone or video ${F[ph]}` : ''}.`);
     if (grp) s.push(grp === 'Never' ? `You're not part of a group, club or class at the moment${vol && vol !== 'Never' ? `, though you volunteer ${F[vol]}` : ''}.` : `You take part in a group, club or class ${F[grp]}${vol && vol !== 'Never' ? ` and volunteer ${F[vol]}` : ''}.`);
-    const hab = (A.q37 || []).filter(x => x !== 'None of these').map(x => lc(x).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your').replace("I’m", "you're").replace('i’m', "you're"));
-    if (hab.length) s.push(`In a typical week you ${list(hab.slice(0, 3))}.`);
-    const goals = (A.q38 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like ${list(goals.map(lc))}.`);
+    const hab = brief(said(A, 'q37', A.q37, 'None of these', x => x.replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your').replace("I’m", "you're").replace('i’m', "you're")), 3);
+    if (hab.length) s.push(`In a typical week you ${list(hab)}.`);
+    const goals = said(A, 'q38', A.q38, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like ${list(goals)}.`);
     out.pillars.Connection = s.join(' '); }
 
   // ---- Prevention
@@ -119,17 +123,18 @@ function profile(A, p) {
     s.push(`${smoke}${alc ? `, and ${alc}${A.q43 !== 'Never' && A.q44 ? `, usually ${A.q44.replace('-', ' to ')} drinks at a time` : ''}` : ''}.`);
     const bp = { 'In the past 12 months': 'in the past year', '1-2 years ago': '1 to 2 years ago', 'More than 2 years ago': 'more than 2 years ago', "Never, or I'm not sure": null }[A.q46];
     s.push(bp ? `Your blood pressure was last checked ${bp}.` : "You're not sure when your blood pressure was last checked.");
-    const lrn = { 'Rarely or never': 'You rarely learn something new or take on a challenging hobby', 'A few times a month': 'You learn something new or practise a challenging hobby a few times a month', 'About once a week': 'You learn something new about once a week', 'Several times a week': 'You learn something new several times a week' }[A.q51];
+    const lrn = { 'Rarely or never': 'You rarely learn something new or take on a challenging hobby', 'About once a month': 'You learn something new or practise a challenging hobby about once a month', 'A few times a month': 'You learn something new or practise a challenging hobby a few times a month', 'About once a week': 'You learn something new about once a week', 'Several times a week': 'You learn something new several times a week' }[A.q51];
     if (lrn) s.push(lrn + '.');
     if (['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes') s.push('You already use hearing aids.');
-    const goals = (A.q52 || []).filter(x => x !== 'Nothing in particular');
-    if (goals.length) s.push(`You'd like to focus on ${list(goals.map(lc))}.`);
+    const goals = said(A, 'q52', A.q52, 'Nothing in particular');
+    if (goals.length) s.push(`You'd like to focus on ${list(goals)}.`);
     out.pillars.Prevention = s.join(' '); }
 
   // ---- what suits them
   const EN = { 'Being outdoors': 'being outdoors', 'Listening to music': 'music', 'Making or creating things': 'making things', Writing: 'writing', 'Being active with other people': 'being active with others', 'Quiet time on my own': 'quiet time on your own', 'Stretching, yoga or Pilates': 'stretching, yoga or Pilates', Sport: 'sport', Cooking: 'cooking' };
   const OO = { 'Tracking or counting what I eat': 'tracking what you eat', 'Using apps or devices to track things': 'tracking apps or devices', 'Eating windows or fasting': 'eating windows or fasting', Meditation: 'meditation', 'Journalling or writing': 'journalling', 'Early-morning activities': 'early-morning activities', 'Practices involving physical affection or touch': 'practices involving touch' };
-  const en = (A.q58 || []).map(x => EN[x]).filter(Boolean), oo = (A.q57 || []).map(x => OO[x]).filter(Boolean);
+  const en = (A.q58 || []).map(x => x === 'Something else' ? (noteOf(A, 'q58') ? `something else: ${noteOf(A, 'q58')}` : 'something else') : EN[x]).filter(Boolean);
+  const oo = (A.q57 || []).map(x => x === 'Something else' ? (noteOf(A, 'q57') ? `something else: ${noteOf(A, 'q57')}` : 'something else') : OO[x]).filter(Boolean);
   out.suits = [en.length ? `You enjoy ${list(en)}` : '', oo.length ? `${en.length ? ', and you' : 'You'}'d rather not do ${list(oo)}` : ''].join('') + (en.length || oo.length ? '. We\'ve kept that in mind.' : '');
   // answer options are written in the member's voice ("I want", "my"): turn them round so the profile speaks to them
   const you = t => String(t || '').replace(/\bmyself\b/g, 'yourself').replace(/\bmy\b/g, 'your').replace(/\bI want\b/g, 'you want').replace(/\bI'm\b/g, "you're").replace(/\bI\b/g, 'you');

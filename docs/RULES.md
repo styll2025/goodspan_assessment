@@ -145,7 +145,7 @@ Each answer adds to an area's opportunity score (High = 2, Medium = 1) and, wher
 | Prevention | AUDIT-C 8 or more | High | Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems. (Also adds a Pilot note.) |
 | Prevention | AUDIT-C 5-7 | Medium | Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health. |
 | Prevention | Blood pressure last checked more than 2 years ago, never or not sure | Medium | Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly. |
-| Prevention | Learns something new rarely or never | Medium | You rarely learn new things or practise a challenging hobby, which helps keep the mind active. |
+| Prevention | Learns something new rarely or never | Medium | You rarely learn new things or practise a challenging hobby, which helps keep the mind active. About once a month does not trigger this. |
 
 ## Goals → practices
 
@@ -204,7 +204,7 @@ In the order the plan tries them (then re-ordered within the list by the fit sco
 | Prevention | Protecting my skin from the sun | `sun` | Daily sunscreen, Avoiding sunburn |  |
 | Prevention | Protecting my hearing | `hearing` | Safe listening, Hearing protection, Hearing check |  |
 | Prevention | Breathing cleaner air at home and outdoors | `air` | Air quality, Indoor air |  |
-| Prevention | Keeping my mind active by learning new things | `learning` | Learning new skills |  |
+| Prevention | Keeping my mind active by learning new things | `learning` | Learning new skills | About once a week or several times a week: not offered as more of the same. About once a month is not the “rarely or never” signal, and a learning practice starts at Learning. A few times a month starts at Developing. |
 
 Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'Staying nicotine-free', 'Offered as a lighter touch when Prevention scores; not a goal option.'); ('Connection', '(rule) Sleep is a priority area', 'Sharing sleep plans with others; Sharing sleep learnings with others; Celebrating sleep wins', 'Offered only as a Connection lighter touch, and only when Sleep is a priority, so the member shares their sleep practice with someone.')
 
@@ -241,6 +241,8 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 | All | The plan adds less than a third of the member's time and no practice adds 15 minutes or more | Ask whether they'd like to use more of their time. | Nothing else changes. |
 | Nutrition | Something else on what they would most like to improve about how they eat, with a few words of their own | Their words are for the Pilot. Ask what they mean. Do not treat them as a new practice. | Nothing else changes. |
 | All | Something else, or Other for working pattern, with a few words of their own (conditions, recent symptoms, food, eating goals, sleep difficulties, movement, and working pattern) | Their words are for the Pilot. Do not treat them as a diagnosis or as a new practice rule. | Nothing else changes. Other for working pattern is not treated as shift work, irregular hours or not working. |
+| All | Something else on a sleep, movement, mind, connection or prevention goal; on what affects their sleep; on a habit they already do; on what they enjoy; or on a practice they would rather not do | Their words are for the Pilot. Ask what they mean. Do not add a new practice, do not treat it as a listed habit they already do, and do not add a new opt-out. | Nothing else changes. |
+| All | The final optional note: anything else to consider for their plan | Their words are for the Pilot. Do not treat them as a diagnosis or as a new practice. | Nothing else changes. Leaving it blank changes nothing. |
 
 ## “Not right for me” (Rule 13), as implemented
 

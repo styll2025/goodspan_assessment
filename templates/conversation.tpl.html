@@ -225,6 +225,7 @@ async function ask(fast) {
   options(q); ready = true;
   if (FIXED.has(q.id)) composer(true, q.type === 'multi' ? 'Tap what applies, or say it. I will check it with you.' : 'Tap an option, or say it. I will check it with you.');
   else if (q.type === 'habit') composer(true, 'Type it in your own words, or skip it.');
+  else if (q.type === 'text') composer(true, 'Type a few words, or skip.');
   else composer(true, q.type === 'multi' ? 'Talk or tap the options.' : 'Tap an option, or type it your way.');
   if (mode === 'talk') listen();
   scrollEnd();
@@ -259,6 +260,9 @@ function options(q, pre) {
   } else if (q.type === 'habit') {
     box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this one</button>`;
     box.onclick = e => { if (e.target.closest('[data-skip]')) { A[q.id] = null; me('Skip'); next(); } };
+  } else if (q.type === 'text') {
+    box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this</button>`;
+    box.onclick = e => { if (e.target.closest('[data-skip]')) { A[q.id] = ''; me('Skip'); next(); } };
   } else if (q.type === 'single') {
     box.innerHTML = q.options.map(o => `<button type="button" class="chip" data-o="${esc(o)}">${esc(label(o))}</button>`).join('');
     box.onclick = e => { const b = e.target.closest('.chip'); if (b) answer(q, [b.dataset.o], 'tapped'); };
@@ -424,6 +428,7 @@ async function typed() {
   }
   if (pending) { pending = null; clearChips(); }
   me(said);
+  if (q0.type === 'text') { A[q0.id] = said.replace(/\s+/g, ' ').trim().slice(0, 600); how[q0.id] = src; return next(); }
   if (q.type === 'habit') { A[q.id] = { text: said }; how[q.id] = src; await typing(350); bot('Thanks. Would you like to keep this private, or share it with your Pilot?', '', 'say'); habitChoice(q); return; }
   const browserAlts = alts.filter(a => a && a !== raw); alts = [];
   let v = null, fromAi = false, used = said;
@@ -515,13 +520,13 @@ const ACK = {
   q36: A => G('q36', 'meet') === 'Weekly or more' ? 'Seeing people you care about every week matters more than most people think.' : '',
   q55: A => !A.q55 ? '' : A.q55 === 'It varies' ? "That's fine. We'll keep your Good Span light enough to fit the weeks that are busier." : `${label(A.q55)} a week. We'll plan for the lower end, so it stays realistic.`,
   q56: A => /^Small/.test(A.q56 || '') ? 'Small, easy steps it is.' : /^A bigger/.test(A.q56 || '') ? "A bigger challenge it is, at a pace that's still safe for you." : '',
-  q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x)); return o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; },
+  q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x) && x !== 'Something else'); const extra = (A.q57 || []).includes('Something else') ? "We'll keep what you added in mind." : ''; const named = o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; return [named, extra].filter(Boolean).join(' '); },
 };
 
 function show(id, v, withNote) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  const text = q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
+  const text = q.type === 'text' ? String(v || '').trim() : q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
   if (withNote === false) return text;
   const note = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
   const detail = pickedDetail(q.options, v);
@@ -568,7 +573,7 @@ function improveStory() {
 }
 // the member's answers as they saw them, for the summary: no contact details, and a personal habit kept private stays out
 function storyAnswers() {
-  return QUESTIONS.filter(q => A[q.id] !== undefined && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
+  return QUESTIONS.filter(q => A[q.id] !== undefined && q.type !== 'text' && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
     .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id], !['q4', 'q5', 'q11', 'q13', 'q29'].includes(q.id)) }));
 }
 function renderPlan(r) {

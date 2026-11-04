@@ -55,6 +55,14 @@ function check(f, o) {
   if ((f.goals.Nutrition || []).some(g => !NUTR_GOALS.includes(g))) issues.push('Something else about eating became a practice goal');
   if (f.eat_goal_else && !(o.pilot || []).some(n => n[0] === 'Eating goals')) issues.push('Missing Pilot note: Eating goals');
   if ((f.else_txt || {}).q9 && !(o.pilot || []).some(n => n[0] === 'Eating goals' && n[1].includes(f.else_txt.q9))) issues.push('Eating goal words missing from the Pilot note');
+  for (const [id, on] of Object.entries(f.else_on || {})) if (on) {
+    const words = (f.else_txt || {})[id];
+    if (words && !(o.pilot || []).some(n => n[1].includes(words) && /do not add a new practice/i.test(n[1]))) issues.push('Something else words missing from the Pilot note: ' + id);
+    if (!words && !(o.pilot || []).some(n => /They chose Something else/.test(n[1]) && /do not add a new practice/i.test(n[1]))) issues.push('Missing Pilot note for Something else: ' + id);
+  }
+  if (f.also && !(o.pilot || []).some(n => n[0] === 'Anything else' && n[1].includes(f.also) && /not treat it as a diagnosis/i.test(n[1]))) issues.push('Final note missing from the Pilot note');
+  if (f.learn_once_month && (f.learn_rare || (f.doing || []).includes('Learning new skills') || (f.bl || {})['Learning new skills'] !== 'Learning')) issues.push('About once a month was treated as rare or as a weekly habit');
+  for (const area of ['Sleep', 'Movement', 'Mind', 'Connection', 'Prevention']) if ((f.goals[area] || []).some(g => g == null || g === 'Something else')) issues.push('Something else became a ' + area + ' goal');
   if (f.work_other && !(o.pilot || []).some(n => n[0] === 'Working pattern')) issues.push('Missing Pilot note: Working pattern');
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive');

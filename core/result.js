@@ -16,7 +16,7 @@
   const NAME = { 'Weekly cardio': 'Aerobic activity', 'Building up cardio': 'Aerobic activity' };
   const CURRENT = ['Weekly cardio', 'Building up cardio', 'Strength sessions'];   // minutes counted on top of what they already do
   const SAME_JOB = [['Slow breathing', 'Slow breathing to wind down', 'Progressive muscle relaxation'], ['Building up cardio', 'Weekly cardio', 'Activity for better sleep'], ['Balanced plate', 'Protein at meals'], ['Strength sessions', 'Strength volume']];
-  const NONE = /^(Nothing in particular|None of these|Prefer not to say)$/;
+  const NONE = /^(Nothing in particular|None of these|Prefer not to say|Something else)$/;
   const list = a => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
   const low = s => s ? s.charAt(0).toLowerCase() + s.slice(1) : s;
   const cap = s => s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
@@ -71,8 +71,8 @@
     return {
       name: name || '', situation: (r.opening && r.opening.situation) || 'start',
       time: r.timeTxt, pace: PACE[p.change] || '',
-      enjoys: (A.q58 || []).filter(x => x !== 'None of these').map(x => lcFirst(x).replace(/\bmy\b/g, 'your')),
-      avoid: (A.q57 || []).filter(x => x !== 'None of these').map(lcFirst),
+      enjoys: (A.q58 || []).filter(x => x !== 'None of these' && x !== 'Something else').map(x => lcFirst(x).replace(/\bmy\b/g, 'your')),
+      avoid: (A.q57 || []).filter(x => x !== 'None of these' && x !== 'Something else').map(lcFirst),
       wants: (p.wish || []).map(a => AREA_TXT[a]),
       wellAreas: AREAS.filter(a => r.groups[a] === 'well'), improveAreas: AREAS.filter(a => r.groups[a] === 'improve'),
       goingWell: [...new Set(well)].slice(0, 5),
