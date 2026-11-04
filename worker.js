@@ -1,6 +1,9 @@
 // These Pages functions stay on thegoodspan-assessment.pages.dev.
 // A redirect would drop the POST body, so the evaluation host forwards the request and returns the answer.
-const PAGES_API = "https://thegoodspan-assessment.pages.dev";
+// The 15:22 production deployment has no Pages secrets. This earlier deployment still has them.
+// Switch this back to https://thegoodspan-assessment.pages.dev once that project’s production
+// environment has OPENAI_API_KEY and ANTHROPIC_API_KEY and a new deployment has picked them up.
+const PAGES_API = "https://66a351f1.thegoodspan-assessment.pages.dev";
 const PAGES_API_PATHS = new Set(["/api/interpret", "/api/transcribe", "/api/story"]);
 
 export default {
