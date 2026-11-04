@@ -615,7 +615,7 @@ async function typedContact(raw) {
 const OPEN_CHIPS = ['energy', 'sleep', 'stress', 'mood', 'fitness', 'ease', 'food', 'connection', 'health'];
 async function askOpen() {
   stage = 'open'; ready = false; $('prog').hidden = false; await typing(500);
-  bot('If the next six months went really well, what would you most like to feel different?', 'Tap any that fit, or say it in your own words', 'q');
+  bot('If the next six months went really well, what would you most like to feel different?', 'Choose up to 3', 'q');
   sel = new Set(); const wrap = document.createElement('div'); wrap.className = 'choices';
   const box = document.createElement('div'); box.className = 'chips';
   const go = document.createElement('button'); go.type = 'button'; go.className = 'done'; go.textContent = 'Done';
