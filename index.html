@@ -147,6 +147,7 @@ html.planon,html.planon body{overflow:hidden}
 // Assessment spec (v7). Each question: id, section, type, text, options; grids have rows and cols (or per-row options).
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
+const HABIT4 = ['I do this now', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
 const SECTIONS = [
   { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
@@ -189,16 +190,16 @@ const QUESTIONS = [
   { id: 'q9', s: 'nutrition', type: 'multi', max: 3, goals: 'Nutrition', text: 'What would you most like to improve about how you eat?', options: ['Getting enough protein', 'Eating more plants and fibre', 'Reducing highly processed foods', 'Reducing sugar', 'Heart health: less salt and more nuts', 'Meal planning and home cooking', "Eating well when I'm out or travelling", 'When I eat, such as late-evening eating', 'Eating more mindfully, with fewer distractions', 'Nothing in particular'] },
   { id: 'q11', s: 'nutrition', type: 'multi', text: 'Are there any health, dietary or other considerations we should take into account?', options: ['Nothing in particular', 'Nut allergy', 'Other food allergy or intolerance', 'Dietary restriction or preference (for example vegetarian, vegan, halal or kosher)', 'A health condition that affects what or how I eat', 'A difficult relationship with food', 'Something else', 'Prefer not to say'] },
   { id: 'q12', s: 'sleep', type: 'single', text: 'On a typical night, how many hours of actual sleep do you get?', options: ['Less than 5', '5-6', '6-7', '7-8', '8-9', 'More than 9'] },
-  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'None of these'] },
+  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'Something else', 'None of these'] },
   { id: 'q14', s: 'sleep', type: 'single', text: 'Has anyone told you that you snore loudly or seem to stop breathing while you sleep?', options: ['Yes', 'No', 'I don’t know'] },
   { id: 'q15', s: 'sleep', type: 'single', text: 'When do you usually have your last drink containing caffeine?', hint: 'Include coffee, tea, cola and energy drinks.', options: ["I don't have caffeine", 'Before 12pm', '12-3pm', '3-6pm', 'After 6pm'] },
   { id: 'q16', s: 'sleep', type: 'single', text: 'How long before bed do you usually finish eating?', options: ['Less than 1 hour', '1-2 hours', '2-3 hours', '3 hours or more'] },
-  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], rows: [
+  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: HABIT4, rows: [
       ['daylight', 'Get outside in daylight in the morning'], ['dim', 'Dim the lights in the evening'], ['regular', 'Keep a regular bedtime and wake time'],
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I', null, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
@@ -289,7 +290,7 @@ function toFeatures(A) {
   p.food_pns = has('q11', 'Prefer not to say') && !has('q11', 'A difficult relationship with food');
   const SH = { 'Less than 5': [4.5, 'less than 5 hours'], '5-6': [5.5, '5-6 hours'], '6-7': [6.5, '6-7 hours'], '7-8': [7.5, '7-8 hours'], '8-9': [8.5, '8-9 hours'], 'More than 9': [9.5, 'more than 9 hours'] }[A.q12] || [7.5, '7-8 hours'];
   p.sleep_h = SH[0]; p.sleep_txt = SH[1];
-  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed' };
+  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed', 'Something else': 'something else is happening' };
   p.insomnia = (A.q13 || []).filter(x => INS[x]).map(x => INS[x]);
   p.wakes_early = has('q13', "I wake earlier than I want to and can't get back to sleep");
   p.snore = A.q14 === 'Yes';
@@ -300,11 +301,17 @@ function toFeatures(A) {
   if (now('phone') || now('work')) p.doing.push('Bed for sleep');
   // Rule 16: tried it and it didn't help -> not offered as a priority; the Pilot is told
   const triedNo = r => g('q17', r) === "I've tried it, but it didn't help";
+  const noFit = r => g('q17', r) === 'Not practical for me right now';
   const SL2 = Object.assign({}, SL, { phone: ['Bed for sleep'], work: ['Bed for sleep'] });
-  p.tried = []; p.tried_txt = [];
+  p.tried = []; p.tried_txt = []; p.nofit = []; p.nofit_txt = [];
   const sleepChosen = (A.q1 || []).some(x => x.startsWith('Sleep'));
-  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
-  p.hyg_tried = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].filter(([r]) => triedNo(r)).map(x => x[1]);
+  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) {
+    if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
+    if (noFit(r) && r !== 'pro') { p.nofit.push(...(SL2[r] || [])); p.nofit_txt.push(lab.toLowerCase()); }
+  }
+  const HYG_MAP = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']];
+  p.hyg_tried = HYG_MAP.filter(([r]) => triedNo(r)).map(x => x[1]);
+  p.hyg_nofit = HYG_MAP.filter(([r]) => noFit(r)).map(x => x[1]);
   // the CBT-I row is only asked when Sleep was chosen, so a stored answer does not count otherwise
   p.sleep_pro_tried = sleepChosen && triedNo('pro');
   if (now('phone') && now('work')) p.doing.push('Bed for sleep');
@@ -671,6 +678,7 @@ function makeEngine(DATA) {
     if (p.food_rel && (p.goals.Nutrition || []).includes('timing')) N.push(['Food timing', "They'd like to work on when they eat. Practices about meal timing are left out for them; talk about it together and agree an approach that feels safe."]);
     if (p.food_pns) N.push(['Food', "Preferred not to say about food considerations. The plan leaves out tracking, eating-window and eating-before-bed practices to be safe; ask gently if there's anything to know."]);
     if ((p.tried_txt || []).length) N.push(['Tried before', "Tried and found it didn't help: " + p.tried_txt.join('; ') + '. Not offered as a priority; ask what got in the way.']);
+    if ((p.nofit_txt || []).length) N.push(['Not practical right now', 'Not practical for them right now: ' + p.nofit_txt.join('; ') + '. Not offered; ask what would fit instead.']);
     if (p.sleep_pro_tried) N.push(['Sleep support', "Has worked with a professional or a sleep programme before and it didn't help. Ask about it."]);
     if (p.sleep_pain) N.push(['Pain and sleep', 'Says pain or physical symptoms affect their sleep. Ask about it.']);
     if (p.night_sweats) N.push(['Night sweats', 'Says hot flushes or night sweats affect their sleep. Ask how it is going and whether they would like to talk to their doctor about it.']);
@@ -726,6 +734,7 @@ function makeEngine(DATA) {
       return sc;
     };
     const byFit = (a, list) => list.map((f, i) => [f, i, fit(a, f)]).sort((x, y) => (y[2] - x[2]) || (x[1] - y[1])).map(x => x[0]);
+    const aside = f => (p.tried || []).includes(f) || (p.nofit || []).includes(f);   // tried without success, or not practical right now
     const ranked = (a, role, strict = false) => {
       const sig = S[a], H = byFit(a, sig.filter(x => x[0] === 'H' && x[2]).map(x => x[2])), M = byFit(a, sig.filter(x => x[0] === 'M' && x[2]).map(x => x[2]));
       const dis = byFit(a, a === 'Sleep' ? (p.sleep_disrupt || []) : a === 'Nutrition' ? (p.meal_rare || []) : []);
@@ -745,7 +754,7 @@ function makeEngine(DATA) {
       const alcAsked = (p.goals.Prevention || []).includes('alcohol') || (p.sleep_disrupt || []).includes('Alcohol and sleep');
       if (p.drinks_rare && !alcAsked) seq = seq.filter(f => !['Alcohol and sleep', 'Alcohol-free swaps'].includes(f));   // drinks less than weekly: no 'drink less on some evenings' practices unless they asked
       const out = [];
-      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16
+      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !aside(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16, and not practical right now
       return out;
     };
     const backed = (a, f) => (p.goals[a] || []).some(g => (GOALMAP[a][g] || []).includes(f)) || S[a].some(x => x[2] === f)
@@ -975,7 +984,7 @@ function makeEngine(DATA) {
       const sel = [], groups = new Set();   // practices that do the same job are never in the plan together, across pillars too
       for (const a of [...pri, ...AREAS.filter(z => !pri.includes(z))]) {
         const famsA = [...new Set(DATA.lib.filter(r => r.p === a).map(r => r.f))], rk = ranked(a, 'Priority');
-        const base = f => !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
+        const base = f => !aside(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
         const ord = [...rk, ...famsA.filter(f => !rk.includes(f) && base(f)).sort((u, v) => fit(a, v) - fit(a, u))];
         const mine = [];
         for (const pass of [1, 2, 3]) for (const f of ord) {
@@ -1060,9 +1069,10 @@ function makeEngine(DATA) {
     }
     // A pillar shown as a priority has a priority practice in month 1 (or the member chose it)
     for (let k = pri.length - 1; k >= 0; k--) if (!wish.includes(pri[k]) && !months[0].some(x => x.role === 'Priority' && x.area === pri[k])) pri.splice(k, 1);
-    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
+    const hygAside = f => (p.hyg_tried || []).includes(f) || (p.hyg_nofit || []).includes(f);
+    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !hygAside(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
-    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
+    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !hygAside(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
     const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
     const THEMES_N = 6;   // Rule 11: six themes for months 4–6
     // Why each theme: it builds on practices from months 1–3 in that theme, or is another part of a priority pillar, or links to their goals or answers
@@ -1225,11 +1235,14 @@ function profile(A, p) {
 
   // ---- Sleep
   { const s = []; const h = { 'Less than 5': 'less than 5', '5-6': '5 to 6', '6-7': '6 to 7', '7-8': '7 to 8', '8-9': '8 to 9', 'More than 9': 'more than 9' }[A.q12];
-    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
+    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? 'something else is happening' : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
     const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };
     if (now.length) s.push(`Already part of your routine: ${list(now.slice(0, 5).map(k => NOW[k]))}.`);
+    const impractical = ['daylight', 'dim', 'regular', 'alcohol', 'winddown', 'tasks', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'share'].filter(k => GRID(A, 'q17', k) === 'Not practical for me right now');
+    const IMP = { daylight: 'morning daylight', dim: 'dimming the lights in the evening', regular: 'a regular bedtime and wake time', alcohol: 'cutting down on alcohol in the evening', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks", cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'avoiding screens before bed', phone: 'keeping your phone out of bed', work: 'keeping work out of bed', naps: 'avoiding long naps', share: 'sharing sleep goals or progress' };
+    if (impractical.length) s.push(`Not practical for you right now: ${list(impractical.slice(0, 4).map(k => IMP[k]))}${impractical.length > 4 ? `, and ${impractical.length - 4} other sleep ${impractical.length - 4 === 1 ? 'habit' : 'habits'}` : ''}.`);
     const caf = { "I don't have caffeine": "You don't have caffeine", 'Before 12pm': 'Your last caffeine is before midday', '12-3pm': 'Your last caffeine is usually in the early afternoon', '3-6pm': 'Your last caffeine is usually between 3pm and 6pm', 'After 6pm': 'Your last caffeine is usually after 6pm' }[A.q15];
     const eat = { 'Less than 1 hour': 'less than an hour', '1-2 hours': '1 to 2 hours', '2-3 hours': '2 to 3 hours', '3 hours or more': '3 hours or more' }[A.q16];
     if (caf) s.push(`${caf}${eat ? `, and you finish eating ${eat} before bed` : ''}.`);
@@ -1540,7 +1553,7 @@ return profile; })();
     // (easiest level, no health exclusions, nothing they already do, tried or opted out of)
     const OO_FAM = { meditation: /Meditation|Present-moment/, journalling: /writing|Three good things|to-do|Best possible/, early: /Morning daylight/, touch: /touch/ };
     const goalPool = a => (p.goals[a] || []).flatMap(g => ((DATA.goals[a] || {})[g] || []).map(f => [g, f]))
-      .filter(([g, f], i, arr) => arr.findIndex(y => y[1] === f) === i && !(p.doing || []).includes(f) && !(p.tried || []).includes(f) && !(p.optout || []).some(k => OO_FAM[k] && OO_FAM[k].test(f))
+      .filter(([g, f], i, arr) => arr.findIndex(y => y[1] === f) === i && !(p.doing || []).includes(f) && !(p.tried || []).includes(f) && !(p.nofit || []).includes(f) && !(p.optout || []).some(k => OO_FAM[k] && OO_FAM[k].test(f))
         && !(p.not_working && /Time away from work|Micro-breaks|Focused work/.test(f)) && !(f === 'Time in nature' && A.q30 && A.q30 !== 'Less than 30 minutes'))
       .map(([g, f]) => { const row = DATA.lib.find(y => y.p === a && y.f === f && (y.l === 'Learning' || y.l === 'All levels')); if (!row || (row.x || []).length) return null;
         const label = (A[GOALQ[a]] || []).filter(x => !NONE.test(x))[(p.goals[a] || []).indexOf(g)] || '';
@@ -1610,7 +1623,7 @@ return profile; })();
     // ---- match each practice to the outcome they want, what they already do, and the difficulty they reported
     const has13 = t => (A.q13 || []).includes(t);
     const sGoals = p.goals.Sleep || [], mGoals = p.goals.Movement || [];
-    const doingF = f => (p.doing || []).includes(f) || (p.tried || []).includes(f);
+    const doingF = f => (p.doing || []).includes(f) || (p.tried || []).includes(f) || (p.nofit || []).includes(f);
     const inPlan = (f, self) => [...pr, ...extras].some(y => y !== self && y.fam === f);
     // Movement: more volume (walking, steps, more cardio) only when that is what they asked for, or they are below the guideline.
     // Someone already active, or training for strength or performance, gets a practice that changes how they train instead.
@@ -1639,7 +1652,7 @@ return profile; })();
     function sleepFor(x) {
       const pickRow = (fam, l) => { const r = libRow(fam, l); return r && !((r.x || []).includes('Shift or night work') && p.shift) && !((r.x || []).includes('Wakes too early') && p.wakes_early) ? r : null; };
       const opts = [];
-      if ((p.wakes_early || sGoals.includes('stay_asleep')) && !(p.tried || []).includes('Bed for sleep')) { const r = pickRow('Bed for sleep', 'Mastering'); if (r) opts.push(['Bed for sleep', r, p.wakes_early ? "You told us you often wake earlier than you want to and can't get back to sleep. Getting up rather than lying awake keeps your bed linked with sleep." : "You'd like to stay asleep through the night. Getting up rather than lying awake keeps your bed linked with sleep."]); }
+      if ((p.wakes_early || sGoals.includes('stay_asleep')) && !(p.tried || []).includes('Bed for sleep') && !(p.nofit || []).includes('Bed for sleep')) { const r = pickRow('Bed for sleep', 'Mastering'); if (r) opts.push(['Bed for sleep', r, p.wakes_early ? "You told us you often wake earlier than you want to and can't get back to sleep. Getting up rather than lying awake keeps your bed linked with sleep." : "You'd like to stay asleep through the night. Getting up rather than lying awake keeps your bed linked with sleep."]); }
       for (const f of ['Progressive muscle relaxation', 'Slow breathing to wind down', 'Bedtime to-do list']) if (!doingF(f)) { const r = pickRow(f, 'Learning'); if (r) opts.push([f, r, x.why]); }
       const o2 = opts.find(([f]) => !inPlan(f, x));
       return o2 ? Object.assign({}, x, { fam: o2[0], row: o2[1], why: o2[2], ex: minOf(o2[0], o2[1]) }) : null;

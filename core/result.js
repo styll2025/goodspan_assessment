@@ -227,7 +227,7 @@
     // (easiest level, no health exclusions, nothing they already do, tried or opted out of)
     const OO_FAM = { meditation: /Meditation|Present-moment/, journalling: /writing|Three good things|to-do|Best possible/, early: /Morning daylight/, touch: /touch/ };
     const goalPool = a => (p.goals[a] || []).flatMap(g => ((DATA.goals[a] || {})[g] || []).map(f => [g, f]))
-      .filter(([g, f], i, arr) => arr.findIndex(y => y[1] === f) === i && !(p.doing || []).includes(f) && !(p.tried || []).includes(f) && !(p.optout || []).some(k => OO_FAM[k] && OO_FAM[k].test(f))
+      .filter(([g, f], i, arr) => arr.findIndex(y => y[1] === f) === i && !(p.doing || []).includes(f) && !(p.tried || []).includes(f) && !(p.nofit || []).includes(f) && !(p.optout || []).some(k => OO_FAM[k] && OO_FAM[k].test(f))
         && !(p.not_working && /Time away from work|Micro-breaks|Focused work/.test(f)) && !(f === 'Time in nature' && A.q30 && A.q30 !== 'Less than 30 minutes'))
       .map(([g, f]) => { const row = DATA.lib.find(y => y.p === a && y.f === f && (y.l === 'Learning' || y.l === 'All levels')); if (!row || (row.x || []).length) return null;
         const label = (A[GOALQ[a]] || []).filter(x => !NONE.test(x))[(p.goals[a] || []).indexOf(g)] || '';
@@ -297,7 +297,7 @@
     // ---- match each practice to the outcome they want, what they already do, and the difficulty they reported
     const has13 = t => (A.q13 || []).includes(t);
     const sGoals = p.goals.Sleep || [], mGoals = p.goals.Movement || [];
-    const doingF = f => (p.doing || []).includes(f) || (p.tried || []).includes(f);
+    const doingF = f => (p.doing || []).includes(f) || (p.tried || []).includes(f) || (p.nofit || []).includes(f);
     const inPlan = (f, self) => [...pr, ...extras].some(y => y !== self && y.fam === f);
     // Movement: more volume (walking, steps, more cardio) only when that is what they asked for, or they are below the guideline.
     // Someone already active, or training for strength or performance, gets a practice that changes how they train instead.
@@ -326,7 +326,7 @@
     function sleepFor(x) {
       const pickRow = (fam, l) => { const r = libRow(fam, l); return r && !((r.x || []).includes('Shift or night work') && p.shift) && !((r.x || []).includes('Wakes too early') && p.wakes_early) ? r : null; };
       const opts = [];
-      if ((p.wakes_early || sGoals.includes('stay_asleep')) && !(p.tried || []).includes('Bed for sleep')) { const r = pickRow('Bed for sleep', 'Mastering'); if (r) opts.push(['Bed for sleep', r, p.wakes_early ? "You told us you often wake earlier than you want to and can't get back to sleep. Getting up rather than lying awake keeps your bed linked with sleep." : "You'd like to stay asleep through the night. Getting up rather than lying awake keeps your bed linked with sleep."]); }
+      if ((p.wakes_early || sGoals.includes('stay_asleep')) && !(p.tried || []).includes('Bed for sleep') && !(p.nofit || []).includes('Bed for sleep')) { const r = pickRow('Bed for sleep', 'Mastering'); if (r) opts.push(['Bed for sleep', r, p.wakes_early ? "You told us you often wake earlier than you want to and can't get back to sleep. Getting up rather than lying awake keeps your bed linked with sleep." : "You'd like to stay asleep through the night. Getting up rather than lying awake keeps your bed linked with sleep."]); }
       for (const f of ['Progressive muscle relaxation', 'Slow breathing to wind down', 'Bedtime to-do list']) if (!doingF(f)) { const r = pickRow(f, 'Learning'); if (r) opts.push([f, r, x.why]); }
       const o2 = opts.find(([f]) => !inPlan(f, x));
       return o2 ? Object.assign({}, x, { fam: o2[0], row: o2[1], why: o2[2], ex: minOf(o2[0], o2[1]) }) : null;

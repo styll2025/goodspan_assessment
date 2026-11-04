@@ -168,6 +168,8 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .menurow>*{min-width:0}
 .menurow span{font-size:15px;line-height:20px}
 .menurow select{display:block;box-sizing:border-box;width:100%;max-width:100%;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.menus.stack .menurow{grid-template-columns:minmax(0,1fr);align-items:start;row-gap:10px}
+.menus.stack .opts{max-width:640px}
 .rgrid{min-width:0}
 .rhead,.rrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,2fr);gap:8px 16px;align-items:center}
 .rhead{padding-bottom:8px}
@@ -475,6 +477,7 @@ function makeEngine(DATA) {
     if (p.food_rel && (p.goals.Nutrition || []).includes('timing')) N.push(['Food timing', "They'd like to work on when they eat. Practices about meal timing are left out for them; talk about it together and agree an approach that feels safe."]);
     if (p.food_pns) N.push(['Food', "Preferred not to say about food considerations. The plan leaves out tracking, eating-window and eating-before-bed practices to be safe; ask gently if there's anything to know."]);
     if ((p.tried_txt || []).length) N.push(['Tried before', "Tried and found it didn't help: " + p.tried_txt.join('; ') + '. Not offered as a priority; ask what got in the way.']);
+    if ((p.nofit_txt || []).length) N.push(['Not practical right now', 'Not practical for them right now: ' + p.nofit_txt.join('; ') + '. Not offered; ask what would fit instead.']);
     if (p.sleep_pro_tried) N.push(['Sleep support', "Has worked with a professional or a sleep programme before and it didn't help. Ask about it."]);
     if (p.sleep_pain) N.push(['Pain and sleep', 'Says pain or physical symptoms affect their sleep. Ask about it.']);
     if (p.night_sweats) N.push(['Night sweats', 'Says hot flushes or night sweats affect their sleep. Ask how it is going and whether they would like to talk to their doctor about it.']);
@@ -530,6 +533,7 @@ function makeEngine(DATA) {
       return sc;
     };
     const byFit = (a, list) => list.map((f, i) => [f, i, fit(a, f)]).sort((x, y) => (y[2] - x[2]) || (x[1] - y[1])).map(x => x[0]);
+    const aside = f => (p.tried || []).includes(f) || (p.nofit || []).includes(f);   // tried without success, or not practical right now
     const ranked = (a, role, strict = false) => {
       const sig = S[a], H = byFit(a, sig.filter(x => x[0] === 'H' && x[2]).map(x => x[2])), M = byFit(a, sig.filter(x => x[0] === 'M' && x[2]).map(x => x[2]));
       const dis = byFit(a, a === 'Sleep' ? (p.sleep_disrupt || []) : a === 'Nutrition' ? (p.meal_rare || []) : []);
@@ -549,7 +553,7 @@ function makeEngine(DATA) {
       const alcAsked = (p.goals.Prevention || []).includes('alcohol') || (p.sleep_disrupt || []).includes('Alcohol and sleep');
       if (p.drinks_rare && !alcAsked) seq = seq.filter(f => !['Alcohol and sleep', 'Alcohol-free swaps'].includes(f));   // drinks less than weekly: no 'drink less on some evenings' practices unless they asked
       const out = [];
-      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16
+      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !aside(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16, and not practical right now
       return out;
     };
     const backed = (a, f) => (p.goals[a] || []).some(g => (GOALMAP[a][g] || []).includes(f)) || S[a].some(x => x[2] === f)
@@ -779,7 +783,7 @@ function makeEngine(DATA) {
       const sel = [], groups = new Set();   // practices that do the same job are never in the plan together, across pillars too
       for (const a of [...pri, ...AREAS.filter(z => !pri.includes(z))]) {
         const famsA = [...new Set(DATA.lib.filter(r => r.p === a).map(r => r.f))], rk = ranked(a, 'Priority');
-        const base = f => !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
+        const base = f => !aside(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
         const ord = [...rk, ...famsA.filter(f => !rk.includes(f) && base(f)).sort((u, v) => fit(a, v) - fit(a, u))];
         const mine = [];
         for (const pass of [1, 2, 3]) for (const f of ord) {
@@ -864,9 +868,10 @@ function makeEngine(DATA) {
     }
     // A pillar shown as a priority has a priority practice in month 1 (or the member chose it)
     for (let k = pri.length - 1; k >= 0; k--) if (!wish.includes(pri[k]) && !months[0].some(x => x.role === 'Priority' && x.area === pri[k])) pri.splice(k, 1);
-    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
+    const hygAside = f => (p.hyg_tried || []).includes(f) || (p.hyg_nofit || []).includes(f);
+    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !hygAside(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
-    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
+    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !hygAside(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
     const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
     const THEMES_N = 6;   // Rule 11: six themes for months 4–6
     // Why each theme: it builds on practices from months 1–3 in that theme, or is another part of a priority pillar, or links to their goals or answers
@@ -983,6 +988,7 @@ else root.makeEngine = makeEngine;
 <script>// Assessment spec (v7). Each question: id, section, type, text, options; grids have rows and cols (or per-row options).
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
+const HABIT4 = ['I do this now', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
 const SECTIONS = [
   { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
@@ -1025,16 +1031,16 @@ const QUESTIONS = [
   { id: 'q9', s: 'nutrition', type: 'multi', max: 3, goals: 'Nutrition', text: 'What would you most like to improve about how you eat?', options: ['Getting enough protein', 'Eating more plants and fibre', 'Reducing highly processed foods', 'Reducing sugar', 'Heart health: less salt and more nuts', 'Meal planning and home cooking', "Eating well when I'm out or travelling", 'When I eat, such as late-evening eating', 'Eating more mindfully, with fewer distractions', 'Nothing in particular'] },
   { id: 'q11', s: 'nutrition', type: 'multi', text: 'Are there any health, dietary or other considerations we should take into account?', options: ['Nothing in particular', 'Nut allergy', 'Other food allergy or intolerance', 'Dietary restriction or preference (for example vegetarian, vegan, halal or kosher)', 'A health condition that affects what or how I eat', 'A difficult relationship with food', 'Something else', 'Prefer not to say'] },
   { id: 'q12', s: 'sleep', type: 'single', text: 'On a typical night, how many hours of actual sleep do you get?', options: ['Less than 5', '5-6', '6-7', '7-8', '8-9', 'More than 9'] },
-  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'None of these'] },
+  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'Something else', 'None of these'] },
   { id: 'q14', s: 'sleep', type: 'single', text: 'Has anyone told you that you snore loudly or seem to stop breathing while you sleep?', options: ['Yes', 'No', 'I don’t know'] },
   { id: 'q15', s: 'sleep', type: 'single', text: 'When do you usually have your last drink containing caffeine?', hint: 'Include coffee, tea, cola and energy drinks.', options: ["I don't have caffeine", 'Before 12pm', '12-3pm', '3-6pm', 'After 6pm'] },
   { id: 'q16', s: 'sleep', type: 'single', text: 'How long before bed do you usually finish eating?', options: ['Less than 1 hour', '1-2 hours', '2-3 hours', '3 hours or more'] },
-  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], rows: [
+  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: HABIT4, rows: [
       ['daylight', 'Get outside in daylight in the morning'], ['dim', 'Dim the lights in the evening'], ['regular', 'Keep a regular bedtime and wake time'],
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I', null, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
@@ -1125,7 +1131,7 @@ function toFeatures(A) {
   p.food_pns = has('q11', 'Prefer not to say') && !has('q11', 'A difficult relationship with food');
   const SH = { 'Less than 5': [4.5, 'less than 5 hours'], '5-6': [5.5, '5-6 hours'], '6-7': [6.5, '6-7 hours'], '7-8': [7.5, '7-8 hours'], '8-9': [8.5, '8-9 hours'], 'More than 9': [9.5, 'more than 9 hours'] }[A.q12] || [7.5, '7-8 hours'];
   p.sleep_h = SH[0]; p.sleep_txt = SH[1];
-  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed' };
+  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed', 'Something else': 'something else is happening' };
   p.insomnia = (A.q13 || []).filter(x => INS[x]).map(x => INS[x]);
   p.wakes_early = has('q13', "I wake earlier than I want to and can't get back to sleep");
   p.snore = A.q14 === 'Yes';
@@ -1136,11 +1142,17 @@ function toFeatures(A) {
   if (now('phone') || now('work')) p.doing.push('Bed for sleep');
   // Rule 16: tried it and it didn't help -> not offered as a priority; the Pilot is told
   const triedNo = r => g('q17', r) === "I've tried it, but it didn't help";
+  const noFit = r => g('q17', r) === 'Not practical for me right now';
   const SL2 = Object.assign({}, SL, { phone: ['Bed for sleep'], work: ['Bed for sleep'] });
-  p.tried = []; p.tried_txt = [];
+  p.tried = []; p.tried_txt = []; p.nofit = []; p.nofit_txt = [];
   const sleepChosen = (A.q1 || []).some(x => x.startsWith('Sleep'));
-  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
-  p.hyg_tried = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].filter(([r]) => triedNo(r)).map(x => x[1]);
+  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) {
+    if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
+    if (noFit(r) && r !== 'pro') { p.nofit.push(...(SL2[r] || [])); p.nofit_txt.push(lab.toLowerCase()); }
+  }
+  const HYG_MAP = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']];
+  p.hyg_tried = HYG_MAP.filter(([r]) => triedNo(r)).map(x => x[1]);
+  p.hyg_nofit = HYG_MAP.filter(([r]) => noFit(r)).map(x => x[1]);
   // the CBT-I row is only asked when Sleep was chosen, so a stored answer does not count otherwise
   p.sleep_pro_tried = sleepChosen && triedNo('pro');
   if (now('phone') && now('work')) p.doing.push('Bed for sleep');
@@ -1292,7 +1304,11 @@ function qHTML(q, n) {
   } else if (q.type === 'grid') {
     const g = v || {};
     const rows = gridRows(q, A);
-    if (q.cols) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    const optsOf = r => r[2] || q.cols;
+    const uniform = q.cols && rows.every(r => optsOf(r).join('|') === q.cols.join('|'));
+    const stacked = q.cols && (!uniform || rows.some(r => optsOf(r).includes('Not practical for me right now')));
+    if (q.cols && !stacked) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    else if (q.cols) body = `<div class="menus stack">${rows.map(r => { const [k, lab] = r, os = optsOf(r); return `<div class="menurow"><span>${esc(lab)}</span><div class="opts">${os.map((o, j) => `<label class="opt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(o)}" ${g[k] === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div></div>`; }).join('')}</div>`;
     else body = `<div class="menus">${rows.map(([k, lab, opts]) => `<label class="menurow"><span>${esc(lab)}</span><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`).join('')}</div>`;
   } else if (q.type === 'habit') {
     const h = v || {};

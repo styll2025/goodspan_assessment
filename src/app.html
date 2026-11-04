@@ -31,6 +31,8 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .menurow>*{min-width:0}
 .menurow span{font-size:15px;line-height:20px}
 .menurow select{display:block;box-sizing:border-box;width:100%;max-width:100%;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+.menus.stack .menurow{grid-template-columns:minmax(0,1fr);align-items:start;row-gap:10px}
+.menus.stack .opts{max-width:640px}
 .rgrid{min-width:0}
 .rhead,.rrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,2fr);gap:8px 16px;align-items:center}
 .rhead{padding-bottom:8px}
@@ -127,7 +129,11 @@ function qHTML(q, n) {
   } else if (q.type === 'grid') {
     const g = v || {};
     const rows = gridRows(q, A);
-    if (q.cols) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    const optsOf = r => r[2] || q.cols;
+    const uniform = q.cols && rows.every(r => optsOf(r).join('|') === q.cols.join('|'));
+    const stacked = q.cols && (!uniform || rows.some(r => optsOf(r).includes('Not practical for me right now')));
+    if (q.cols && !stacked) body = `<div class="rgrid" style="--cols:${q.cols.length}"><div class="rhead" aria-hidden="true"><span></span><div class="rhcols">${q.cols.map(c => `<span>${esc(c)}</span>`).join('')}</div></div>${rows.map(([k, lab]) => `<div class="rrow"><span class="rlab">${esc(lab)}</span><div class="ropts" role="group" aria-label="${esc(lab)}">${q.cols.map((c, j) => `<label class="ropt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(c)}" ${g[k] === c ? 'checked' : ''}><span>${esc(c)}</span></label>`).join('')}</div></div>`).join('')}</div>`;
+    else if (q.cols) body = `<div class="menus stack">${rows.map(r => { const [k, lab] = r, os = optsOf(r); return `<div class="menurow"><span>${esc(lab)}</span><div class="opts">${os.map((o, j) => `<label class="opt"><input type="radio" name="${q.id}.${k}" id="${q.id}_${k}_${j}" value="${esc(o)}" ${g[k] === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div></div>`; }).join('')}</div>`;
     else body = `<div class="menus">${rows.map(([k, lab, opts]) => `<label class="menurow"><span>${esc(lab)}</span><select id="${q.id}_${k}" name="${q.id}.${k}" aria-label="${esc(lab)}"><option value="">Select one</option>${opts.map(o => `<option ${g[k] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></label>`).join('')}</div>`;
   } else if (q.type === 'habit') {
     const h = v || {};

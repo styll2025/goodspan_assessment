@@ -46,11 +46,14 @@ function profile(A, p) {
 
   // ---- Sleep
   { const s = []; const h = { 'Less than 5': 'less than 5', '5-6': '5 to 6', '6-7': '6 to 7', '7-8': '7 to 8', '8-9': '8 to 9', 'More than 9': 'more than 9' }[A.q12];
-    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
+    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? 'something else is happening' : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
     const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };
     if (now.length) s.push(`Already part of your routine: ${list(now.slice(0, 5).map(k => NOW[k]))}.`);
+    const impractical = ['daylight', 'dim', 'regular', 'alcohol', 'winddown', 'tasks', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'share'].filter(k => GRID(A, 'q17', k) === 'Not practical for me right now');
+    const IMP = { daylight: 'morning daylight', dim: 'dimming the lights in the evening', regular: 'a regular bedtime and wake time', alcohol: 'cutting down on alcohol in the evening', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks", cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'avoiding screens before bed', phone: 'keeping your phone out of bed', work: 'keeping work out of bed', naps: 'avoiding long naps', share: 'sharing sleep goals or progress' };
+    if (impractical.length) s.push(`Not practical for you right now: ${list(impractical.slice(0, 4).map(k => IMP[k]))}${impractical.length > 4 ? `, and ${impractical.length - 4} other sleep ${impractical.length - 4 === 1 ? 'habit' : 'habits'}` : ''}.`);
     const caf = { "I don't have caffeine": "You don't have caffeine", 'Before 12pm': 'Your last caffeine is before midday', '12-3pm': 'Your last caffeine is usually in the early afternoon', '3-6pm': 'Your last caffeine is usually between 3pm and 6pm', 'After 6pm': 'Your last caffeine is usually after 6pm' }[A.q15];
     const eat = { 'Less than 1 hour': 'less than an hour', '1-2 hours': '1 to 2 hours', '2-3 hours': '2 to 3 hours', '3 hours or more': '3 hours or more' }[A.q16];
     if (caf) s.push(`${caf}${eat ? `, and you finish eating ${eat} before bed` : ''}.`);

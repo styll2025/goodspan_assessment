@@ -91,6 +91,8 @@ Members who aren't working are not offered practices about the working day (Micr
 
 A sleep habit the member has tried without success is not offered as a priority or lighter touch, and the matching foundation is not used; the Pilot is told what they tried.
 
+On the same sleep-habit questions, except the professional sleep programme, "Not practical for me right now" leaves that habit out of the plan in the same way: not as a priority, a lighter touch or a foundation. The Pilot is told which habits, separately from anything they tried. The member's summary names them in their own words.
+
 ### Rule 17. Variety
 
 The priority practices come from different themes wherever possible; two from the same theme only if nothing else from the member's own answers fits. Variety never removes a practice for a goal that has no practice yet, and never brings in a starting-set practice in place of one from their answers. Practices that do the same job are never in a plan together: Slow breathing, Slow breathing to wind down and Progressive muscle relaxation; Avoiding sunburn and Daily sunscreen; Focused work and Present-moment attention; Breaking up sitting and Micro-breaks; Habit building and If-then planning; Balanced plate and Protein at meals (plus the existing pairs for cardio, strength, alcohol, eating windows, shared meals, quitting, hearing and air quality).
@@ -215,6 +217,7 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 | Sleep | Sleep difficulties on 3+ nights a week (2 or more, or 1 with under 6 hours' sleep) | Ask how long it has been going on. If 3 months or more, suggest they talk to their doctor. | Wind-down and sleep-timing practices only. No insomnia therapy in the plan. |
 | Sleep | Loud snoring or pauses in breathing | Suggest they mention it to their doctor. | Nothing changes. |
 | Sleep | Works with a professional or a sleep programme such as CBT-I, or tried one and it didn't help. Asked only when they chose Sleep in question 1. “I'm not sure yet” does not count. | Ask how it is going, or what got in the way. | Nothing is added to the plan. No insomnia therapy. |
+| Sleep | A listed sleep habit is not practical for them right now | Ask what would fit instead. | That habit is not offered as a practice or a foundation. |
 | Movement | Chest pain, breathlessness, dizziness, palpitations, swollen ankles or calf pain | Ask whether they've seen their doctor. | Movement stays at Learning (rule 6); harder cardio excluded. |
 | Movement | Heart, metabolic or kidney condition and less than 150 minutes of activity | Ask whether their doctor has advised on activity. | Movement stays at Learning (rule 6); harder cardio excluded. |
 | Movement | A fall in the past 12 months | Ask whether they've seen a doctor or physiotherapist about it. | Balance practice suggested; level not raised; higher-intensity practices excluded. |

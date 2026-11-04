@@ -1,6 +1,7 @@
 // Assessment spec (v7). Each question: id, section, type, text, options; grids have rows and cols (or per-row options).
 const NONE_WORDS = /^(None of these|Nothing in particular|I haven't found it particularly difficult|Prefer not to say|I'm not currently looking for more connection)$/;
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
+const HABIT4 = ['I do this now', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
 const SECTIONS = [
   { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
@@ -43,16 +44,16 @@ const QUESTIONS = [
   { id: 'q9', s: 'nutrition', type: 'multi', max: 3, goals: 'Nutrition', text: 'What would you most like to improve about how you eat?', options: ['Getting enough protein', 'Eating more plants and fibre', 'Reducing highly processed foods', 'Reducing sugar', 'Heart health: less salt and more nuts', 'Meal planning and home cooking', "Eating well when I'm out or travelling", 'When I eat, such as late-evening eating', 'Eating more mindfully, with fewer distractions', 'Nothing in particular'] },
   { id: 'q11', s: 'nutrition', type: 'multi', text: 'Are there any health, dietary or other considerations we should take into account?', options: ['Nothing in particular', 'Nut allergy', 'Other food allergy or intolerance', 'Dietary restriction or preference (for example vegetarian, vegan, halal or kosher)', 'A health condition that affects what or how I eat', 'A difficult relationship with food', 'Something else', 'Prefer not to say'] },
   { id: 'q12', s: 'sleep', type: 'single', text: 'On a typical night, how many hours of actual sleep do you get?', options: ['Less than 5', '5-6', '6-7', '7-8', '8-9', 'More than 9'] },
-  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'None of these'] },
+  { id: 'q13', s: 'sleep', type: 'multi', text: 'Which of these happen to you on 3 or more nights a week?', options: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep", 'I wake feeling unrefreshed', 'Something else', 'None of these'] },
   { id: 'q14', s: 'sleep', type: 'single', text: 'Has anyone told you that you snore loudly or seem to stop breathing while you sleep?', options: ['Yes', 'No', 'I don’t know'] },
   { id: 'q15', s: 'sleep', type: 'single', text: 'When do you usually have your last drink containing caffeine?', hint: 'Include coffee, tea, cola and energy drinks.', options: ["I don't have caffeine", 'Before 12pm', '12-3pm', '3-6pm', 'After 6pm'] },
   { id: 'q16', s: 'sleep', type: 'single', text: 'How long before bed do you usually finish eating?', options: ['Less than 1 hour', '1-2 hours', '2-3 hours', '3 hours or more'] },
-  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], rows: [
+  { id: 'q17', s: 'sleep', type: 'grid', text: 'Which of these sleep habits do you have now, and which have you tried?', cols: HABIT4, rows: [
       ['daylight', 'Get outside in daylight in the morning'], ['dim', 'Dim the lights in the evening'], ['regular', 'Keep a regular bedtime and wake time'],
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I', null, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
@@ -143,7 +144,7 @@ function toFeatures(A) {
   p.food_pns = has('q11', 'Prefer not to say') && !has('q11', 'A difficult relationship with food');
   const SH = { 'Less than 5': [4.5, 'less than 5 hours'], '5-6': [5.5, '5-6 hours'], '6-7': [6.5, '6-7 hours'], '7-8': [7.5, '7-8 hours'], '8-9': [8.5, '8-9 hours'], 'More than 9': [9.5, 'more than 9 hours'] }[A.q12] || [7.5, '7-8 hours'];
   p.sleep_h = SH[0]; p.sleep_txt = SH[1];
-  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed' };
+  const INS = { 'It takes me a long time to fall asleep': 'it takes you a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep': 'you wake during the night and find it hard to get back to sleep', "I wake earlier than I want to and can't get back to sleep": "you wake earlier than you want to and can't get back to sleep", 'I wake feeling unrefreshed': 'you wake feeling unrefreshed', 'Something else': 'something else is happening' };
   p.insomnia = (A.q13 || []).filter(x => INS[x]).map(x => INS[x]);
   p.wakes_early = has('q13', "I wake earlier than I want to and can't get back to sleep");
   p.snore = A.q14 === 'Yes';
@@ -154,11 +155,17 @@ function toFeatures(A) {
   if (now('phone') || now('work')) p.doing.push('Bed for sleep');
   // Rule 16: tried it and it didn't help -> not offered as a priority; the Pilot is told
   const triedNo = r => g('q17', r) === "I've tried it, but it didn't help";
+  const noFit = r => g('q17', r) === 'Not practical for me right now';
   const SL2 = Object.assign({}, SL, { phone: ['Bed for sleep'], work: ['Bed for sleep'] });
-  p.tried = []; p.tried_txt = [];
+  p.tried = []; p.tried_txt = []; p.nofit = []; p.nofit_txt = [];
   const sleepChosen = (A.q1 || []).some(x => x.startsWith('Sleep'));
-  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
-  p.hyg_tried = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']].filter(([r]) => triedNo(r)).map(x => x[1]);
+  for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) {
+    if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
+    if (noFit(r) && r !== 'pro') { p.nofit.push(...(SL2[r] || [])); p.nofit_txt.push(lab.toLowerCase()); }
+  }
+  const HYG_MAP = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']];
+  p.hyg_tried = HYG_MAP.filter(([r]) => triedNo(r)).map(x => x[1]);
+  p.hyg_nofit = HYG_MAP.filter(([r]) => noFit(r)).map(x => x[1]);
   // the CBT-I row is only asked when Sleep was chosen, so a stored answer does not count otherwise
   p.sleep_pro_tried = sleepChosen && triedNo('pro');
   if (now('phone') && now('work')) p.doing.push('Bed for sleep');

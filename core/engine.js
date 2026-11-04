@@ -236,6 +236,7 @@ function makeEngine(DATA) {
     if (p.food_rel && (p.goals.Nutrition || []).includes('timing')) N.push(['Food timing', "They'd like to work on when they eat. Practices about meal timing are left out for them; talk about it together and agree an approach that feels safe."]);
     if (p.food_pns) N.push(['Food', "Preferred not to say about food considerations. The plan leaves out tracking, eating-window and eating-before-bed practices to be safe; ask gently if there's anything to know."]);
     if ((p.tried_txt || []).length) N.push(['Tried before', "Tried and found it didn't help: " + p.tried_txt.join('; ') + '. Not offered as a priority; ask what got in the way.']);
+    if ((p.nofit_txt || []).length) N.push(['Not practical right now', 'Not practical for them right now: ' + p.nofit_txt.join('; ') + '. Not offered; ask what would fit instead.']);
     if (p.sleep_pro_tried) N.push(['Sleep support', "Has worked with a professional or a sleep programme before and it didn't help. Ask about it."]);
     if (p.sleep_pain) N.push(['Pain and sleep', 'Says pain or physical symptoms affect their sleep. Ask about it.']);
     if (p.night_sweats) N.push(['Night sweats', 'Says hot flushes or night sweats affect their sleep. Ask how it is going and whether they would like to talk to their doctor about it.']);
@@ -291,6 +292,7 @@ function makeEngine(DATA) {
       return sc;
     };
     const byFit = (a, list) => list.map((f, i) => [f, i, fit(a, f)]).sort((x, y) => (y[2] - x[2]) || (x[1] - y[1])).map(x => x[0]);
+    const aside = f => (p.tried || []).includes(f) || (p.nofit || []).includes(f);   // tried without success, or not practical right now
     const ranked = (a, role, strict = false) => {
       const sig = S[a], H = byFit(a, sig.filter(x => x[0] === 'H' && x[2]).map(x => x[2])), M = byFit(a, sig.filter(x => x[0] === 'M' && x[2]).map(x => x[2]));
       const dis = byFit(a, a === 'Sleep' ? (p.sleep_disrupt || []) : a === 'Nutrition' ? (p.meal_rare || []) : []);
@@ -310,7 +312,7 @@ function makeEngine(DATA) {
       const alcAsked = (p.goals.Prevention || []).includes('alcohol') || (p.sleep_disrupt || []).includes('Alcohol and sleep');
       if (p.drinks_rare && !alcAsked) seq = seq.filter(f => !['Alcohol and sleep', 'Alcohol-free swaps'].includes(f));   // drinks less than weekly: no 'drink less on some evenings' practices unless they asked
       const out = [];
-      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16
+      for (const f of seq) if (!out.includes(f) && !p.doing.includes(f) && !aside(f) && !(p.not_working && WORK_FAMS.includes(f))) out.push(f);   // Rules 15 and 16, and not practical right now
       return out;
     };
     const backed = (a, f) => (p.goals[a] || []).some(g => (GOALMAP[a][g] || []).includes(f)) || S[a].some(x => x[2] === f)
@@ -540,7 +542,7 @@ function makeEngine(DATA) {
       const sel = [], groups = new Set();   // practices that do the same job are never in the plan together, across pillars too
       for (const a of [...pri, ...AREAS.filter(z => !pri.includes(z))]) {
         const famsA = [...new Set(DATA.lib.filter(r => r.p === a).map(r => r.f))], rk = ranked(a, 'Priority');
-        const base = f => !(p.tried || []).includes(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
+        const base = f => !aside(f) && !(p.not_working && WORK_FAMS.includes(f)) && !(a === 'Connection' && !pri.includes('Sleep') && SLEEP_SHARE.includes(f));
         const ord = [...rk, ...famsA.filter(f => !rk.includes(f) && base(f)).sort((u, v) => fit(a, v) - fit(a, u))];
         const mine = [];
         for (const pass of [1, 2, 3]) for (const f of ord) {
@@ -625,9 +627,10 @@ function makeEngine(DATA) {
     }
     // A pillar shown as a priority has a priority practice in month 1 (or the member chose it)
     for (let k = pri.length - 1; k >= 0; k--) if (!wish.includes(pri[k]) && !months[0].some(x => x.role === 'Priority' && x.area === pri[k])) pri.splice(k, 1);
-    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
+    const hygAside = f => (p.hyg_tried || []).includes(f) || (p.hyg_nofit || []).includes(f);
+    const trig = DATA.hyg.filter(h => p.hyg.includes(h.f) && !hygAside(h.f) && !(h.f === 'Step tracking' && optout.includes('apps'))).sort((x, y) => (pri.includes(x.p) ? 0 : 1) - (pri.includes(y.p) ? 0 : 1));
     const FILL = ['Evening light', 'Dark bedroom', 'Cool bedroom', 'Notifications', 'Bedroom noise', 'Caffeine timing'];   // broadly useful; never filler: warm-up, napping, recovery, music
-    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !(p.hyg_tried || []).includes(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
+    const fill = FILL.map(f => DATA.hyg.find(h => h.f === f)).filter(h => h && !trig.includes(h) && !(p.hyg_done || []).includes(h.f) && !hygAside(h.f) && !(h.f === 'Caffeine timing' && p.no_caffeine));
     const found = trig.concat(fill).slice(0, Math.max(4, Math.min(8, trig.length))).map(h => Object.assign({}, h, { because: (p.hyg_why || {})[h.f] || '' }));
     const THEMES_N = 6;   // Rule 11: six themes for months 4–6
     // Why each theme: it builds on practices from months 1–3 in that theme, or is another part of a priority pillar, or links to their goals or answers

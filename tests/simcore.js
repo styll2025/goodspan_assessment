@@ -46,6 +46,9 @@ function check(f, o) {
     if (m1.some(x => x.role === 'Priority' && x.row.l !== 'Learning' && x.row.l !== 'All levels' && !x.atBaseline)) issues.push('Priority practice above Learning despite small steps');
   }
   for (const x of m1) if (x.role === 'Priority' && x.row.ev === 'Explore' && !(f.goals[x.area] || []).flatMap(g => DATA.goals[x.area][g] || []).includes(x.fam)) issues.push(`Explore practice as priority without a matching goal: ${x.fam}`);
+  for (const x of all) if ((f.nofit || []).includes(x.fam)) issues.push('Not practical right now, still offered: ' + x.fam);
+  for (const h of (o.foundations || [])) if ((f.hyg_nofit || []).includes(h.f)) issues.push('Not practical foundation still offered: ' + h.f);
+  if ((f.nofit_txt || []).length && !(o.pilot || []).some(n => n[0] === 'Not practical right now')) issues.push('Missing Pilot note: Not practical right now');
   for (const g of OVER) { const n = m1.filter(x => g.includes(x.fam)).length; if (n > 1) issues.push('Two practices from one overlap group: ' + g.join(' / ')); }
   const held = cond.has('Exercise warning symptoms, not yet cleared') || cond.has('Heart, metabolic or kidney condition and inactive');
   if (!held && f.change !== 'small' && o.minutes[0] < o.budget / 3 && !m1.some(x => o.extraMinutes(x.row) >= 15) && !o.pilot.some(n => n[0] === 'Low new time')) issues.push(`Plan adds only ${Math.round(o.minutes[0])} of ${o.budget} minutes (minimum-time rule could not find a practice)`);

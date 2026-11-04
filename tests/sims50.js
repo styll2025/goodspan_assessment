@@ -73,7 +73,9 @@ for (const s of U) {
   // Rule 15 / 16
   if (f.not_working) for (const x of o.months.flat()) if (WORK.includes(x.fam)) issues.push('Rule 15: working-day practice for a non-worker: ' + x.fam);
   for (const x of m1) if ((f.tried || []).includes(x.fam)) issues.push("Rule 16: offered something they tried that didn't help: " + x.fam);
+  for (const x of m1) if ((f.nofit || []).includes(x.fam)) issues.push('Not practical, still offered: ' + x.fam);
   for (const h of o.foundations) if ((f.hyg_tried || []).includes(h.f)) issues.push('Rule 16: foundation they tried: ' + h.f);
+  for (const h of o.foundations) if ((f.hyg_nofit || []).includes(h.f)) issues.push('Not practical foundation: ' + h.f);
   // Rule 17
   for (let i = 0; i < pr.length; i++) for (let j = i + 1; j < pr.length; j++) if (pr[i].area === pr[j].area && CAT[pr[i].area + '|' + pr[i].fam] === CAT[pr[j].area + '|' + pr[j].fam]) warn.push(`Rule 17: two priorities from one theme (${CAT[pr[i].area + '|' + pr[i].fam]})`);
   // Rule 18: in a chosen area with 2+ goals and 2+ priority practices there, the first two goals are each covered (unless every practice for that goal is excluded)
@@ -98,12 +100,12 @@ for (const s of U) {
   // Pilot notes expected for trigger answers
   const P = new Set(o.pilot.map(n => n[0]));
   const exp = [[f.snore, 'Snoring'], [f.high_bp, 'Blood pressure'], [f.lung, 'Lung condition'], [f.pregnant || f.breastfeeding, 'Pregnancy'], [f.phq4_pos, 'PHQ-4 positive'], [(f.audit || 0) >= 8, 'AUDIT-C 8+'],
-    [f.hearing_diff, 'Hearing'], [f.food_rel || (f.food_other || []).length, 'Food'], [f.diabetes_med, 'Medication'], [f.shift, 'Shift work'], [f.fall, 'Fall'], [(f.tried_txt || []).length, 'Tried before'], [f.carer, 'Caring'], [f.sleep_pain, 'Pain and sleep'],
+    [f.hearing_diff, 'Hearing'], [f.food_rel || (f.food_other || []).length, 'Food'], [f.diabetes_med, 'Medication'], [f.shift, 'Shift work'], [f.fall, 'Fall'], [(f.tried_txt || []).length, 'Tried before'], [(f.nofit_txt || []).length, 'Not practical right now'], [f.carer, 'Caring'], [f.sleep_pain, 'Pain and sleep'],
     [f.own_habit && f.own_habit[1] === 'share' && f.own_habit[0], 'Own habit'], [f.symptoms, 'Exercise warning symptoms']];
   for (const [cond, k] of exp) if (cond && !P.has(k)) issues.push('Missing Pilot note: ' + k);
   // Not right for me
   const nrr = m1.map((x, i) => R.map(r => { nr++; const z = o.notRight(0, i, r); return [x.fam, r, z.action, (z.options || []).map(y => y.fam + ' (' + y.row.l + ')').join('; ')]; })).flat();
-  for (const [fam, r, a, opts] of nrr) if (a === 'options') for (const o3 of opts.split('; ')) { const fn = o3.replace(/ \(.*/, ''); if (f.not_working && WORK.includes(fn)) issues.push('Rule 15 in Not right for me: ' + fn); if ((f.tried || []).includes(fn)) issues.push('Rule 16 in Not right for me: ' + fn); }
+  for (const [fam, r, a, opts] of nrr) if (a === 'options') for (const o3 of opts.split('; ')) { const fn = o3.replace(/ \(.*/, ''); if (f.not_working && WORK.includes(fn)) issues.push('Rule 15 in Not right for me: ' + fn); if ((f.tried || []).includes(fn)) issues.push('Rule 16 in Not right for me: ' + fn); if ((f.nofit || []).includes(fn)) issues.push('Not practical in Not right for me: ' + fn); }
   nIssues += issues.length; nWarn += warn.length;
   out.push({ name: s.name, f, o, issues, warn, just, nrr, seen: QUESTIONS.filter(q => !q.show || q.show(s.A)).length });
 }
