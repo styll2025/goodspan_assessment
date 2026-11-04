@@ -91,7 +91,7 @@ Members who aren't working are not offered practices about the working day (Micr
 
 A sleep habit the member has tried without success is not offered as a priority or lighter touch, and the matching foundation is not used; the Pilot is told what they tried.
 
-On the same sleep-habit questions, except the professional sleep programme, "Not practical for me right now" leaves that habit out of the plan in the same way: not as a priority, a lighter touch or a foundation. The Pilot is told which habits, separately from anything they tried. The member's summary names them in their own words.
+On the same sleep-habit questions, including the professional sleep programme, "Not practical for me right now" leaves that habit out of the plan in the same way: not as a priority, a lighter touch or a foundation. The Pilot is told which habits, separately from anything they tried. It is not treated as already working with a professional, or as having tried a programme. The member's summary names them in their own words. Nothing is added to the plan, and no insomnia therapy is suggested.
 
 ### Rule 17. Variety
 
@@ -216,7 +216,7 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 |---|---|---|---|
 | Sleep | Sleep difficulties on 3+ nights a week (2 or more, or 1 with under 6 hours' sleep) | Ask how long it has been going on. If 3 months or more, suggest they talk to their doctor. | Wind-down and sleep-timing practices only. No insomnia therapy in the plan. |
 | Sleep | Loud snoring or pauses in breathing | Suggest they mention it to their doctor. | Nothing changes. |
-| Sleep | Works with a professional or a sleep programme such as CBT-I, or tried one and it didn't help. Asked only when they chose Sleep in question 1. “I'm not sure yet” does not count. | Ask how it is going, or what got in the way. | Nothing is added to the plan. No insomnia therapy. |
+| Sleep | Works with a professional or a sleep programme such as CBT-I, tried one and it didn't help, or says it is not practical right now. Asked only when they chose Sleep in question 1. “I'm not sure yet” does not count. | Ask how it is going, what got in the way, or what would fit instead. Not practical is not the same as already doing it or having tried it. | Nothing is added to the plan. No insomnia therapy. |
 | Sleep | A listed sleep habit is not practical for them right now | Ask what would fit instead. | That habit is not offered as a practice or a foundation. |
 | Movement | Chest pain, breathlessness, dizziness, palpitations, swollen ankles or calf pain | Ask whether they've seen their doctor. | Movement stays at Learning (rule 6); harder cardio excluded. |
 | Movement | Heart, metabolic or kidney condition and less than 150 minutes of activity | Ask whether their doctor has advised on activity. | Movement stays at Learning (rule 6); harder cardio excluded. |

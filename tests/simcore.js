@@ -49,6 +49,7 @@ function check(f, o) {
   for (const x of all) if ((f.nofit || []).includes(x.fam)) issues.push('Not practical right now, still offered: ' + x.fam);
   for (const h of (o.foundations || [])) if ((f.hyg_nofit || []).includes(h.f)) issues.push('Not practical foundation still offered: ' + h.f);
   if ((f.nofit_txt || []).length && !(o.pilot || []).some(n => n[0] === 'Not practical right now')) issues.push('Missing Pilot note: Not practical right now');
+  if ((f.nofit_txt || []).some(t => /professional or a sleep programme/.test(t)) && (f.sleep_pro || f.sleep_pro_tried)) issues.push('Not practical sleep programme treated as already doing it or having tried it');
   if (f.work_other && (f.not_working || f.shift || f.irregular)) issues.push('Other working pattern treated as a known pattern');
   const NUTR_GOALS = ['protein', 'plants', 'processed', 'sugar', 'heart', 'planning', 'out', 'timing', 'mindful'];
   if ((f.goals.Nutrition || []).some(g => !NUTR_GOALS.includes(g))) issues.push('Something else about eating became a practice goal');

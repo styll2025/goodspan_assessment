@@ -1053,7 +1053,7 @@ const QUESTIONS = [
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I already do this', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', HABIT4, A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
@@ -1168,7 +1168,7 @@ function toFeatures(A) {
   const sleepChosen = (A.q1 || []).some(x => x.startsWith('Sleep'));
   for (const [r, lab] of gridRows(QUESTIONS.find(x => x.id === 'q17'), A)) {
     if (triedNo(r)) { p.tried.push(...(SL2[r] || [])); p.tried_txt.push(lab.toLowerCase()); }
-    if (noFit(r) && r !== 'pro') { p.nofit.push(...(SL2[r] || [])); p.nofit_txt.push(lab.toLowerCase()); }
+    if (noFit(r)) { p.nofit.push(...(SL2[r] || [])); p.nofit_txt.push(lab.toLowerCase()); }
   }
   const HYG_MAP = [['dim', 'Evening light'], ['cool', 'Cool bedroom'], ['dark', 'Dark bedroom'], ['quiet', 'Bedroom noise'], ['naps', 'Napping']];
   p.hyg_tried = HYG_MAP.filter(([r]) => triedNo(r)).map(x => x[1]);
