@@ -5,7 +5,7 @@ const __path = require('path'); require('fs').mkdirSync(__path.join(__dirname, '
 const fs = require('fs');
 const { M, AO, check, E, DATA, toFeatures, QUESTIONS } = require('./simcore.js');
 const SM = "Small, easy steps. I'm not sure how much I can manage right now", BIG = "I'm ready for a bigger challenge";
-const NOTRIED = { daylight: "I haven't tried it", dim: "I haven't tried it", regular: "I haven't tried it", alcohol: "I haven't tried it", winddown: "I haven't tried it", tasks: "I haven't tried it", cool: 'I do this now', dark: 'I do this now', quiet: 'I do this now', screens: "I haven't tried it", phone: "I haven't tried it", work: 'I do this now', naps: 'I do this now', pro: "I haven't tried it", share: "I haven't tried it" };
+const NOTRIED = { daylight: "I haven't tried it", dim: "I haven't tried it", regular: "I haven't tried it", alcohol: "I haven't tried it", winddown: "I haven't tried it", tasks: "I haven't tried it", cool: 'I already do this', dark: 'I already do this', quiet: 'I already do this', screens: "I haven't tried it", phone: "I haven't tried it", work: 'I already do this', naps: 'I already do this', pro: "I haven't tried it", share: "I haven't tried it" };
 const U = [
   M('U1 Rosa, 29, nurse on nights, Sleep, tried wind-down', { q1: [AO('Sleep')], q3: 'Shift work, including nights', q12: '5-6', q17: Object.assign({}, NOTRIED, { winddown: "I've tried it, but it didn't help", screens: "I've tried it, but it didn't help" }), q18: ['Getting more sleep', 'Falling asleep more easily'] }),
   M('U2 Henrique, 67, retired, not working, Mind, enjoys outdoors', { q1: [AO('Mind')], q2: '60-69', q3: 'Not currently working', q33: ['Rest and recovery', 'Focus and concentration'], q58: ['Being outdoors', 'Quiet time on my own'] }),

@@ -705,7 +705,7 @@
 
   // what is already going well in an area, from their own answers
   function wellOf(a, A, p) {
-    const g = (q, r) => (A[q] || {})[r], has = (q, o) => (A[q] || []).includes(o), now = k => g('q17', k) === 'I do this now', W = [];
+    const g = (q, r) => (A[q] || {})[r], has = (q, o) => (A[q] || []).includes(o), now = k => g('q17', k) === 'I already do this', W = [];
     if (a === 'Nutrition') {
       if (g('q7', 'veg') === '5 or more portions') W.push('Eating 5 or more portions of vegetables and fruit a day.');
       if (['3–5', 'More than 5'].includes(g('q7', 'cooked'))) W.push(`Cooking ${g('q7', 'cooked') === '3–5' ? '3 to 5' : 'more than 5'} main meals a week at home.`);

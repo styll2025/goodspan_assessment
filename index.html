@@ -153,7 +153,7 @@ function pickedDetail(options, v) {
   return DETAIL_OPTS.find(o => opts.includes(o) && (v === o || (Array.isArray(v) && v.includes(o)))) || '';
 }
 const FREQ4 = ['Rarely or never', '1–2 days a week', '3–5 days a week', '6–7 days a week'];
-const HABIT4 = ['I do this now', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
+const HABIT4 = ['I already do this', "I've tried it, but it didn't help", "I haven't tried it", 'Not practical for me right now'];
 const SECTIONS = [
   { id: 'focus', title: 'Your focus', intro: '' },
   { id: 'about', title: 'About you', intro: 'These questions help us suggest practices that are safe and suitable for you.' },
@@ -205,7 +205,7 @@ const QUESTIONS = [
       ['alcohol', 'Cut down on alcohol in the evening'], ['winddown', 'Follow a relaxing wind-down routine, such as breathing, relaxation or calm music'],
       ['tasks', "Write down tomorrow's tasks before bed"], ['cool', 'Keep my bedroom cool'], ['dark', 'Keep my bedroom dark'], ['quiet', 'Keep my bedroom quiet, for example with earplugs'],
       ['screens', 'Avoid screens in the 30 minutes before bed'], ['phone', 'Keep my phone out of bed'], ['work', 'Keep work out of bed'], ['naps', 'Avoid long naps (over 30 minutes)'],
-      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I do this now', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
+      ['pro', 'Work with a professional or a sleep programme such as CBT-I', ['I already do this', "I've tried it, but it didn't help", "I haven't tried it"], A => (A.q1 || []).some(x => x.startsWith('Sleep'))],
       ['share', 'Share sleep goals or progress with others']] },
   { id: 'q18', s: 'sleep', type: 'multi', max: 3, goals: 'Sleep', text: 'Which aspects of your sleep would you most like to improve?', options: ['Falling asleep more easily', 'Staying asleep through the night', 'Getting more sleep', 'Waking at the time I want', 'Waking feeling rested', 'Having a more consistent sleep schedule', 'Improving my evening routine', 'Improving my morning routine', 'Nothing in particular'] },
   { id: 'q19', s: 'sleep', type: 'multi', text: 'Which of these currently affect your sleep?', options: ['Stress or feeling under pressure', 'Work or schedule', 'Screens or technology', 'Caffeine', 'Alcohol', 'Light in my bedroom', 'Noise', 'Bedroom temperature', 'Caring or family responsibilities', 'Pain or physical symptoms', 'Nothing in particular'] },
@@ -308,7 +308,7 @@ function toFeatures(A) {
   p.wakes_early = has('q13', "I wake earlier than I want to and can't get back to sleep");
   p.snore = A.q14 === 'Yes';
   p.caffeine_late = ['3-6pm', 'After 6pm'].includes(A.q15); p.caffeine_when = A.q15 === 'After 6pm' ? 'after 6pm' : 'between 3pm and 6pm';
-  const now = r => g('q17', r) === 'I do this now';
+  const now = r => g('q17', r) === 'I already do this';
   const SL = { daylight: ['Morning daylight'], regular: ['Consistent sleep timing'], alcohol: ['Alcohol and sleep'], winddown: ['Slow breathing to wind down', 'Progressive muscle relaxation', 'Bedtime music'], tasks: ['Bedtime to-do list'], screens: ['Screen-free wind-down'], share: ['Sharing sleep plans with others', 'Sharing sleep learnings with others', 'Celebrating sleep wins'] };
   for (const k in SL) if (now(k)) p.doing.push(...SL[k]);
   if (now('phone') || now('work')) p.doing.push('Bed for sleep');
@@ -1260,7 +1260,7 @@ function profile(A, p) {
     const sleepElse = ((A.more || {}).q13 || '').replace(/\s+/g, ' ').trim();
     const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? (sleepElse ? `something else is happening: ${sleepElse}` : 'something else is happening') : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
-    const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
+    const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I already do this');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };
     if (now.length) s.push(`Already part of your routine: ${list(now.slice(0, 5).map(k => NOW[k]))}.`);
     const impractical = ['daylight', 'dim', 'regular', 'alcohol', 'winddown', 'tasks', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'share'].filter(k => GRID(A, 'q17', k) === 'Not practical for me right now');
@@ -2054,7 +2054,7 @@ return profile; })();
 
   // what is already going well in an area, from their own answers
   function wellOf(a, A, p) {
-    const g = (q, r) => (A[q] || {})[r], has = (q, o) => (A[q] || []).includes(o), now = k => g('q17', k) === 'I do this now', W = [];
+    const g = (q, r) => (A[q] || {})[r], has = (q, o) => (A[q] || []).includes(o), now = k => g('q17', k) === 'I already do this', W = [];
     if (a === 'Nutrition') {
       if (g('q7', 'veg') === '5 or more portions') W.push('Eating 5 or more portions of vegetables and fruit a day.');
       if (['3–5', 'More than 5'].includes(g('q7', 'cooked'))) W.push(`Cooking ${g('q7', 'cooked') === '3–5' ? '3 to 5' : 'more than 5'} main meals a week at home.`);
@@ -2467,7 +2467,7 @@ const ACK = {
   q7: A => G('q7', 'veg') === '5 or more portions' ? 'Five or more portions of vegetables and fruit a day. You already have strong foundations here.'
     : ['3–5', 'More than 5'].includes(G('q7', 'cooked')) ? "You cook most of your main meals at home. Useful to know: we'll build on that." : '',
   q12: A => ({ '7-8': 'Seven to eight hours most nights. A good base to build from.', '8-9': 'Eight to nine hours most nights. A good base to build from.' })[A.q12] || '',
-  q17: A => Object.values(A.q17 || {}).filter(v => v === 'I do this now').length >= 4 ? "You already have quite a few good sleep habits in place. We'll build on them rather than asking you to start again." : '',
+  q17: A => Object.values(A.q17 || {}).filter(v => v === 'I already do this').length >= 4 ? "You already have quite a few good sleep habits in place. We'll build on them rather than asking you to start again." : '',
   q21: A => { if (!A.q20 || !A.q21) return ''; const w = +A.q20 * (A.q21 === '150 or more' ? 150 : +A.q21); return w >= 150 ? `That's around ${w} minutes a week, already within the guideline. We won't ask you for more of the same.` : w ? `Thanks. That's around ${w} minutes a week.` : ''; },
   q22: A => ({ '2': "You're already doing strength work twice a week. Useful to know: we'll build on that rather than asking you to start again.", '3 or more': "You're already doing strength work three or more times a week. We'll build on that rather than asking you to start again." })[A.q22] || '',
   q24: A => ['8,000-9,999', '10,000 or more'].includes(A.q24) ? "That's a good number of steps on a typical day." : '',

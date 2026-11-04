@@ -52,7 +52,7 @@ function profile(A, p) {
     const sleepElse = ((A.more || {}).q13 || '').replace(/\s+/g, ' ').trim();
     const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? (sleepElse ? `something else is happening: ${sleepElse}` : 'something else is happening') : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
-    const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
+    const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I already do this');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };
     if (now.length) s.push(`Already part of your routine: ${list(now.slice(0, 5).map(k => NOW[k]))}.`);
     const impractical = ['daylight', 'dim', 'regular', 'alcohol', 'winddown', 'tasks', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'share'].filter(k => GRID(A, 'q17', k) === 'Not practical for me right now');
