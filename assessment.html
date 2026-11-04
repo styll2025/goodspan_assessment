@@ -170,6 +170,8 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .menurow select{display:block;box-sizing:border-box;width:100%;max-width:100%;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .menus.stack .menurow{grid-template-columns:minmax(0,1fr);align-items:start;row-gap:10px}
 .menus.stack .opts{max-width:640px}
+.elsebox{display:grid;gap:8px;margin-top:12px}
+.elsebox span{font-size:15px;line-height:22px}
 .rgrid{min-width:0}
 .rhead,.rrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,2fr);gap:8px 16px;align-items:center}
 .rhead{padding-bottom:8px}
@@ -457,13 +459,16 @@ function makeEngine(DATA) {
   }
   function pilotNotes(p, c) {
     const N = [], ins = p.insomnia || [];
-    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.']);
+    const ownWords = id => ((p.else_txt || {})[id] || '').trim();
+    const plusWords = (id, msg) => ownWords(id) ? msg.replace(/\s*$/, '') + ' In their words: ' + ownWords(id) + '.' : msg;
+    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', plusWords('q13', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.')]);
+    else if (ownWords('q13')) N.push(['Sleep', 'On 3 or more nights a week, something else: ' + ownWords('q13') + '. Ask about it. Not a diagnosis, and not added as a new practice.']);
     if (p.snore) N.push(['Snoring', 'Loud snoring or pauses in breathing. Suggest they mention it to their doctor.']);
     if (p.symptoms) {
       const what = (p.symptoms_txt || []).join('; ').toLowerCase(), ctx = p.symptoms_active ? ' Happened during or just after activity.' : '';
-      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`]);
-      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`]);
-      else N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`]);
+      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`)]);
+      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', plusWords('q5', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`)]);
+      else N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`)]);
     }
     if (c.has('Heart, metabolic or kidney condition and inactive')) N.push(['Condition and inactive', 'Movement held at Learning until their doctor has advised on activity.']);
     if (p.fall) N.push(['Fall', 'Fall in the past 12 months. Ask whether they have seen a doctor or physiotherapist.']);
@@ -486,11 +491,12 @@ function makeEngine(DATA) {
     if (p.kidney) N.push(['Kidney', 'Has kidney disease. Protein practices are left out; check any nutrition changes with their doctor.']);
     if (p.high_bp) N.push(['Blood pressure', 'Has high blood pressure. Check it is being monitored, and talk through any big changes in exercise.']);
     if (p.lung) N.push(['Lung condition', 'Has a lung condition, such as asthma or COPD. Check the movement plan suits them.']);
-    if ((p.food_other || []).length) N.push(['Food', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.']);
+    if ((p.food_other || []).length) N.push(['Food', plusWords('q11', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.')]);
     if (p.diabetes_med) N.push(['Medication', 'Blood-sugar medicine: check with their doctor before changing meal timing.']);
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
+    if (p.work_other) N.push(['Working pattern', plusWords('q3', 'Working pattern is something else. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
-    if (p.health_other) N.push(['Health', 'They mentioned another health condition. Review it with them.']);
+    if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);
     return N;
   }
@@ -1008,7 +1014,7 @@ const QUESTIONS = [
   { id: 'q1', s: 'focus', type: 'multi', max: 2, exclusive: ['I’m not sure yet'], text: 'Which one or two areas would you most like to improve?', hint: "We'll still ask about every area. Your Good Span may also include practices from other areas where your answers show the greatest opportunity. We'll always explain why.", options: AREA_OPTS },
   { id: 'q2', s: 'about', type: 'single', text: 'What is your age?', options: ['18-29', '30-39', '40-49', '50-59', '60-69', '70 or over', 'Prefer not to say'] },
   { id: 'q2a', s: 'about', type: 'single', text: 'What was your sex at birth?', hint: 'This helps us show you only the questions that apply to you, and suggest practices that suit your body.', options: ['Female', 'Male', 'Prefer not to say'] },
-  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Prefer not to say'] },
+  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Something else', 'Prefer not to say'] },
   { id: 'q4', s: 'about', type: 'multi', text: 'Has a doctor or other healthcare professional ever told you that you have any of these?', options: ['A heart condition', 'High blood pressure', 'Diabetes (including if you take insulin or other blood-sugar medicine)', 'Kidney disease', 'A lung condition, such as asthma or COPD', 'Something else', 'None of these', 'Prefer not to say'] },
   { id: 'q5', s: 'about', type: 'multi', text: 'In the past 3 months, have you experienced any of the following?', options: ['Pain, tightness or pressure in your chest', 'Shortness of breath with very little effort', 'Feeling dizzy, light-headed or fainting', 'Your heart racing, fluttering or beating irregularly', 'Swollen ankles', 'Pain in your calves when walking', 'Something else', 'None of these'] },
   { id: 'q5a', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Did any of these happen during or just after physical activity?', options: ['Yes', 'No', 'Not sure'] },
@@ -1100,6 +1106,13 @@ function toFeatures(A) {
   p.wish = AREAS.filter(a => (A.q1 || []).some(x => x.startsWith(a)));
   p.age = A.q2; p.shift = A.q3 === 'Shift work, including nights';
   p.not_working = A.q3 === 'Not currently working'; p.irregular = A.q3 === 'Irregular or changing hours';
+  p.work_other = A.q3 === 'Something else';
+  p.else_txt = {};
+  for (const id of ['q3', 'q4', 'q5', 'q11', 'q13', 'q29']) {
+    const on = id === 'q3' ? p.work_other : (A[id] || []).includes('Something else');
+    const t = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    if (on && t) p.else_txt[id] = t;
+  }
   p.heart = has('q4', 'A heart condition');
   p.diabetes = p.diabetes_med = has('q4', 'Diabetes (including if you take insulin or other blood-sugar medicine)');
   p.kidney = has('q4', 'Kidney disease'); p.health_other = has('q4', 'Something else');
@@ -1315,7 +1328,9 @@ function qHTML(q, n) {
     body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
   }
   const lim = q.type === 'multi' ? (q.max ? `Select up to ${q.max}.` : 'Select all that apply.') : q.type === 'grid' ? 'Select one for each row.' : q.type === 'single' ? 'Select one.' : '';
-  return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}</fieldset>`;
+  const elseOn = (q.options || []).includes('Something else') && (v === 'Something else' || (Array.isArray(v) && v.includes('Something else')));
+  const elseBox = elseOn ? `<label class="elsebox"><span>Tell us a little more, if you'd like.</span><textarea id="${q.id}_more" name="${q.id}.more" maxlength="300" placeholder="A few words is enough">${esc(((A.more || {})[q.id] || ''))}</textarea></label>` : '';
+  return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}${elseBox}</fieldset>`;
 }
 // Every question that applies must be answered (the personal habit question is the only optional one). The member can't move on
 // to the next section, or see their Good Span, until this section is complete; the questions still open are marked in orange.
@@ -1359,6 +1374,7 @@ function renderAssess() {
 function onInput(e) {
   const el = e.target; if (!el.name) return;
   const [qid, sub] = el.name.split('.'); const q = QUESTIONS.find(x => x.id === qid);
+  if (sub === 'more') { A.more = Object.assign({}, A.more, { [qid]: el.value.slice(0, 300) }); save(); return; }
   if (q.type === 'single') A[qid] = el.value;
   else if (q.type === 'multi') {
     let sel = [...document.querySelectorAll(`input[name="${qid}"]:checked`)].map(x => x.value);
@@ -1368,8 +1384,15 @@ function onInput(e) {
     A[qid] = sel;
   } else if (q.type === 'grid') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
   else if (q.type === 'habit') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
+  const onElse = A[qid] === 'Something else' || (Array.isArray(A[qid]) && A[qid].includes('Something else'));
+  if (!onElse && A.more) delete A.more[qid];
   save();
-  if (e.type === 'change' && el.type !== 'textarea') { const y = scrollY; renderAssess(); scrollTo(0, y); const t = document.getElementById(el.id); if (t) t.focus({ preventScroll: true }); }
+  if (e.type === 'change' && el.type !== 'textarea') {
+    const y = scrollY; renderAssess(); scrollTo(0, y);
+    const more = onElse ? document.getElementById(qid + '_more') : null;
+    if (more) more.focus({ preventScroll: true });
+    else { const t = document.getElementById(el.id); if (t) t.focus({ preventScroll: true }); }
+  }
 }
 
 /* ---------- plan ---------- */

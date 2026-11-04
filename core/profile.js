@@ -10,12 +10,13 @@ const lc = s => s.charAt(0).toLowerCase() + s.slice(1);
 function profile(A, p) {
   const out = { intro: '', pillars: {} };
   // ---- opening: who they are right now, what they want, how they'd like to go about it
-  const work = { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
+  const workNote = ((A.more || {}).q3 || '').replace(/\s+/g, ' ').trim();
+  const work = A.q3 === 'Something else' ? '' : { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
   const AREA = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
   const time = { 'About 45–60 minutes': 'about 45–60 minutes', '1-2 hours': '1–2 hours', '2-4 hours': '2–4 hours', 'More than 4 hours': 'more than 4 hours', 'It varies': 'a varying amount of time' }[A.q55];
   const pace = { small: 'small, easy steps', mid: 'something in between: steady, but not too gentle', big: 'a bigger challenge' }[p.change];
   const want = p.wish.length ? `You'd like to work on ${list(p.wish.map(a => AREA[a]))}.` : "You weren't sure which area to start with, so we've let your answers lead.";
-  const s1 = work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
+  const s1 = A.q3 === 'Something else' && workNote ? `You described your working pattern as “${workNote}”, and you can give ${time} a week to your Good Span.` : work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
   const s2 = p.change === 'big' ? `You're ready for ${pace}.` : `You'd like ${pace}.`;
   const caring = p.carer ? ' Caring or family responsibilities also shape your days, so short practices suit you best.' : '';
   out.intro = `${want} ${s1} ${s2}${caring}`;
@@ -46,7 +47,8 @@ function profile(A, p) {
 
   // ---- Sleep
   { const s = []; const h = { 'Less than 5': 'less than 5', '5-6': '5 to 6', '6-7': '6 to 7', '7-8': '7 to 8', '8-9': '8 to 9', 'More than 9': 'more than 9' }[A.q12];
-    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? 'something else is happening' : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
+    const sleepElse = ((A.more || {}).q13 || '').replace(/\s+/g, ' ').trim();
+    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? (sleepElse ? `something else is happening: ${sleepElse}` : 'something else is happening') : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
     const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };

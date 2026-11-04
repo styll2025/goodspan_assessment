@@ -216,13 +216,16 @@ function makeEngine(DATA) {
   }
   function pilotNotes(p, c) {
     const N = [], ins = p.insomnia || [];
-    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.']);
+    const ownWords = id => ((p.else_txt || {})[id] || '').trim();
+    const plusWords = (id, msg) => ownWords(id) ? msg.replace(/\s*$/, '') + ' In their words: ' + ownWords(id) + '.' : msg;
+    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', plusWords('q13', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.')]);
+    else if (ownWords('q13')) N.push(['Sleep', 'On 3 or more nights a week, something else: ' + ownWords('q13') + '. Ask about it. Not a diagnosis, and not added as a new practice.']);
     if (p.snore) N.push(['Snoring', 'Loud snoring or pauses in breathing. Suggest they mention it to their doctor.']);
     if (p.symptoms) {
       const what = (p.symptoms_txt || []).join('; ').toLowerCase(), ctx = p.symptoms_active ? ' Happened during or just after activity.' : '';
-      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`]);
-      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`]);
-      else N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`]);
+      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`)]);
+      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', plusWords('q5', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`)]);
+      else N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`)]);
     }
     if (c.has('Heart, metabolic or kidney condition and inactive')) N.push(['Condition and inactive', 'Movement held at Learning until their doctor has advised on activity.']);
     if (p.fall) N.push(['Fall', 'Fall in the past 12 months. Ask whether they have seen a doctor or physiotherapist.']);
@@ -245,11 +248,12 @@ function makeEngine(DATA) {
     if (p.kidney) N.push(['Kidney', 'Has kidney disease. Protein practices are left out; check any nutrition changes with their doctor.']);
     if (p.high_bp) N.push(['Blood pressure', 'Has high blood pressure. Check it is being monitored, and talk through any big changes in exercise.']);
     if (p.lung) N.push(['Lung condition', 'Has a lung condition, such as asthma or COPD. Check the movement plan suits them.']);
-    if ((p.food_other || []).length) N.push(['Food', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.']);
+    if ((p.food_other || []).length) N.push(['Food', plusWords('q11', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.')]);
     if (p.diabetes_med) N.push(['Medication', 'Blood-sugar medicine: check with their doctor before changing meal timing.']);
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
+    if (p.work_other) N.push(['Working pattern', plusWords('q3', 'Working pattern is something else. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
-    if (p.health_other) N.push(['Health', 'They mentioned another health condition. Review it with them.']);
+    if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);
     return N;
   }

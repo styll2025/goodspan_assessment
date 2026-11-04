@@ -243,6 +243,7 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 | Nutrition | Food allergy or intolerance (other than nuts), a dietary restriction, a health condition that affects eating, or something else | Check the nutrition practices suit them. | Nothing else changes. |
 | Nutrition | Prefers not to say about food considerations | Ask gently if there's anything to know; don't assume a difficulty. | Tracking, eating-window and eating-before-bed practices excluded, to be safe. |
 | All | The plan adds less than a third of the member's time and no practice adds 15 minutes or more | Ask whether they'd like to use more of their time. | Nothing else changes. |
+| All | Something else, with a few words of their own (working pattern, conditions, recent symptoms, food, sleep difficulties, movement) | Their words are for the Pilot. Do not treat them as a diagnosis or as a new practice rule. | Nothing else changes. "Something else" for working pattern is not treated as shift work, irregular hours or not working. |
 
 ## “Not right for me” (Rule 13), as implemented
 

@@ -167,7 +167,7 @@ const QUESTIONS = [
   { id: 'q1', s: 'focus', type: 'multi', max: 2, exclusive: ['I’m not sure yet'], text: 'Which one or two areas would you most like to improve?', hint: "We'll still ask about every area. Your Good Span may also include practices from other areas where your answers show the greatest opportunity. We'll always explain why.", options: AREA_OPTS },
   { id: 'q2', s: 'about', type: 'single', text: 'What is your age?', options: ['18-29', '30-39', '40-49', '50-59', '60-69', '70 or over', 'Prefer not to say'] },
   { id: 'q2a', s: 'about', type: 'single', text: 'What was your sex at birth?', hint: 'This helps us show you only the questions that apply to you, and suggest practices that suit your body.', options: ['Female', 'Male', 'Prefer not to say'] },
-  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Prefer not to say'] },
+  { id: 'q3', s: 'about', type: 'single', text: 'Which best describes your working pattern?', options: ['Mostly regular daytime hours', 'Shift work, including nights', 'Irregular or changing hours', 'Not currently working', 'Something else', 'Prefer not to say'] },
   { id: 'q4', s: 'about', type: 'multi', text: 'Has a doctor or other healthcare professional ever told you that you have any of these?', options: ['A heart condition', 'High blood pressure', 'Diabetes (including if you take insulin or other blood-sugar medicine)', 'Kidney disease', 'A lung condition, such as asthma or COPD', 'Something else', 'None of these', 'Prefer not to say'] },
   { id: 'q5', s: 'about', type: 'multi', text: 'In the past 3 months, have you experienced any of the following?', options: ['Pain, tightness or pressure in your chest', 'Shortness of breath with very little effort', 'Feeling dizzy, light-headed or fainting', 'Your heart racing, fluttering or beating irregularly', 'Swollen ankles', 'Pain in your calves when walking', 'Something else', 'None of these'] },
   { id: 'q5a', s: 'about', type: 'single', show: A => (A.q5 || []).some(x => x !== 'None of these'), text: 'Did any of these happen during or just after physical activity?', options: ['Yes', 'No', 'Not sure'] },
@@ -259,6 +259,13 @@ function toFeatures(A) {
   p.wish = AREAS.filter(a => (A.q1 || []).some(x => x.startsWith(a)));
   p.age = A.q2; p.shift = A.q3 === 'Shift work, including nights';
   p.not_working = A.q3 === 'Not currently working'; p.irregular = A.q3 === 'Irregular or changing hours';
+  p.work_other = A.q3 === 'Something else';
+  p.else_txt = {};
+  for (const id of ['q3', 'q4', 'q5', 'q11', 'q13', 'q29']) {
+    const on = id === 'q3' ? p.work_other : (A[id] || []).includes('Something else');
+    const t = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    if (on && t) p.else_txt[id] = t;
+  }
   p.heart = has('q4', 'A heart condition');
   p.diabetes = p.diabetes_med = has('q4', 'Diabetes (including if you take insulin or other blood-sugar medicine)');
   p.kidney = has('q4', 'Kidney disease'); p.health_other = has('q4', 'Something else');
@@ -658,13 +665,16 @@ function makeEngine(DATA) {
   }
   function pilotNotes(p, c) {
     const N = [], ins = p.insomnia || [];
-    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.']);
+    const ownWords = id => ((p.else_txt || {})[id] || '').trim();
+    const plusWords = (id, msg) => ownWords(id) ? msg.replace(/\s*$/, '') + ' In their words: ' + ownWords(id) + '.' : msg;
+    if (ins.length && (ins.length >= 2 || p.sleep_h < 6)) N.push(['Sleep difficulties', plusWords('q13', 'Sleep difficulties on 3+ nights a week. Ask how long; if 3 months or more, suggest they talk to their doctor. Not added to the plan.')]);
+    else if (ownWords('q13')) N.push(['Sleep', 'On 3 or more nights a week, something else: ' + ownWords('q13') + '. Ask about it. Not a diagnosis, and not added as a new practice.']);
     if (p.snore) N.push(['Snoring', 'Loud snoring or pauses in breathing. Suggest they mention it to their doctor.']);
     if (p.symptoms) {
       const what = (p.symptoms_txt || []).join('; ').toLowerCase(), ctx = p.symptoms_active ? ' Happened during or just after activity.' : '';
-      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`]);
-      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`]);
-      else N.push(['Exercise warning symptoms', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`]);
+      if (p.symptoms_cleared) N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}.${ctx} They say a doctor is happy for them to be more active, so Movement is not held; vigorous practices are still left out and the starting level is not raised. Check this at the pre-Span interview.`)]);
+      else if (p.symptoms_active) N.push(['Exercise warning symptoms: during activity', plusWords('q5', `Reported in the past 3 months, during or just after activity: ${what}. Not yet cleared by a doctor. Priority: encourage them to see their doctor before doing more. Movement held at Learning, no vigorous practices.`)]);
+      else N.push(['Exercise warning symptoms', plusWords('q5', `Reported in the past 3 months: ${what}. Not yet cleared by a doctor. Movement held at Learning, no vigorous practices, until they have seen their doctor.`)]);
     }
     if (c.has('Heart, metabolic or kidney condition and inactive')) N.push(['Condition and inactive', 'Movement held at Learning until their doctor has advised on activity.']);
     if (p.fall) N.push(['Fall', 'Fall in the past 12 months. Ask whether they have seen a doctor or physiotherapist.']);
@@ -687,11 +697,12 @@ function makeEngine(DATA) {
     if (p.kidney) N.push(['Kidney', 'Has kidney disease. Protein practices are left out; check any nutrition changes with their doctor.']);
     if (p.high_bp) N.push(['Blood pressure', 'Has high blood pressure. Check it is being monitored, and talk through any big changes in exercise.']);
     if (p.lung) N.push(['Lung condition', 'Has a lung condition, such as asthma or COPD. Check the movement plan suits them.']);
-    if ((p.food_other || []).length) N.push(['Food', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.']);
+    if ((p.food_other || []).length) N.push(['Food', plusWords('q11', 'Mentioned: ' + p.food_other.join('; ').toLowerCase() + '. Check the nutrition practices suit them.')]);
     if (p.diabetes_med) N.push(['Medication', 'Blood-sugar medicine: check with their doctor before changing meal timing.']);
     if (p.shift) N.push(['Shift work', 'No shift-work sleep practices yet; tailor sleep timing together.']);
+    if (p.work_other) N.push(['Working pattern', plusWords('q3', 'Working pattern is something else. Do not assume shift work, irregular hours or not working. Check before suggesting practices about the working day.')]);
     if (p.sleep_pro) N.push(['Sleep support', 'Already works with a professional or a sleep programme. Ask how it is going and keep the plan in step with it.']);
-    if (p.health_other) N.push(['Health', 'They mentioned another health condition. Review it with them.']);
+    if (p.health_other) N.push(['Health', plusWords('q4', plusWords('q29', 'They mentioned another health condition. Review it with them.'))]);
     if (!p.mind_shown) N.push(['Always ask', 'Ask about mood (the PHQ-4 was not shown), falls if 60+, and long-term sleep problems.']);
     return N;
   }
@@ -1199,12 +1210,13 @@ const lc = s => s.charAt(0).toLowerCase() + s.slice(1);
 function profile(A, p) {
   const out = { intro: '', pillars: {} };
   // ---- opening: who they are right now, what they want, how they'd like to go about it
-  const work = { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
+  const workNote = ((A.more || {}).q3 || '').replace(/\s+/g, ' ').trim();
+  const work = A.q3 === 'Something else' ? '' : { 'Mostly regular daytime hours': 'work regular daytime hours', 'Shift work, including nights': 'work shifts, including nights', 'Irregular or changing hours': 'work irregular or changing hours', 'Not currently working': "aren't working at the moment" }[A.q3];
   const AREA = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
   const time = { 'About 45–60 minutes': 'about 45–60 minutes', '1-2 hours': '1–2 hours', '2-4 hours': '2–4 hours', 'More than 4 hours': 'more than 4 hours', 'It varies': 'a varying amount of time' }[A.q55];
   const pace = { small: 'small, easy steps', mid: 'something in between: steady, but not too gentle', big: 'a bigger challenge' }[p.change];
   const want = p.wish.length ? `You'd like to work on ${list(p.wish.map(a => AREA[a]))}.` : "You weren't sure which area to start with, so we've let your answers lead.";
-  const s1 = work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
+  const s1 = A.q3 === 'Something else' && workNote ? `You described your working pattern as “${workNote}”, and you can give ${time} a week to your Good Span.` : work ? `You ${work}, and you can give ${time} a week to your Good Span.` : `You can give ${time} a week to your Good Span.`;
   const s2 = p.change === 'big' ? `You're ready for ${pace}.` : `You'd like ${pace}.`;
   const caring = p.carer ? ' Caring or family responsibilities also shape your days, so short practices suit you best.' : '';
   out.intro = `${want} ${s1} ${s2}${caring}`;
@@ -1235,7 +1247,8 @@ function profile(A, p) {
 
   // ---- Sleep
   { const s = []; const h = { 'Less than 5': 'less than 5', '5-6': '5 to 6', '6-7': '6 to 7', '7-8': '7 to 8', '8-9': '8 to 9', 'More than 9': 'more than 9' }[A.q12];
-    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? 'something else is happening' : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
+    const sleepElse = ((A.more || {}).q13 || '').replace(/\s+/g, ' ').trim();
+    const dif = (A.q13 || []).filter(x => x !== 'None of these').map(x => x === 'Something else' ? (sleepElse ? `something else is happening: ${sleepElse}` : 'something else is happening') : lc(x).replace(/^i /, 'you ').replace(/ me /, ' you ').replace("i can't", "you can't").replace('I wake', 'you wake'));
     if (h) s.push(`You sleep ${h} hours on a typical night${dif.length ? `, and on 3 or more nights a week ${list(dif.map(d => d.replace(/^it takes me/, 'it takes you')))}` : ', and sleep itself isn\'t usually a struggle'}.`);
     const now = ['daylight', 'dim', 'regular', 'cool', 'dark', 'quiet', 'screens', 'phone', 'work', 'naps', 'winddown', 'tasks'].filter(k => GRID(A, 'q17', k) === 'I do this now');
     const NOW = { daylight: 'morning daylight', dim: 'dimmed evening lights', regular: 'a regular bedtime and wake time', cool: 'a cool bedroom', dark: 'a dark bedroom', quiet: 'a quiet bedroom', screens: 'no screens in the last half hour', phone: 'no phone in bed', work: 'no work in bed', naps: 'short naps only', winddown: 'a relaxing wind-down', tasks: "writing down tomorrow's tasks" };
@@ -2090,7 +2103,7 @@ const ROWQ = { q40: { tobacco: 'Do you currently smoke cigarettes, cigars, rolli
 const ALLNEVER = { q40: "I don't smoke or vape" };
 const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.", q32: "These next four help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", q55: "Nearly there. These last ones set the limits your Good Span will respect." };
 const EXCL = q => NONE_WORDS;
-let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
+let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '', moreQ = null;
 // talk or type: the microphone starts talking, and typing or tapping returns to the box
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
 let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false, pending = null;
@@ -2292,7 +2305,7 @@ function takeAnswer(q0, q, v, src) {
     if (stepRow(q0)) return ask();
     return next();
   }
-  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; maybeMore(q);
 }
 function saidYes(t) {
   t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
@@ -2324,6 +2337,15 @@ async function typed() {
   stopListen();
   if (stage === 'contact') { if (raw) return typedContact(raw); return; }
   if (stage === 'open') return typedOpen(raw, clip, spoke);
+  if (moreQ) {
+    $('txt').value = '';
+    const said = (raw || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    if (!said) return;
+    me(said);
+    A.more = Object.assign({}, A.more, { [moreQ]: said });
+    moreQ = null; clearChips();
+    return next();
+  }
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
@@ -2390,7 +2412,29 @@ function habitChoice(q) {
 }
 function answer(q, v, src, confirmed) {
   clearChips(); me(confirmed ? "Yes, that's right" : v.map(label).join(', '));
-  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; maybeMore(q);
+}
+function choseElse(q) {
+  const v = A[q.id];
+  return (q.options || []).includes('Something else') && (v === 'Something else' || (Array.isArray(v) && v.includes('Something else')));
+}
+function maybeMore(q) {
+  if (!choseElse(q) && A.more) delete A.more[q.id];
+  if (choseElse(q)) return askMore(q);
+  next();
+}
+async function askMore(q) {
+  moreQ = q.id; ready = false; pending = null;
+  await typing(reduce ? 0 : 280);
+  bot("Tell us a little more, if you'd like.", 'A few words is enough', 'q');
+  clearChips();
+  const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this</button>`;
+  box.onclick = () => { if (moreQ !== q.id) return; moreQ = null; box.remove(); me('Skip'); if (A.more) delete A.more[q.id]; next(); };
+  T.append(box);
+  composer(true, 'Type a few words, or skip.');
+  ready = true; scrollEnd();
+  if (mode === 'talk') listen();
 }
 function answerAll(q, text) {
   clearChips(); me(text);
@@ -2427,12 +2471,14 @@ const ACK = {
   q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x)); return o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; },
 };
 
-function show(id, v) {
+function show(id, v, withNote) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  if (q.type === 'grid') return gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
-  if (q.type === 'habit') return [v.text, v.choice].filter(Boolean).join(' · ');
-  return [].concat(v).map(label).join(', ');
+  const text = q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
+  if (withNote === false) return text;
+  const note = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
+  const on = v === 'Something else' || (Array.isArray(v) && v.includes('Something else'));
+  return on && note ? text.replace('Something else', 'Something else: ' + note) : text;
 }
 function finish() {
   composer(false, ''); clearChips(); $('comp').hidden = true;
@@ -2476,7 +2522,7 @@ function improveStory() {
 // the member's answers as they saw them, for the summary: no contact details, and a personal habit kept private stays out
 function storyAnswers() {
   return QUESTIONS.filter(q => A[q.id] !== undefined && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
-    .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]) }));
+    .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id], !['q4', 'q5', 'q11', 'q13', 'q29'].includes(q.id)) }));
 }
 function renderPlan(r) {
   const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention, Stretch: IMG.sleep };
@@ -2752,7 +2798,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; sentRef = ''; planRef = ''; planCache = null; storyWait = null; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; moreQ = null; sentRef = ''; planRef = ''; planCache = null; storyWait = null; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }

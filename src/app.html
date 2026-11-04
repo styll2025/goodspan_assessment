@@ -33,6 +33,8 @@ legend{font-size:24px;line-height:30px;padding:0;margin-bottom:6px}
 .menurow select{display:block;box-sizing:border-box;width:100%;max-width:100%;height:40px;font:inherit;font-size:15px;line-height:20px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
 .menus.stack .menurow{grid-template-columns:minmax(0,1fr);align-items:start;row-gap:10px}
 .menus.stack .opts{max-width:640px}
+.elsebox{display:grid;gap:8px;margin-top:12px}
+.elsebox span{font-size:15px;line-height:22px}
 .rgrid{min-width:0}
 .rhead,.rrow{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,2fr);gap:8px 16px;align-items:center}
 .rhead{padding-bottom:8px}
@@ -140,7 +142,9 @@ function qHTML(q, n) {
     body = `<textarea id="${q.id}_text" name="${q.id}.text" placeholder="For example: read again, call my family more often, drink less">${esc(h.text || '')}</textarea><div class="opts">${q.options.map((o, i) => `<label class="opt"><input type="radio" name="${q.id}.choice" id="${q.id}_c${i}" value="${esc(o)}" ${h.choice === o ? 'checked' : ''}><span>${esc(o)}</span></label>`).join('')}</div>`;
   }
   const lim = q.type === 'multi' ? (q.max ? `Select up to ${q.max}.` : 'Select all that apply.') : q.type === 'grid' ? 'Select one for each row.' : q.type === 'single' ? 'Select one.' : '';
-  return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}</fieldset>`;
+  const elseOn = (q.options || []).includes('Something else') && (v === 'Something else' || (Array.isArray(v) && v.includes('Something else')));
+  const elseBox = elseOn ? `<label class="elsebox"><span>Tell us a little more, if you'd like.</span><textarea id="${q.id}_more" name="${q.id}.more" maxlength="300" placeholder="A few words is enough">${esc(((A.more || {})[q.id] || ''))}</textarea></label>` : '';
+  return `<fieldset data-q="${q.id}"><legend><span class="qn">Question ${n}</span>${esc(q.text)}</legend>${q.hint ? `<p class="hint">${esc(q.hint)}</p>` : ''}${lim ? `<p class="hint">${lim}</p>` : ''}${body}${elseBox}</fieldset>`;
 }
 // Every question that applies must be answered (the personal habit question is the only optional one). The member can't move on
 // to the next section, or see their Good Span, until this section is complete; the questions still open are marked in orange.
@@ -184,6 +188,7 @@ function renderAssess() {
 function onInput(e) {
   const el = e.target; if (!el.name) return;
   const [qid, sub] = el.name.split('.'); const q = QUESTIONS.find(x => x.id === qid);
+  if (sub === 'more') { A.more = Object.assign({}, A.more, { [qid]: el.value.slice(0, 300) }); save(); return; }
   if (q.type === 'single') A[qid] = el.value;
   else if (q.type === 'multi') {
     let sel = [...document.querySelectorAll(`input[name="${qid}"]:checked`)].map(x => x.value);
@@ -193,8 +198,15 @@ function onInput(e) {
     A[qid] = sel;
   } else if (q.type === 'grid') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
   else if (q.type === 'habit') { A[qid] = Object.assign({}, A[qid], { [sub]: el.value }); }
+  const onElse = A[qid] === 'Something else' || (Array.isArray(A[qid]) && A[qid].includes('Something else'));
+  if (!onElse && A.more) delete A.more[qid];
   save();
-  if (e.type === 'change' && el.type !== 'textarea') { const y = scrollY; renderAssess(); scrollTo(0, y); const t = document.getElementById(el.id); if (t) t.focus({ preventScroll: true }); }
+  if (e.type === 'change' && el.type !== 'textarea') {
+    const y = scrollY; renderAssess(); scrollTo(0, y);
+    const more = onElse ? document.getElementById(qid + '_more') : null;
+    if (more) more.focus({ preventScroll: true });
+    else { const t = document.getElementById(el.id); if (t) t.focus({ preventScroll: true }); }
+  }
 }
 
 /* ---------- plan ---------- */

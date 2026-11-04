@@ -157,7 +157,7 @@ const ROWQ = { q40: { tobacco: 'Do you currently smoke cigarettes, cigars, rolli
 const ALLNEVER = { q40: "I don't smoke or vape" };
 const LEAD = { q5: "A few questions to make sure your Good Span is safe for you.", q32: "These next four help us suggest practices that suit how you're feeling right now. They are not a diagnosis.", q55: "Nearly there. These last ones set the limits your Good Span will respect." };
 const EXCL = q => NONE_WORDS;
-let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '';
+let stage = 'contact', ci = 0, contact = {}, ready = false, A = {}, how = {}, qi = 0, row = 0, secShown = -1, sel = new Set(), name = '', moreQ = null;
 // talk or type: the microphone starts talking, and typing or tapping returns to the box
 let mode = 'type', rec = null, listening = false, viaVoice = false, alts = [], misses = 0;
 let voiceClip = null, session = 0, recorderTask = Promise.resolve(null), capTimer = null, silenceTimer = null, clipOnly = false, pending = null;
@@ -359,7 +359,7 @@ function takeAnswer(q0, q, v, src) {
     if (stepRow(q0)) return ask();
     return next();
   }
-  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; maybeMore(q);
 }
 function saidYes(t) {
   t = String(t || '').toLowerCase().replace(/[’']/g, "'").replace(/[.,!?]/g, '').replace(/\s+/g, ' ').trim();
@@ -391,6 +391,15 @@ async function typed() {
   stopListen();
   if (stage === 'contact') { if (raw) return typedContact(raw); return; }
   if (stage === 'open') return typedOpen(raw, clip, spoke);
+  if (moreQ) {
+    $('txt').value = '';
+    const said = (raw || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+    if (!said) return;
+    me(said);
+    A.more = Object.assign({}, A.more, { [moreQ]: said });
+    moreQ = null; clearChips();
+    return next();
+  }
   if (stage !== 'questions') return;
   if (qi >= QUESTIONS.length) return;
   const q0 = QUESTIONS[qi]; const q = q0.type === 'grid' ? { id: q0.id, type: 'single', options: rowOpts(q0), text: ROWQ[q0.id] ? ROWQ[q0.id][q0.rows[row][0]] : `${q0.text} ${q0.rows[row][1]}` } : q0;
@@ -457,7 +466,29 @@ function habitChoice(q) {
 }
 function answer(q, v, src, confirmed) {
   clearChips(); me(confirmed ? "Yes, that's right" : v.map(label).join(', '));
-  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; next();
+  A[q.id] = q.type === 'multi' ? v : v[0]; how[q.id] = src; maybeMore(q);
+}
+function choseElse(q) {
+  const v = A[q.id];
+  return (q.options || []).includes('Something else') && (v === 'Something else' || (Array.isArray(v) && v.includes('Something else')));
+}
+function maybeMore(q) {
+  if (!choseElse(q) && A.more) delete A.more[q.id];
+  if (choseElse(q)) return askMore(q);
+  next();
+}
+async function askMore(q) {
+  moreQ = q.id; ready = false; pending = null;
+  await typing(reduce ? 0 : 280);
+  bot("Tell us a little more, if you'd like.", 'A few words is enough', 'q');
+  clearChips();
+  const box = document.createElement('div'); box.className = 'chips';
+  box.innerHTML = `<button type="button" class="chip alt" data-skip="1">Skip this</button>`;
+  box.onclick = () => { if (moreQ !== q.id) return; moreQ = null; box.remove(); me('Skip'); if (A.more) delete A.more[q.id]; next(); };
+  T.append(box);
+  composer(true, 'Type a few words, or skip.');
+  ready = true; scrollEnd();
+  if (mode === 'talk') listen();
 }
 function answerAll(q, text) {
   clearChips(); me(text);
@@ -494,12 +525,14 @@ const ACK = {
   q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x)); return o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; },
 };
 
-function show(id, v) {
+function show(id, v, withNote) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  if (q.type === 'grid') return gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ');
-  if (q.type === 'habit') return [v.text, v.choice].filter(Boolean).join(' · ');
-  return [].concat(v).map(label).join(', ');
+  const text = q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
+  if (withNote === false) return text;
+  const note = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
+  const on = v === 'Something else' || (Array.isArray(v) && v.includes('Something else'));
+  return on && note ? text.replace('Something else', 'Something else: ' + note) : text;
 }
 function finish() {
   composer(false, ''); clearChips(); $('comp').hidden = true;
@@ -543,7 +576,7 @@ function improveStory() {
 // the member's answers as they saw them, for the summary: no contact details, and a personal habit kept private stays out
 function storyAnswers() {
   return QUESTIONS.filter(q => A[q.id] !== undefined && !(q.type === 'habit' && !/Share/.test((A[q.id] || {}).choice || '')))
-    .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]) }));
+    .map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id], !['q4', 'q5', 'q11', 'q13', 'q29'].includes(q.id)) }));
 }
 function renderPlan(r) {
   const img = { Nutrition: IMG.nutrition, Sleep: IMG.sleep, Movement: IMG.movement, Mind: IMG.mind, Connection: IMG.connection, Prevention: IMG.prevention, Stretch: IMG.sleep };
@@ -819,7 +852,7 @@ $('mic').onclick = () => {
 };
 
 function begin() {
-  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; sentRef = ''; planRef = ''; planCache = null; storyWait = null; stopListen();
+  stage = 'contact'; ci = 0; contact = {}; name = ''; pending = null; moreQ = null; sentRef = ''; planRef = ''; planCache = null; storyWait = null; stopListen();
   A = {}; how = {}; qi = 0; row = 0; secShown = -1; T.innerHTML = ''; $('comp').hidden = false; $('prog').hidden = true; $('welcome').hidden = false;
   askContact(true);
 }
