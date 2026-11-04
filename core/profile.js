@@ -121,8 +121,6 @@ function profile(A, p) {
     s.push(bp ? `Your blood pressure was last checked ${bp}.` : "You're not sure when your blood pressure was last checked.");
     const lrn = { 'Rarely or never': 'You rarely learn something new or take on a challenging hobby', 'A few times a month': 'You learn something new or practise a challenging hobby a few times a month', 'About once a week': 'You learn something new about once a week', 'Several times a week': 'You learn something new several times a week' }[A.q51];
     if (lrn) s.push(lrn + '.');
-    if (has(A, 'q48', "I've been sunburnt, or used a sunbed, in the past 12 months")) s.push("You've been sunburnt or used a sunbed in the past year.");
-    if (has(A, 'q48', 'I often find it hard to follow conversations, or ask people to repeat themselves')) s.push('You often find it hard to follow conversations.');
     if (['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes') s.push('You already use hearing aids.');
     const goals = (A.q52 || []).filter(x => x !== 'Nothing in particular');
     if (goals.length) s.push(`You'd like to focus on ${list(goals.map(lc))}.`);

@@ -41,8 +41,8 @@ const U = [
   M('U32 Hugo, 39, snores, sleeps <5h, wants Movement', { q1: [AO('Movement')], q12: 'Less than 5', q14: 'Yes' }),
   M('U33 Rita, 57, prefers not to say health', { q1: [AO('Sleep')], q4: ['Prefer not to say'], q29: ['Prefer not to say'], q11: ['Prefer not to say'] }),
   M('U34 Joaquim, 72, isolated widower, Connection', { q1: [AO('Connection')], q2: '70 or over', q3: 'Not currently working', q36: { phone: 'Never', meet: 'Never', group: 'Never', volunteer: 'Never' }, q37: ['None of these'], q38: ['A stronger sense of belonging', 'Helping others or contributing to my community'] }),
-  M('U35 Patrícia, 26, sunbeds, Prevention sun', { q1: [AO('Prevention')], q48: ["I've been sunburnt, or used a sunbed, in the past 12 months"], q52: ['Protecting my skin from the sun'] }),
-  M('U36 Mário, 59, hearing difficulty, Connection', { q1: [AO('Connection')], q48: ['I often find it hard to follow conversations, or ask people to repeat themselves'], q38: ['More time with friends or family'] }),
+  M('U35 Patrícia, 26, Prevention sun', { q1: [AO('Prevention')], q52: ['Protecting my skin from the sun'] }),
+  M('U36 Mário, 59, Connection', { q1: [AO('Connection')], q38: ['More time with friends or family'] }),
   M('U37 Diana, 44, diabetes inactive, Movement', { q1: [AO('Movement')], q4: ['Diabetes (including if you take insulin or other blood-sugar medicine)'], q20: '1', q21: '20', q22: '0' }),
   M('U38 Zé, 31, chest pain on effort, Movement big', { q1: [AO('Movement')], q5: ['Pain, tightness or pressure in your chest'], q56: BIG, q20: '2', q21: '30' }),
   M('U39 Margarida, 47, it varies, all goals Sleep', { q1: [AO('Sleep')], q55: 'It varies', q18: ['Falling asleep more easily', 'Staying asleep through the night', 'Waking feeling rested'], q13: ['It takes me a long time to fall asleep', 'I wake during the night and find it hard to get back to sleep'] }),
@@ -100,7 +100,7 @@ for (const s of U) {
   // Pilot notes expected for trigger answers
   const P = new Set(o.pilot.map(n => n[0]));
   const exp = [[f.snore, 'Snoring'], [f.high_bp, 'Blood pressure'], [f.lung, 'Lung condition'], [f.pregnant || f.breastfeeding, 'Pregnancy'], [f.phq4_pos, 'PHQ-4 positive'], [(f.audit || 0) >= 8, 'AUDIT-C 8+'],
-    [f.hearing_diff, 'Hearing'], [f.food_rel || (f.food_other || []).length, 'Food'], [f.diabetes_med, 'Medication'], [f.shift, 'Shift work'], [f.fall, 'Fall'], [(f.tried_txt || []).length, 'Tried before'], [(f.nofit_txt || []).length, 'Not practical right now'], [f.carer, 'Caring'], [f.sleep_pain, 'Pain and sleep'],
+    [f.food_rel || (f.food_other || []).length, 'Food'], [f.diabetes_med, 'Medication'], [f.shift, 'Shift work'], [f.fall, 'Fall'], [(f.tried_txt || []).length, 'Tried before'], [(f.nofit_txt || []).length, 'Not practical right now'], [f.carer, 'Caring'], [f.sleep_pain, 'Pain and sleep'],
     [f.own_habit && f.own_habit[1] === 'share' && f.own_habit[0], 'Own habit'], [f.symptoms, 'Exercise warning symptoms']];
   for (const [cond, k] of exp) if (cond && !P.has(k)) issues.push('Missing Pilot note: ' + k);
   // Not right for me

@@ -156,8 +156,6 @@ function makeEngine(DATA) {
     if (au >= 8) add('Prevention', 'H', 'Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems.', 'Alcohol intake');
     else if (au >= 5) add('Prevention', 'M', 'Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health.', 'Alcohol intake');
     if (p.bp_old) add('Prevention', 'M', p.bp_unsure ? "You're not sure your blood pressure has been checked. All adults are advised to have it checked regularly." : "Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly.", 'Routine check-ups');
-    if (p.sunburn) add('Prevention', 'M', "You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time.", 'Avoiding sunburn');
-    if (p.hearing_diff && !p.hearing_aid) add('Prevention', 'M', 'You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected.', 'Hearing check');
     if (p.learn_rare) add('Prevention', 'M', 'You rarely learn new things or practise a challenging hobby, which helps keep the mind active.', 'Learning new skills');
     return a;
   }
@@ -234,7 +232,6 @@ function makeEngine(DATA) {
     if ((p.audit || 0) >= 8) N.push(['AUDIT-C 8+', "Talk about support; heavy daily drinkers shouldn't stop suddenly without medical advice."]);
     if ((p.smokes || p.vapes) && !p.want_quit) N.push(['Smokes, not ready to stop', 'Raise it gently at the pre-Span interview; support is there whenever they want it.']);
     if ((p.smokes || p.vapes) && p.want_quit) N.push(['Wants to quit', 'Help them connect with a stop-smoking service or quitline' + (p.tried_quit ? ' (has tried before).' : '.')]);
-    if (p.hearing_diff) N.push(['Hearing', p.hearing_aid ? 'Uses hearing aids and still finds conversations hard to follow. Worth asking whether they have had them reviewed recently.' : 'Finds conversations hard to follow. Suggest a hearing test.']);
     if (p.food_rel && !p.food_pns) N.push(['Food', 'Difficult relationship with food. Check they have support; no tracking, eating-window or eating-before-bed practices.']);
     if (p.food_rel && (p.goals.Nutrition || []).includes('timing')) N.push(['Food timing', "They'd like to work on when they eat. Practices about meal timing are left out for them; talk about it together and agree an approach that feels safe."]);
     if (p.food_pns) N.push(['Food', "Preferred not to say about food considerations. The plan leaves out tracking, eating-window and eating-before-bed practices to be safe; ask gently if there's anything to know."]);

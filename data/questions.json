@@ -996,18 +996,6 @@
   },
   {
    "number": 47,
-   "id": "q48",
-   "s": "prevention",
-   "type": "multi",
-   "text": "Which of these apply to you?",
-   "options": [
-    "I've been sunburnt, or used a sunbed, in the past 12 months",
-    "I often find it hard to follow conversations, or ask people to repeat themselves",
-    "None of these"
-   ]
-  },
-  {
-   "number": 48,
    "id": "q48a",
    "s": "prevention",
    "type": "single",
@@ -1019,7 +1007,7 @@
    ]
   },
   {
-   "number": 49,
+   "number": 48,
    "id": "q51",
    "s": "prevention",
    "type": "single",
@@ -1032,7 +1020,7 @@
    ]
   },
   {
-   "number": 50,
+   "number": 49,
    "id": "q52",
    "s": "prevention",
    "type": "multi",
@@ -1053,7 +1041,7 @@
    ]
   },
   {
-   "number": 51,
+   "number": 50,
    "id": "q54",
    "s": "life",
    "type": "habit",
@@ -1066,7 +1054,7 @@
    ]
   },
   {
-   "number": 52,
+   "number": 51,
    "id": "q58",
    "s": "life",
    "type": "multi",
@@ -1086,7 +1074,7 @@
    ]
   },
   {
-   "number": 53,
+   "number": 52,
    "id": "q55",
    "s": "life",
    "type": "single",
@@ -1101,7 +1089,7 @@
    ]
   },
   {
-   "number": 54,
+   "number": 53,
    "id": "q56",
    "s": "life",
    "type": "single",
@@ -1113,7 +1101,7 @@
    ]
   },
   {
-   "number": 55,
+   "number": 54,
    "id": "q57",
    "s": "life",
    "type": "multi",

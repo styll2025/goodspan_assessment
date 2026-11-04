@@ -145,8 +145,6 @@ Each answer adds to an area's opportunity score (High = 2, Medium = 1) and, wher
 | Prevention | AUDIT-C 8 or more | High | Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems. (Also adds a Pilot note.) |
 | Prevention | AUDIT-C 5-7 | Medium | Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health. |
 | Prevention | Blood pressure last checked more than 2 years ago, never or not sure | Medium | Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly. |
-| Prevention | Sunburnt or used a sunbed in the past 12 months | Medium | You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time. |
-| Prevention | Finds it hard to follow conversations | Medium | You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected. (Also adds a Pilot note.) Not when they are 60 or over and already use hearing aids (question 45a). |
 | Prevention | Learns something new rarely or never | Medium | You rarely learn new things or practise a challenging hobby, which helps keep the mind active. |
 
 ## Goals → practices
@@ -226,8 +224,6 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 | Mind | Positive PHQ-4 screen | Check in gently and share local support options. | Expressive writing excluded; Mind level not raised. |
 | Prevention | AUDIT-C 8 or more | Talk about support from their doctor or a local alcohol service. If they drink heavily every day, they shouldn't stop suddenly without medical advice. | Full alcohol-free month and Mastering alcohol practices excluded. |
 | Prevention | Smokes or vapes and would like to stop | Help them find a stop-smoking service or quitline. Ask about past attempts. | Quitting practice added if Prevention is a focus. |
-| Prevention | Often finds it hard to follow conversations | Suggest a hearing test. | Nothing else changes. |
-| Prevention | Aged 60 or over, uses hearing aids and often finds it hard to follow conversations | Ask whether the hearing aids have been reviewed recently. | No hearing test is suggested. |
 | Nutrition | Difficult relationship with food | Check they have support. | Tracking, eating-window and eating-before-bed practices excluded. |
 | Nutrition | Difficult relationship with food (or prefers not to say) and chose the “when I eat” goal | Talk about when they eat together and agree an approach that feels safe. | No meal-timing practice is offered for that goal. |
 | Nutrition | Takes diabetes or other blood-sugar medicine | Suggest they check with their doctor before changing meal timing. | Eating-window practices excluded. |

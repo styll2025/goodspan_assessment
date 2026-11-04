@@ -399,8 +399,6 @@ function makeEngine(DATA) {
     if (au >= 8) add('Prevention', 'H', 'Your drinking is in the higher-risk range. Cutting down lowers the risk of several long-term health problems.', 'Alcohol intake');
     else if (au >= 5) add('Prevention', 'M', 'Your drinking is above lower-risk levels. Drinking less is linked with better sleep and long-term health.', 'Alcohol intake');
     if (p.bp_old) add('Prevention', 'M', p.bp_unsure ? "You're not sure your blood pressure has been checked. All adults are advised to have it checked regularly." : "Your blood pressure hasn't been checked in the past 2 years. All adults are advised to have it checked regularly.", 'Routine check-ups');
-    if (p.sunburn) add('Prevention', 'M', "You've been sunburnt or used a sunbed in the past 12 months. Protecting your skin lowers the risk of skin damage and skin cancer over time.", 'Avoiding sunburn');
-    if (p.hearing_diff && !p.hearing_aid) add('Prevention', 'M', 'You often find it hard to follow conversations. A hearing check can show whether anything would help, and hearing well makes it easier to stay connected.', 'Hearing check');
     if (p.learn_rare) add('Prevention', 'M', 'You rarely learn new things or practise a challenging hobby, which helps keep the mind active.', 'Learning new skills');
     return a;
   }
@@ -477,7 +475,6 @@ function makeEngine(DATA) {
     if ((p.audit || 0) >= 8) N.push(['AUDIT-C 8+', "Talk about support; heavy daily drinkers shouldn't stop suddenly without medical advice."]);
     if ((p.smokes || p.vapes) && !p.want_quit) N.push(['Smokes, not ready to stop', 'Raise it gently at the pre-Span interview; support is there whenever they want it.']);
     if ((p.smokes || p.vapes) && p.want_quit) N.push(['Wants to quit', 'Help them connect with a stop-smoking service or quitline' + (p.tried_quit ? ' (has tried before).' : '.')]);
-    if (p.hearing_diff) N.push(['Hearing', p.hearing_aid ? 'Uses hearing aids and still finds conversations hard to follow. Worth asking whether they have had them reviewed recently.' : 'Finds conversations hard to follow. Suggest a hearing test.']);
     if (p.food_rel && !p.food_pns) N.push(['Food', 'Difficult relationship with food. Check they have support; no tracking, eating-window or eating-before-bed practices.']);
     if (p.food_rel && (p.goals.Nutrition || []).includes('timing')) N.push(['Food timing', "They'd like to work on when they eat. Practices about meal timing are left out for them; talk about it together and agree an approach that feels safe."]);
     if (p.food_pns) N.push(['Food', "Preferred not to say about food considerations. The plan leaves out tracking, eating-window and eating-before-bed practices to be safe; ask gently if there's anything to know."]);
@@ -1085,7 +1082,6 @@ const QUESTIONS = [
   { id: 'q44', s: 'prevention', type: 'single', show: A => A.q43 && A.q43 !== 'Never', text: 'On a typical day when you drink, how many drinks do you have?', options: ['1-2', '3-4', '5-6', '7-9', '10 or more'] },
   { id: 'q45', s: 'prevention', type: 'single', show: A => A.q43 && A.q43 !== 'Never', text: 'How often do you have 6 or more drinks on one occasion?', options: ['Never', 'Less than monthly', 'Monthly', 'Weekly', 'Daily or almost daily'] },
   { id: 'q46', s: 'prevention', type: 'single', text: 'When did you last have your blood pressure checked?', options: ['In the past 12 months', '1-2 years ago', 'More than 2 years ago', "Never, or I'm not sure"] },
-  { id: 'q48', s: 'prevention', type: 'multi', text: 'Which of these apply to you?', options: ["I've been sunburnt, or used a sunbed, in the past 12 months", 'I often find it hard to follow conversations, or ask people to repeat themselves', 'None of these'] },
   { id: 'q48a', s: 'prevention', type: 'single', show: A => ['60-69', '70 or over'].includes(A.q2), text: 'Do you already use hearing aids?', options: ['Yes', 'No'] },
   { id: 'q51', s: 'prevention', type: 'single', text: 'How often do you learn something new or practise a mentally challenging hobby, such as a language, an instrument or a craft?', options: ['Rarely or never', 'A few times a month', 'About once a week', 'Several times a week'] },
   { id: 'q52', s: 'prevention', type: 'multi', max: 3, goals: 'Prevention', text: 'What would you most like to improve in this area?', options: ['Drinking less alcohol', 'Stopping smoking or vaping', 'Keeping up with check-ups', 'Knowing which vaccines are due', 'Taking only the supplements I need', 'Protecting my skin from the sun', 'Protecting my hearing', 'Breathing cleaner air at home and outdoors', 'Keeping my mind active by learning new things', 'Nothing in particular'] },
@@ -1244,8 +1240,6 @@ function toFeatures(A) {
   else if (A.q43) { p.drinks = 1; const opts = id => QUESTIONS.find(x => x.id === id).options; p.audit = i3('q43', opts('q43')) + i3('q44', opts('q44')) + i3('q45', opts('q45')); }
   p.bp_old = ['More than 2 years ago', "Never, or I'm not sure"].includes(A.q46);
   p.bp_unsure = A.q46 === "Never, or I'm not sure";
-  p.sunburn = has('q48', "I've been sunburnt, or used a sunbed, in the past 12 months");
-  p.hearing_diff = has('q48', 'I often find it hard to follow conversations, or ask people to repeat themselves');
   p.hearing_aid = ['60-69', '70 or over'].includes(A.q2) && A.q48a === 'Yes';   // asked from 60; no hearing test for someone who already uses hearing aids
   p.learn_rare = A.q51 === 'Rarely or never';
   if (['About once a week', 'Several times a week'].includes(A.q51)) p.doing.push('Learning new skills');   // already learns something new weekly
