@@ -1,5 +1,5 @@
-// "About you": the Good Span Personal Assessment Summary. A short heading and two paragraphs that reflect a member's
-// assessment answers back to them, at the top of their Good Span. Written by Claude to the brief below.
+// "About you": the Good Span personal summary. A short heading and two paragraphs that reflect a member's
+// evaluation answers back to them, at the top of their Good Span. Written by Claude to the brief below.
 // The page always has a rule-based version (storyOf in core/result.js). If the key is missing, the call fails or the
 // text breaks a rule checked here, the page keeps that version.
 //
@@ -17,7 +17,7 @@ function fromProcess(name) {
 const SYSTEM = `You write the personal summary at the top of a participant's Good Span, a six-month wellbeing plan from The Good Span.
 
 Purpose
-A short, personalised narrative that helps the participant understand their current lifestyle, recognise existing strengths and see how their Good Span has been shaped around their priorities, preferences and circumstances. It should feel like a thoughtful reflection of their answers, not an assessment report, a list of scores or generic health advice. Treat the assessment responses as the source of truth: never combine their priorities with generic descriptions of those areas.
+A short, personalised narrative that helps the participant understand their current lifestyle, recognise existing strengths and see how their Good Span has been shaped around their priorities, preferences and circumstances. It should feel like a thoughtful reflection of their answers, not a report, a list of scores or generic health advice. Treat the assessment responses as the source of truth: never combine their priorities with generic descriptions of those areas.
 
 Before writing, interpret the answers privately and identify:
 - Existing strengths: habits and behaviours already established.
@@ -38,7 +38,7 @@ Make it recognisably individual
 - Don't rely on broad statements such as "you have strong foundations" or "you already have good habits" when more specific information is available.
 - Use at least two concrete details from their answers to illustrate their current lifestyle, chosen because they help explain their starting position, priorities or the direction of the plan.
 - When they have more than one priority, explain what they want to change in each relevant area. Don't focus only on the first priority, and don't just repeat the focus areas.
-- Every detail must contribute to the narrative. Don't include details just to show the assessment was read.
+- Every detail must contribute to the narrative. Don't include details just to show the evaluation was read.
 - They should feel their answers have been understood, not merely processed.
 
 When not to interpret
@@ -80,9 +80,12 @@ Contextual accuracy and consistency
 - Don't call a whole area a strength if they asked for help in it (for example good habits in mental wellbeing alongside a wish to manage stress): acknowledge the routines they have and the help they want.
 - When an answer is a range (for example 30 minutes to 2 hours), don't infer which side of a guideline they fall on.
 - For activity, keep three figures apart when you mention them: what they do now, the weekly total to aim for, and the additional time on top of today.
-- Don't assume a habit the assessment didn't ask about (for example using a phone in bed). If the plan's practice is conditional ("if your phone usually comes to bed with you"), keep it conditional.
+- Don't assume a habit the evaluation didn't ask about (for example using a phone in bed). If the plan's practice is conditional ("if your phone usually comes to bed with you"), keep it conditional.
 - Only moderate or vigorous activity counts towards an aerobic target; never describe gentle walks, stretching, balance or strength work as part of those minutes.
 - If they asked for help in an area the plan doesn't cover yet, either leave it out or say clearly that it isn't part of the starting focus. Never imply the plan addresses it.
+- The questionnaire is called the evaluation (never "assessment").
+- "Something else" or "Other", and any words they added after it, are for their Pilot: don't quote or interpret those words, and don't present them as part of the plan. You may say their Pilot will talk them through.
+- For sleep habits, "Not practical for me right now" means the habit doesn't fit their life at the moment, not that they tried it. Never describe it as something they tried.
 - Before finalising, validate the whole narrative. Check every fact about them against their original answers, never against the plan fields. Check every practice name, frequency, duration and sequencing statement (what starts now, what is optional, what follows in month 2 or month 3) against the plan exactly as listed. If the plan has nothing in month 2 or month 3, don't mention one.
 
 Tone
@@ -157,7 +160,7 @@ async function handleStory(body, { fetchImpl = fetch, apiKey = fromProcess('ANTH
   if (!f) return { status: 400, json: { error: 'bad_request' } };
   const req = {
     model: model || fromProcess('GS_STORY_MODEL') || DEFAULT_MODEL, max_tokens: 900, temperature: 0.6, system: SYSTEM,
-    tools: [{ name: 'write_summary', description: 'The Personal Assessment Summary.',
+    tools: [{ name: 'write_summary', description: 'The personal summary at the top of their Good Span.',
       input_schema: { type: 'object', properties: {
         heading: { type: 'string', description: 'Short heading, ideally 4 to 9 words, no full stop' },
         paragraphs: { type: 'array', items: { type: 'string' }, minItems: 2, maxItems: 2, description: 'Paragraph 1: where they are now. Paragraph 2: where they want to go and how their Good Span responds.' } },

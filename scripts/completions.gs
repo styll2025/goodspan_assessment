@@ -1,5 +1,5 @@
 /**
- * The Good Span: assessment completions → Google Sheet, and each member's plan as a web page.
+ * The Good Span: evaluation completions → Google Sheet, and each member's plan as a web page.
  *
  * What it does
  * - The conversation (index.html) posts one completion when a member finishes: their contact details,
@@ -27,7 +27,7 @@
  * - Plan links use a long random id, so they can't be guessed, but anyone who has a link can open
  *   that plan. Share links only with the member and their Pilot.
  * - The Drive folder stays private to you; only this web app reads from it.
- * - Answers include health information. Add consent wording to the assessment before real members use it.
+ * - Answers include health information. Add consent wording to the evaluation before real members use it.
  */
 
 const CONFIG = {
@@ -164,7 +164,7 @@ function savePlan_(id, html) {
 
 // ---------- membership interest (from the plan page) ----------
 
-// One row per sign-up in the "Membership interest" tab. When it comes from a finished assessment, the matching
+// One row per sign-up in the "Membership interest" tab. When it comes from a finished evaluation, the matching
 // Completions row also gets the level and email in its "Membership interest" column.
 function interest_(d) {
   const email = text_(d.email).trim();
