@@ -1,3 +1,4 @@
+// Live evaluation Worker. Workers Builds deploys this repo as goodspan-evaluation.
 {
   "name": "goodspan-longevity-map",
   "main": "worker.js",
