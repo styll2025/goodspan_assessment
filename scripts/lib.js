@@ -21,6 +21,8 @@ const iconLinks = [
   '<link rel="manifest" href="site.webmanifest">',
   '<meta name="theme-color" content="#4d2831">',
 ].join('');
+// Google Analytics for the public evaluation pages.
+const googleTag = '<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=G-HMHPYN0VZE"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag(\'js\',new Date());gtag(\'config\',\'G-HMHPYN0VZE\');</script>';
 const fill = (s, map) => { for (const k in map) s = s.split(k).join(map[k]); return s; };
 const fontMap = () => Object.fromEntries(Object.entries(FONTS).map(([k, [f, m]]) => [k, dataUri(A + f, m)]));
 const img = key => dataUri(A + 'img/' + key.toLowerCase() + '.jpg', 'image/jpeg');
@@ -47,6 +49,6 @@ function conversationPage() {
   s = s.replace('__IMG__', () => JSON.stringify(Object.fromEntries(PILLARS.map(k => [k.toLowerCase(), img(k)]))));
   s = s.replace('__QUESTIONS__', () => fs.readFileSync(ROOT + '/core/questions.js', 'utf8'));
   s = s.replace('__RESULT_JS__', () => js);
-  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + iconLinks + '</head><body>' + s + '</body></html>';
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + iconLinks + googleTag + '</head><body>' + s + '</body></html>';
 }
-module.exports = { ROOT, env, buildResult, resultPage, conversationPage, iconLinks };
+module.exports = { ROOT, env, buildResult, resultPage, conversationPage, iconLinks, googleTag };

@@ -8,7 +8,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(import.meta.url);
-const { conversationPage } = require('./lib.js');
+const { conversationPage, googleTag } = require('./lib.js');
 const r = p => readFileSync(join(root, p), 'utf8');
 const body = r('src/app.html')
   .replace('__BASECSS__', () => r('src/base.css'))
@@ -22,6 +22,7 @@ const html = `<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Good Span: find your Good Span</title>
 <!-- Built by scripts/build.mjs from src/ and core/. Edit those files, not this one. Served at /assessment.html. -->
+${googleTag}
 </head>
 <body>
 ${body}
