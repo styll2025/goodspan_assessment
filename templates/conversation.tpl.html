@@ -523,14 +523,34 @@ const ACK = {
   q57: A => { const o = (A.q57 || []).filter(x => !NONE_WORDS.test(x) && x !== 'Something else'); const extra = (A.q57 || []).includes('Something else') ? "We'll keep what you added in mind." : ''; const named = o.length ? `Noted. We won't suggest ${list2(o.map(x => x.charAt(0).toLowerCase() + x.slice(1).replace(/\bI\b/g, 'you').replace(/\bmy\b/g, 'your')))}.` : ''; return [named, extra].filter(Boolean).join(' '); },
 };
 
+function ownNote(id) { return ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim(); }
 function show(id, v, withNote) {
   const q = QUESTIONS.find(x => x.id === id);
   if (v == null) return '';
-  const text = q.type === 'text' ? String(v || '').trim() : q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
+  const text = q.type === 'text' ? String(v || '').replace(/\s+/g, ' ').trim() : q.type === 'grid' ? gridRows(q, A).map(r => `${r[1]}: ${v[r[0]] || '—'}`).join('; ') : q.type === 'habit' ? [v.text, v.choice].filter(Boolean).join(' · ') : [].concat(v).map(label).join(', ');
   if (withNote === false) return text;
-  const note = ((A.more || {})[id] || '').replace(/\s+/g, ' ').trim();
+  const note = ownNote(id);
+  if (!note || text.includes(note)) return text;
   const detail = pickedDetail(q.options, v);
-  return detail && note ? text.replace(detail, detail + ': ' + note) : text;
+  if (detail && text.includes(detail)) return text.replace(detail, detail + ': ' + note);
+  return text ? text + ' (' + note + ')' : note;
+}
+// Every free-text answer, in one place, so the sheet has it even when a question cell only shows the option.
+function openTextLines() {
+  const lines = [];
+  for (const q of QUESTIONS) {
+    if (q.type === 'text') {
+      const t = String(A[q.id] || '').replace(/\s+/g, ' ').trim();
+      if (t) lines.push(q.text + ': ' + t);
+    } else if (q.type === 'habit') {
+      const h = A[q.id];
+      if (h && h.text && /Share/.test(h.choice || '')) lines.push(q.text + ': ' + String(h.text).replace(/\s+/g, ' ').trim());
+    } else {
+      const note = ownNote(q.id);
+      if (note) lines.push(q.text + ': ' + note);
+    }
+  }
+  return lines;
 }
 function finish() {
   composer(false, ''); clearChips(); $('comp').hidden = true;
@@ -592,6 +612,8 @@ function sendCompletion() {
   sentRef = planRef || newRef();
   const planLink = planPageLink(sentRef);
   const answers = QUESTIONS.filter(q => A[q.id] !== undefined).map(q => ({ section: (SECTIONS.find(s => s.id === q.s) || {}).title || '', question: q.text, answer: show(q.id, A[q.id]), how: how[q.id] === 'spoken' ? 'Spoken' : how[q.id] === 'typed' ? 'Typed' : 'Tapped' }));
+  const words = openTextLines();
+  if (words.length) answers.push({ section: 'In their own words', question: 'Open text', answer: words.join('\n'), how: 'Typed' });
   if (planLink) answers.push({ section: '', question: 'Plan page', answer: planLink, how: 'Tapped' });
   const ref = sentRef;
   improveStory().then(p => { if (!p) return;

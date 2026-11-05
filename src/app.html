@@ -394,11 +394,30 @@ function answerText(q, v) {
   if (q.type === 'text') return String(v || '').replace(/\s+/g, ' ').trim();
   let base = Array.isArray(v) ? v.join('; ') : String(v);
   const more = ((A.more || {})[q.id] || '').replace(/\s+/g, ' ').trim();
-  if (more && pickedDetail(q.options, v)) base = base.replace('Something else', 'Something else: ' + more);
+  const detail = pickedDetail(q.options, v);
+  if (more && detail && !base.includes(more)) base = base.includes(detail) ? base.replace(detail, detail + ': ' + more) : (base ? base + ' (' + more + ')' : more);
   return base;
+}
+function openText() {
+  const lines = [];
+  for (const q of QUESTIONS) {
+    if (!visible(q)) continue;
+    if (q.type === 'text') {
+      const t = String(A[q.id] || '').replace(/\s+/g, ' ').trim();
+      if (t) lines.push(q.text + ': ' + t);
+    } else if (q.type === 'habit') {
+      const h = A[q.id];
+      if (h && h.text && /Share/.test(h.choice || '')) lines.push(q.text + ': ' + String(h.text).replace(/\s+/g, ' ').trim());
+    } else {
+      const note = ((A.more || {})[q.id] || '').replace(/\s+/g, ' ').trim();
+      if (note) lines.push(q.text + ': ' + note);
+    }
+  }
+  return lines.join('\n');
 }
 function sheetRow(P, source) {
   const row = { submittedAt: new Date().toISOString(), version: VERSION, memberRef: member.id, memberName: member.name || '', email: member.email || '', mobile: member.mobile || '', source };
+  const words = openText(); if (words) row['In their own words'] = words;
   // one column per question, the same for every member: section + question text (questions that weren't shown stay blank)
   for (const q of QUESTIONS) { if (!visible(q)) continue; row[`v7 ${SECTIONS.find(x => x.id === q.s).title}: ${q.text}`] = answerText(q, A[q.id]); }
   if (P) {
