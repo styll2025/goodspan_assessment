@@ -51,11 +51,11 @@
   const OO_AREA = { tracking_food: ['Nutrition'], fasting: ['Nutrition'], meditation: ['Mind', 'Sleep'], journalling: ['Mind', 'Sleep'], early: ['Sleep', 'Movement'], touch: ['Connection'], apps: AREAS };
   const SMALL = { Nutrition: 'how you eat', Sleep: 'more attention to your sleep', Movement: 'more movement', Mind: 'more room for your mental wellbeing', Connection: 'more time with others', Prevention: 'one of your long-term health habits' };
   // goals in a member's own voice: “You picked ‘managing stress’ as a goal” becomes “You told us managing stress matters to you”
-  const voice = t => (t || '').replace(/\bmyself\b/g, 'yourself').replace(/\b(the time) I want\b/g, '$1 you want').replace(/^You picked “([^”]+)” as a goal, and this is a practical way to work on it\./, 'You told us $1 matters to you, and this is a practical way to work on it.')
+  const voice = t => (t || '').replace(/how much you move/g, 'your movement').replace(/\bmyself\b/g, 'yourself').replace(/\b(the time) I want\b/g, '$1 you want').replace(/^You picked “([^”]+)” as a goal, and this is a practical way to work on it\./, 'You told us $1 matters to you, and this is a practical way to work on it.')
     .replace(/^You picked “([^”]+)” and “([^”]+)” as goals\./, 'You told us $1 and $2 matter to you.').replace(/^You picked “([^”]+)” as a goal\./, 'You told us $1 matters to you.');
 
 
-  // ---- "About you": the Personal Assessment Summary. A heading and two short paragraphs that reflect the member's
+  // ---- "About you": the personal summary (from the evaluation answers). A heading and two short paragraphs that reflect the member's
   // answers back to them: their lifestyle today, then what matters to them and where their Good Span starts.
   // buildResult writes a rule-based version so the section never depends on AI. The conversation sends storyFacts plus
   // the member's answers to /api/story, which asks Claude for a fuller reflection written to the brief in server/ai-story.js.
@@ -530,6 +530,9 @@
     const inPlanArea = a => [...pr, ...extras, ...m2, ...m3].some(x => x.area === a);
     const outOfFocus = a => { if (inPlanArea(a)) return ''; const nx = later.slice(0, 3).find(x => x.area === a); return ` That isn't part of your starting focus${startAreas.length ? `, which is ${list(startAreas.map(z => AREA_TXT[z]))}` : ''}, so this plan doesn't address it yet${nx ? `; a practice such as ${(NAME[nx.fam] || nx.fam).toLowerCase()} could follow later on` : ''}. You can raise it with your Pilot at any time.`; };
     const partlyLine = partly.map(a => { const h = wellOf(a, A, p)[0]; return `In ${AREA_TXT[a]}, you have ${h ? `routines such as ${low(h).replace(/\.$/, '')}` : 'some routines in place'}, and you'd also like help with ${glist(goalsOf(a).map(ger))}.${outOfFocus(a)}`; }).join(' ');
+    const ELSE_Q = { Nutrition: ['q9'], Sleep: ['q13', 'q18'], Movement: ['q27'], Mind: ['q33'], Connection: ['q38'], Prevention: ['q52'] };
+    const elseAreas = p.wish.filter(a => (ELSE_Q[a] || []).some(q => (A[q] || []).includes('Something else')));
+    const elseLine = elseAreas.length ? `You also chose "Something else" for ${list(elseAreas.map(a => AREA_TXT[a]))}. Your Pilot will ask you about it, and your Good Span can change once they understand what you mean.` : '';
     let intro1;
     if (held) {
       const mg = goalsOf('Movement');
@@ -595,6 +598,7 @@
       paras = [wellAreas.length ? `You already have strong foundations in ${wellTxt}, and we'll build on what already works.` : "We'll build on what already works, one step at a time."];
       if (wishWell.length) paras.unshift(`${cap(list(wishWell.map(a => AREA_TXT[a])))} already ${wishWell.length > 1 ? 'have' : 'has'} strong foundations, so we're starting with ${AREA_TXT[startAreas[0]]}.`);
       if (alsoLine) paras.push(alsoLine);
+      if (elseLine) paras.push(elseLine);
       if (partlyLine) paras.push(partlyLine);
       if (ooLine) paras.push(ooLine);
       if (laterLine) paras.push(laterLine);

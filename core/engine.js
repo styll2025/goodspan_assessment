@@ -57,7 +57,7 @@ const WORK_FAMS = ['Micro-breaks', 'Time away from work', 'Focused work'];
 // where they like to be active (not what they enjoy): said as a place, not as enjoyment
 const LOC_TXT = { outdoors: 'You can do it outdoors, where you like to be active.', sport: 'You can do it at your sports club.' };
 const WISH_WEIGHT = 2;
-const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
+const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'your movement', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
 const GOAL_TXT = { protein: 'getting enough protein', plants: 'eating more plants and fibre', processed: 'eating less processed food', sugar: 'reducing sugar',
   heart: 'heart health', planning: 'meal planning and home cooking', out: 'eating well when out', timing: 'when I eat', mindful: 'eating mindfully',
   fall_asleep: 'falling asleep more easily', stay_asleep: 'staying asleep', more_sleep: 'getting more sleep', wake_time: 'waking at the time I want',

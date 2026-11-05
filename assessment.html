@@ -301,7 +301,7 @@ const WORK_FAMS = ['Micro-breaks', 'Time away from work', 'Focused work'];
 // where they like to be active (not what they enjoy): said as a place, not as enjoyment
 const LOC_TXT = { outdoors: 'You can do it outdoors, where you like to be active.', sport: 'You can do it at your sports club.' };
 const WISH_WEIGHT = 2;
-const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'how much you move', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
+const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'your movement', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
 const GOAL_TXT = { protein: 'getting enough protein', plants: 'eating more plants and fibre', processed: 'eating less processed food', sugar: 'reducing sugar',
   heart: 'heart health', planning: 'meal planning and home cooking', out: 'eating well when out', timing: 'when I eat', mindful: 'eating mindfully',
   fall_asleep: 'falling asleep more easily', stay_asleep: 'staying asleep', more_sleep: 'getting more sleep', wake_time: 'waking at the time I want',
@@ -1461,7 +1461,7 @@ function nrResult(r, i, P) {
       <span class="t">${esc(z.row.w)} ${esc(z.row.d)}.</span><span class="muted" style="font-size:15px">${e > 0 ? '+' + Math.round(e) + ' new minutes a week' : 'No extra time'} · ${esc(z.row.ev)} evidence</span>
       <span style="font-size:15px">${esc(z.why)}</span><div><button class="btn small primary" type="button" data-pick="${i}:${k}">Choose this</button></div></div>`; }).join('')}</div>`;
   if (r.action === 'pause') return `<p class="nrmsg">Thank you for telling us. We'll pause this practice and let your Pilot know, so you can talk it through before anything replaces it.</p><div class="nrrow"><button class="btn small primary" type="button" data-confirm="${i}:pause">Pause this practice</button></div>`;
-  if (r.locked) return `<p class="nrmsg">This practice answers one of the most important things in your assessment, so it isn't changed without a conversation. We'll ask your Pilot to talk it through with you at your next check-in.</p><div class="nrrow"><button class="btn small primary" type="button" data-confirm="${i}:talk">Ask to talk it through</button></div>`;
+  if (r.locked) return `<p class="nrmsg">This practice answers one of the most important things in your evaluation, so it isn't changed without a conversation. We'll ask your Pilot to talk it through with you at your next check-in.</p><div class="nrrow"><button class="btn small primary" type="button" data-confirm="${i}:talk">Ask to talk it through</button></div>`;
   if (r.action === 'none') return `<p class="nrmsg">Nothing else fits your answers and your time right now. You can keep it for now, or pause it until your next check-in, where you'll decide together what comes next.</p><div class="nrrow"><button class="btn small" type="button" data-close="${i}">Keep it</button><button class="btn small primary" type="button" data-confirm="${i}:pause">Pause until my check-in</button></div>`;
   return '';
 }
@@ -1571,7 +1571,7 @@ function renderPlan() {
     <div><p class="kicker">From month 1 · all six months</p><h2>Your foundations.</h2><p style="margin-top:16px">Simple everyday habits that support everything else. They're separate from your practices and themes: start them now, keep them going in the background, and tick them off once they're in place.</p></div>
     <div><ul class="list" style="margin-top:0">${P.foundations.map((f, i) => `<li><span class="ui">${esc(f.p)}</span><label style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="fd${i}" style="accent-color:var(--plum);width:18px;height:18px;margin-top:3px;flex:none"><span>${esc(f.t)}<br><span class="muted">${esc(f.because || 'A simple everyday habit that helps most people.')} ${esc(f.why || '')}</span></span></label></li>`).join('') || '<li><span></span><span class="muted">None for now.</span></li>'}</ul></div></div></section>
   <section class="inv"><div class="wrap next">
-    <div><p class="kicker">03 · New Position</p><h2>Where you'll be after six months.</h2><p>At the end of month 6 you'll repeat a short assessment. We'll show your New Position next to your Starting Position, so you can see what has changed.</p></div>
+    <div><p class="kicker">03 · New Position</p><h2>Where you'll be after six months.</h2><p>At the end of month 6 you'll repeat a short evaluation. We'll show your New Position next to your Starting Position, so you can see what has changed.</p></div>
     <div><p class="kicker">04 · Your next Good Span</p><h2>Where you go from there.</h2><p>Your New Position becomes the starting point for your next Good Span: we keep what's working, build on what's going well, and choose the next step together.</p></div></div></section>
   <section><div class="wrap closing"><p class="kicker">One step at a time</p><h2>Healthy habits are built one step at a time.</h2>
     <p>You don't need to get everything right at once. Start with the practices for this month, keep going with what works, and adjust what doesn't. Some weeks will go better than others, and that's part of it. Small changes, kept up, add up over time.</p>
@@ -1604,30 +1604,11 @@ function answerText(q, v) {
   if (q.type === 'text') return String(v || '').replace(/\s+/g, ' ').trim();
   let base = Array.isArray(v) ? v.join('; ') : String(v);
   const more = ((A.more || {})[q.id] || '').replace(/\s+/g, ' ').trim();
-  const detail = pickedDetail(q.options, v);
-  if (more && detail && !base.includes(more)) base = base.includes(detail) ? base.replace(detail, detail + ': ' + more) : (base ? base + ' (' + more + ')' : more);
+  if (more && pickedDetail(q.options, v)) base = base.replace('Something else', 'Something else: ' + more);
   return base;
-}
-function openText() {
-  const lines = [];
-  for (const q of QUESTIONS) {
-    if (!visible(q)) continue;
-    if (q.type === 'text') {
-      const t = String(A[q.id] || '').replace(/\s+/g, ' ').trim();
-      if (t) lines.push(q.text + ': ' + t);
-    } else if (q.type === 'habit') {
-      const h = A[q.id];
-      if (h && h.text && /Share/.test(h.choice || '')) lines.push(q.text + ': ' + String(h.text).replace(/\s+/g, ' ').trim());
-    } else {
-      const note = ((A.more || {})[q.id] || '').replace(/\s+/g, ' ').trim();
-      if (note) lines.push(q.text + ': ' + note);
-    }
-  }
-  return lines.join('\n');
 }
 function sheetRow(P, source) {
   const row = { submittedAt: new Date().toISOString(), version: VERSION, memberRef: member.id, memberName: member.name || '', email: member.email || '', mobile: member.mobile || '', source };
-  const words = openText(); if (words) row['In their own words'] = words;
   // one column per question, the same for every member: section + question text (questions that weren't shown stay blank)
   for (const q of QUESTIONS) { if (!visible(q)) continue; row[`v7 ${SECTIONS.find(x => x.id === q.s).title}: ${q.text}`] = answerText(q, A[q.id]); }
   if (P) {
@@ -1676,8 +1657,8 @@ function renderWelcome() {
   document.getElementById('view').innerHTML = `<div class="wrap"><div class="intro welcome">
     <p class="kicker">Find your Good Span</p><h1>Welcome.</h1>
     <p class="lead">About 15 minutes of questions across six pillars: Nutrition, Sleep, Movement, Mind, Connection and Prevention. Your answers build a Good Span that is yours alone, and we'll explain why each practice is in it.</p>
-    ${resume ? `<p>You have an assessment in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
-      <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new assessment</button></div>`
+    ${resume ? `<p>You have an evaluation in progress${member.name ? ' for ' + esc(member.name) : ''}.</p>
+      <div class="nav" style="border:0;padding-top:0"><button class="btn primary" type="button" id="cont">Continue where I left off</button><button class="btn" type="button" id="fresh">Start a new evaluation</button></div>`
     : `<form id="wform" class="qwrap" style="padding-block:8px 0" novalidate><label class="nm"><span>What would you like us to call you?</span>
       <input id="nm" type="text" autocomplete="given-name" maxlength="40" placeholder="Your first name" value="${esc(member && member.name || '')}"></label>
       <label class="nm"><span>Email</span><input id="em" type="email" autocomplete="email" inputmode="email" maxlength="120" placeholder="you@example.com"></label>
@@ -1697,7 +1678,7 @@ function render() {
 // The logo starts again: from the welcome screen it does nothing; anywhere else it asks first, then clears this device's answers
 document.getElementById('home').onclick = () => {
   if (mode === 'welcome') return;
-  if (!confirm('Start a new assessment? Your current answers on this device will be cleared.')) return;
+  if (!confirm('Start a new evaluation? Your current answers on this device will be cleared.')) return;
   REQ = {}; OPEN = null; CUR = null; A = {}; sec = 0; member = null; mode = 'welcome'; tried = false; save(); render(); scrollTo(0, 0);
 };
 if (!member) mode = 'welcome';
