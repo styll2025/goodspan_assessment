@@ -160,7 +160,7 @@ In the order the plan tries them (then re-ordered within the list by the fit sco
 | Nutrition | Heart health: less salt and more nuts | `heart` | Salt, Nuts | Nuts excluded for nut allergy. |
 | Nutrition | Meal planning and home cooking | `planning` | Meal planning and home cooking |  |
 | Nutrition | Eating well when I'm out or travelling | `out` | Eating out and on the move |  |
-| Nutrition | When I eat, such as late-evening eating | `timing` | Gap between eating and bed, Daily eating window | Eating window excluded for pregnancy, blood-sugar medicine, a difficult relationship with food, shift work, or opting out of fasting. |
+| Nutrition | Not eating too late in the evening | `timing` | Gap between eating and bed, Daily eating window | Eating window excluded for pregnancy, blood-sugar medicine, a difficult relationship with food, shift work, or opting out of fasting. |
 | Nutrition | Eating more mindfully, with fewer distractions | `mindful` | Screen-free meals, Attention to food, Slow eating |  |
 | Sleep | Falling asleep more easily | `fall_asleep` | Slow breathing to wind down, Screen-free wind-down, Bedtime to-do list, Progressive muscle relaxation, Bedtime music |  |
 | Sleep | Staying asleep through the night | `stay_asleep` | Bed for sleep, Alcohol and sleep, Slow breathing to wind down, Progressive muscle relaxation | Alcohol and sleep excluded for non-drinkers. |
@@ -225,7 +225,7 @@ Extra mappings: ('Prevention', '(answer) Used to smoke or vape, has stopped', 'S
 | Prevention | AUDIT-C 8 or more | Talk about support from their doctor or a local alcohol service. If they drink heavily every day, they shouldn't stop suddenly without medical advice. | Full alcohol-free month and Mastering alcohol practices excluded. |
 | Prevention | Smokes or vapes and would like to stop | Help them find a stop-smoking service or quitline. Ask about past attempts. | Quitting practice added if Prevention is a focus. |
 | Nutrition | Difficult relationship with food | Check they have support. | Tracking, eating-window and eating-before-bed practices excluded. |
-| Nutrition | Difficult relationship with food (or prefers not to say) and chose the “when I eat” goal | Talk about when they eat together and agree an approach that feels safe. | No meal-timing practice is offered for that goal. |
+| Nutrition | Difficult relationship with food (or prefers not to say) and chose the “not eating too late in the evening” goal | Talk about when they eat together and agree an approach that feels safe. | No meal-timing practice is offered for that goal. |
 | Nutrition | Takes diabetes or other blood-sugar medicine | Suggest they check with their doctor before changing meal timing. | Eating-window practices excluded. |
 | All | “I'm not sure yet” and no area scores 2 or more | Confirm the focus areas together; the suggestion is only a starting point. | Nothing changes. |
 | Sleep | Works shifts or nights | Tailor sleep timing together; the library has no shift-work sleep practices yet. | Sleep-timing practices excluded. |

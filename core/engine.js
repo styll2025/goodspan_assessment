@@ -59,7 +59,7 @@ const LOC_TXT = { outdoors: 'You can do it outdoors, where you like to be active
 const WISH_WEIGHT = 2;
 const AREA_TXT = { Nutrition: 'how you eat', Sleep: 'your sleep', Movement: 'your movement', Mind: 'your mental wellbeing', Connection: 'your connections with others', Prevention: 'your long-term health habits' };
 const GOAL_TXT = { protein: 'getting enough protein', plants: 'eating more plants and fibre', processed: 'eating less processed food', sugar: 'reducing sugar',
-  heart: 'heart health', planning: 'meal planning and home cooking', out: 'eating well when out', timing: 'when I eat', mindful: 'eating mindfully',
+  heart: 'heart health', planning: 'meal planning and home cooking', out: 'eating well when out', timing: 'not eating too late in the evening', mindful: 'eating mindfully',
   fall_asleep: 'falling asleep more easily', stay_asleep: 'staying asleep', more_sleep: 'getting more sleep', wake_time: 'waking at the time I want',
   rested: 'waking feeling rested', schedule: 'a more consistent sleep schedule', evening: 'a better evening routine', morning: 'a better morning routine',
   fitness: 'general fitness', strength: 'building strength', cardio: 'cardiovascular fitness', mobility: 'mobility and flexibility', balance: 'balance',
